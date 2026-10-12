@@ -11,7 +11,7 @@
 | T02 | Hash matching 不等於證明正確 | file_sha256 PASS 自動升格論文真偽 |
 | T03 | 有界算式不能升格全稱定理 | 一個 finite check 變成 universal-proof verdict |
 | T04 | Lean kernel 實際未執行就不得標為已跑 | mock/編譯計畫當成 genuine formal replay |
-| T05 | Lean PASS 不自動等於 Claim/FomalTarget 對齊 | 無語義對照即宣稱自然語言原命題成立 |
+| T05 | Lean PASS 不自動等於 Claim/FormalTarget 對齊 | 無語義對照即宣稱自然語言原命題成立 |
 | T06 | 每條 claim 可追到固定來源版本 | source revision 可默默變動或更新未記錄 |
 | T07 | 修訂／撤回不可抹除舊事件 | correction 覆寫證據歷史 |
 | T08 | public repo 不得拿私有來源補料 | AMRAL/私有論文直接進 AMVO |
