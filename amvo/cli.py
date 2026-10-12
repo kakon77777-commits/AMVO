@@ -1,4 +1,4 @@
-"""Command-line entry point. No network or model API calls."""
+"""AMVO command-line interface. Offline only, with no model API calls."""
 from __future__ import annotations
 
 import argparse
@@ -46,7 +46,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "build-site":
             destination = args.output or (ROOT / "site")
             destination.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / "web" / "index.html", destination / "index.html")
+            for name in ("index.html", "styles.css", "app.js"):
+                shutil.copyfile(ROOT / "web" / name, destination / name)
             _write_json(destination / "data" / "index.json",
                         {"records": records, "verification": result,
                          "warning": "This site reports scoped evidence, not global theorem proof."})

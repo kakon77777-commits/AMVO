@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kakon77777-commits/AMVO/blob/main/schemas/case.schema.json",
+  "title": "AMVO public claim intake v0.1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "type",
+    "title",
+    "source",
+    "rights",
+    "claim",
+    "review",
+    "checks"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^amvo-[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "type": {
+      "enum": [
+        "public_source_intake",
+        "claim",
+        "synthetic_fixture"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "publisher",
+        "title",
+        "authors",
+        "url",
+        "version",
+        "captured_at",
+        "public"
+      ],
+      "properties": {
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://[^?\\#]+$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "captured_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "public": {
+          "const": true
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "required": [
+        "mode",
+        "note"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "metadata_only",
+            "redistribution_cleared"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "required": [
+        "statement",
+        "scope"
+      ],
+      "properties": {
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unreviewed",
+            "under_review",
+            "needs_revision",
+            "withdrawn"
+          ]
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "lhs",
+              "rhs"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "kind": {
+                "const": "rational_sum"
+              },
+              "lhs": {
+                "$ref": "#/$defs/fractions"
+              },
+              "rhs": {
+                "$ref": "#/$defs/fractions"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "lhs_coefficients",
+              "rhs_coefficients"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "kind": {
+                "const": "polynomial_coefficients"
+              },
+              "lhs_coefficients": {
+                "$ref": "#/$defs/fractions"
+              },
+              "rhs_coefficients": {
+                "$ref": "#/$defs/fractions"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "kind",
+              "path",
+              "sha256"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "kind": {
+                "const": "file_sha256"
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^evidence/"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "fractions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "pattern": "^-?[0-9]{1,80}(/[0-9]{1,80})?$"
+      }
+    }
+  }
+}
