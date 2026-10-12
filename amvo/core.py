@@ -72,7 +72,7 @@ def _fractions(values: object) -> list[Fraction]:
 
 def _verify_url(url: object) -> None:
     _require(_is_nonempty(url, limit=1200), "source.url is required")
-    _require(not re.search(r"[\\x00-\\x20\\x7f]", url),
+    _require("\\" not in url and not re.search(r"[\x00-\x20\x7f]", url),
              "source URL contains whitespace or control characters")
     try:
         p = urlsplit(url)
