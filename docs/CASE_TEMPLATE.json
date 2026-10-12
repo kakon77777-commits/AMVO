@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "id": "amvo-example-record",
+  "type": "claim",
+  "title": "Public mathematical claim title",
+  "source": {
+    "publisher": "Source publisher",
+    "title": "Original manuscript title",
+    "authors": [
+      "Original author"
+    ],
+    "url": "https://example.org/public-paper",
+    "version": "pin-version-or-commit",
+    "captured_at": "2026-10-13",
+    "public": true
+  },
+  "rights": {
+    "mode": "metadata_only",
+    "note": "Metadata link only; original authors retain rights."
+  },
+  "claim": {
+    "statement": "Exact proposition with quantified assumptions.",
+    "scope": "Declare what is and is not asserted."
+  },
+  "review": {
+    "status": "unreviewed"
+  },
+  "checks": []
+}
