@@ -1,5 +1,13 @@
 # Agent policy for AMVO
 
+**Canonical next-phase handoff (2026-10-13):**
+- docs/LOCAL_AGENT_HANDOFF_2026-10-13.md
+- docs/ENGINEERING_MASTER_PLAN_2026-10-13.md
+- docs/ACCEPTANCE_MATRIX_2026-10-13.md
+- docs/SOURCE_AND_REVIEW_CONTRACT_2026-10-13.md
+
+Read these together with this file and the actual latest main branch before implementing any new phase. Confirm baseline test and CI results; do not mistake declared source pins for remotely verified pins.
+
 AMVO is a **public-only, independent verification** repository. It must never silently import private AMRAL, OCME, SREG, ISQL or other EveMissLab resources.
 
 1. Use public source URLs and license-aware metadata by default; do not mirror third-party proofs or full papers without explicit reuse rights.
