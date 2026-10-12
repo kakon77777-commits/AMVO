@@ -94,14 +94,16 @@ def validate_record(record: object) -> dict:
     required = {"schema_version", "id", "type", "title", "source", "claim",
                 "rights", "review", "checks"}
     _require(required.issubset(record), f"missing required fields: {sorted(required - set(record))}")
+    _require(set(record).issubset(required), "unknown top-level fields are not permitted")
     _require(record["schema_version"] == VERSION, "unsupported schema version")
     _require(isinstance(record["id"], str) and ID_PATTERN.fullmatch(record["id"]) is not None,
              "invalid case id")
-    _require(record["type"] in CASE_TYPES, "unknown case type")
+    _require(isinstance(record["type"], str) and record["type"] in CASE_TYPES, "unknown case type")
     _require(_is_nonempty(record["title"], limit=240), "title is required")
 
     source = record["source"]
     _require(isinstance(source, dict), "source must be an object")
+    _require(set(source).issubset({"publisher", "title", "authors", "url", "version", "captured_at", "public"}), "unknown source fields")
     for field in ("publisher", "title", "url", "version", "captured_at"):
         _require(_is_nonempty(source.get(field), limit=1200), f"source.{field} is required")
     _verify_url(source["url"])
@@ -115,18 +117,23 @@ def validate_record(record: object) -> dict:
     _require(source.get("public") is True, "only public source metadata is allowed")
 
     rights = record["rights"]
-    _require(isinstance(rights, dict) and rights.get("mode") in RIGHTS_MODES,
+    _require(isinstance(rights, dict) and isinstance(rights.get("mode"), str)
+             and rights.get("mode") in RIGHTS_MODES,
              "rights.mode must be metadata_only or redistribution_cleared")
     _require(_is_nonempty(rights.get("note"), limit=1200), "rights.note required")
+    _require(set(rights).issubset({"mode", "note"}), "unknown rights fields")
 
     claim = record["claim"]
     _require(isinstance(claim, dict)
              and _is_nonempty(claim.get("statement"))
              and _is_nonempty(claim.get("scope")), "claim statement and scope required")
+    _require(set(claim).issubset({"statement", "scope"}), "unknown claim fields")
 
     review = record["review"]
-    _require(isinstance(review, dict) and review.get("status") in REVIEW_STATUSES,
+    _require(isinstance(review, dict) and isinstance(review.get("status"), str)
+             and review.get("status") in REVIEW_STATUSES,
              "invalid manual review status")
+    _require(set(review).issubset({"status"}), "unknown review fields")
 
     checks = record["checks"]
     _require(isinstance(checks, list) and len(checks) <= MAX_CHECKS, "invalid checks list")
@@ -140,7 +147,14 @@ def validate_record(record: object) -> dict:
                  "duplicate or invalid check id")
         seen.add(check_id)
         kind = check.get("kind")
-        _require(kind in CHECK_TYPES, f"unsupported check kind: {kind}")
+        _require(isinstance(kind, str) and kind in CHECK_TYPES, f"unsupported check kind: {kind}")
+        if kind == "rational_sum":
+            allowed = {"id", "kind", "lhs", "rhs"}
+        elif kind == "polynomial_coefficients":
+            allowed = {"id", "kind", "lhs_coefficients", "rhs_coefficients"}
+        else:
+            allowed = {"id", "kind", "path", "sha256"}
+        _require(set(check).issubset(allowed), "unknown check fields")
         if kind == "rational_sum":
             _fractions(check.get("lhs"))
             _fractions(check.get("rhs"))
