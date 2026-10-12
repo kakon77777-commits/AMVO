@@ -6,6 +6,7 @@ No dynamic evaluation, network access, or external command execution.
 from __future__ import annotations
 
 import hashlib
+import ipaddress
 import json
 import re
 from datetime import date
@@ -14,10 +15,13 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
 VERSION = "0.1"
-VERIFIER_ID = "amvo-stdlib-exact-v0.1"
+VERIFIER_ID = "amvo-stdlib-exact-v0.1.1"
 ID_PATTERN = re.compile(r"^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRACTION_PATTERN = re.compile(r"^-?[0-9]{1,80}(?:/[0-9]{1,80})?$")
 HASH_PATTERN = re.compile(r"^[0-9a-f]{64}$")
+GIT_COMMIT_PATTERN = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+ARXIV_VERSION_PATTERN = re.compile(r"^[0-9]{4}\.[0-9]{4,5}v[1-9][0-9]*$")
+PIN_KINDS = frozenset({"git_commit", "arxiv_version", "sha256"})
 CHECK_TYPES = frozenset({"rational_sum", "polynomial_coefficients", "file_sha256"})
 REVIEW_STATUSES = frozenset({"unreviewed", "under_review", "needs_revision", "withdrawn"})
 RIGHTS_MODES = frozenset({"metadata_only", "redistribution_cleared"})
@@ -68,15 +72,48 @@ def _fractions(values: object) -> list[Fraction]:
 
 def _verify_url(url: object) -> None:
     _require(_is_nonempty(url, limit=1200), "source.url is required")
-    p = urlsplit(url)
-    _require(p.scheme == "https" and bool(p.hostname), "only HTTPS source URLs are allowed")
+    _require(not re.search(r"[\\x00-\\x20\\x7f]", url),
+             "source URL contains whitespace or control characters")
+    try:
+        p = urlsplit(url)
+        host = p.hostname
+        _ = p.port
+    except ValueError as exc:
+        raise RecordError("malformed source URL") from exc
+    _require(p.scheme == "https" and bool(host), "only HTTPS source URLs are allowed")
     _require(not p.username and not p.password and not p.query and not p.fragment,
              "source URL cannot contain userinfo, query parameters, or fragments")
-    _require("\n" not in url and "\r" not in url, "source URL contains control characters")
+    _require(host not in {"localhost"} and not host.endswith((".localhost", ".local", ".internal")),
+             "local hostname is not a public source")
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    else:
+        _require(ip.is_global, "local or non-global IP address is not a public source")
+
+
+def _validate_pin(pin: object) -> None:
+    _require(isinstance(pin, dict) and set(pin) == {"kind", "value"},
+             "source.pin must contain only kind and value")
+    kind, value = pin["kind"], pin["value"]
+    _require(isinstance(kind, str) and kind in PIN_KINDS, "unsupported source.pin kind")
+    _require(_is_nonempty(value, limit=128), "source.pin value is required")
+    if kind == "git_commit":
+        _require(GIT_COMMIT_PATTERN.fullmatch(value) is not None,
+                 "source.pin git_commit must be a 40 or 64 hex digest")
+    elif kind == "arxiv_version":
+        _require(ARXIV_VERSION_PATTERN.fullmatch(value) is not None,
+                 "source.pin arxiv_version must contain a pinned vN suffix")
+    else:
+        _require(HASH_PATTERN.fullmatch(value) is not None,
+                 "source.pin sha256 must be a 64 hex digest")
 
 
 def _is_safe_evidence_path(path: object) -> bool:
     if not isinstance(path, str) or "\\" in path or "\x00" in path:
+        return False
+    if any(segment in {"", ".", ".."} for segment in path.split("/")):
         return False
     p = PurePosixPath(path)
     return (
@@ -103,7 +140,7 @@ def validate_record(record: object) -> dict:
 
     source = record["source"]
     _require(isinstance(source, dict), "source must be an object")
-    _require(set(source).issubset({"publisher", "title", "authors", "url", "version", "captured_at", "public"}), "unknown source fields")
+    _require(set(source).issubset({"publisher", "title", "authors", "url", "version", "captured_at", "public", "pin"}), "unknown source fields")
     for field in ("publisher", "title", "url", "version", "captured_at"):
         _require(_is_nonempty(source.get(field), limit=1200), f"source.{field} is required")
     _verify_url(source["url"])
@@ -115,6 +152,11 @@ def validate_record(record: object) -> dict:
              and all(_is_nonempty(name, limit=200) for name in source["authors"]),
              "source.authors must be a string list")
     _require(source.get("public") is True, "only public source metadata is allowed")
+    _require(bool(source["authors"]), "source.authors must contain at least one attribution")
+    if "pin" in source:
+        _validate_pin(source["pin"])
+    _require(record["type"] != "claim" or "pin" in source,
+             "mathematical claim records require a declared immutable source.pin")
 
     rights = record["rights"]
     _require(isinstance(rights, dict) and isinstance(rights.get("mode"), str)
@@ -240,6 +282,8 @@ def verify_record(record: dict, project_root: Path) -> dict:
         "id": record["id"],
         "source_url": record["source"]["url"],
         "source_version": record["source"]["version"],
+        "source_pin": record["source"].get("pin"),
+        "source_pin_verified": False,
         "record_sha256": sha256(canonical_bytes(record)),
         "engine": VERIFIER_ID,
         "outcome": outcome,
@@ -257,7 +301,7 @@ def report(records: list[dict], project_root: Path) -> dict:
         "report_schema": VERSION,
         "engine": VERIFIER_ID,
         "cases": [verify_record(rec, project_root) for rec in records],
-        "disclaimer": "No external theorem receives mathematical certification in AMVO v0.1."
+        "disclaimer": "No external theorem or remotely declared source pin receives independent certification in AMVO v0.1.1."
     }
 
 

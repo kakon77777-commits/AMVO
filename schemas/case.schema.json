@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/kakon77777-commits/AMVO/blob/main/schemas/case.schema.json",
-  "title": "AMVO public claim intake v0.1",
+  "title": "AMVO public mathematical source v0.1 contract (v0.1.1 implementation)",
   "type": "object",
   "required": [
     "schema_version",
@@ -59,7 +59,8 @@
           "items": {
             "type": "string",
             "minLength": 1
-          }
+          },
+          "minItems": 1
         },
         "url": {
           "type": "string",
@@ -75,8 +76,64 @@
         },
         "public": {
           "const": true
+        },
+        "pin": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "git_commit"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "arxiv_version"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}\\\\.[0-9]{4,5}v[1-9][0-9]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "sha256"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "rights": {
       "type": "object",
@@ -95,7 +152,8 @@
           "type": "string",
           "minLength": 1
         }
-      }
+      },
+      "additionalProperties": false
     },
     "claim": {
       "type": "object",
@@ -112,7 +170,8 @@
           "type": "string",
           "minLength": 1
         }
-      }
+      },
+      "additionalProperties": false
     },
     "review": {
       "type": "object",
@@ -128,7 +187,8 @@
             "withdrawn"
           ]
         }
-      }
+      },
+      "additionalProperties": false
     },
     "checks": {
       "type": "array",
@@ -156,7 +216,8 @@
               "rhs": {
                 "$ref": "#/$defs/fractions"
               }
-            }
+            },
+            "additionalProperties": false
           },
           {
             "type": "object",
@@ -179,7 +240,8 @@
               "rhs_coefficients": {
                 "$ref": "#/$defs/fractions"
               }
-            }
+            },
+            "additionalProperties": false
           },
           {
             "type": "object",
@@ -204,7 +266,8 @@
                 "type": "string",
                 "pattern": "^[a-f0-9]{64}$"
               }
-            }
+            },
+            "additionalProperties": false
           }
         ]
       }
@@ -220,5 +283,29 @@
         "pattern": "^-?[0-9]{1,80}(/[0-9]{1,80})?$"
       }
     }
-  }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "claim"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "required": [
+              "pin"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

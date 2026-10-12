@@ -8,7 +8,7 @@ AMVO is an open-source research observatory maintained by EveMissLab. It records
 
 ## Status
 
-**v0.1 foundation** — source intake, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
+**v0.1.1 foundation** — source intake with declared immutable version pins for mathematical claims, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
 
 ## Quick start
 
@@ -25,6 +25,12 @@ python -m http.server 8000 --directory site
 Open http://localhost:8000/ after starting the server.
 
 The included synthetic arithmetic example demonstrates the verifier. The OpenAI public-repository intake is **metadata only** and has **not** been checked or endorsed.
+
+### Source pinning
+
+New records of type `claim` must include `source.pin` (kind: `git_commit`, `arxiv_version`, or `sha256`) with a valid format. **A declared pin is not remotely checked by the offline v0.1.1 engine.** Pin acceptance verifies only data shape; remote provenance replay is a subsequent milestone. Intake-only source records can remain unpinned and must not be presented as verified theorems.
+
+For the next iteration, see [Local Agent Handoff](docs/LOCAL_AGENT_HANDOFF_2026-10-13.md) and [Engineering Master Plan](docs/ENGINEERING_MASTER_PLAN_2026-10-13.md).
 
 ## Evidence model
 

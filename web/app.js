@@ -40,6 +40,11 @@ function makeRecord(item) {
   card.append(el("p", "scope", "範圍：" + record.claim.scope));
   const footer = el("div", "record-footer");
   footer.append(el("span", "", record.source.publisher + " · " + record.source.version));
+  if (record.source.pin) {
+    const pin = record.source.pin;
+    footer.append(el("span", "source-pin", "聲明版本："
+      + pin.kind + " · " + pin.value.slice(0, 12) + "…（未遠端核驗）"));
+  }
   const url = safeUrl(record.source.url);
   if (url) {
     const link = el("a", "", "原始來源 ↗");
