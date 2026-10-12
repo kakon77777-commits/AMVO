@@ -30,7 +30,7 @@ The included synthetic arithmetic example demonstrates the verifier. The OpenAI 
 
 New records of type `claim` must include `source.pin` (kind: `git_commit`, `arxiv_version`, or `sha256`) with a valid format. **A declared pin is not remotely checked by the offline v0.1.1 engine.** Pin acceptance verifies only data shape; remote provenance replay is a subsequent milestone. Intake-only source records can remain unpinned and must not be presented as verified theorems.
 
-For the next iteration, see [Local Agent Handoff](docs/LOCAL_AGENT_HANDOFF_2026-10-13.md) and [Engineering Master Plan](docs/ENGINEERING_MASTER_PLAN_2026-10-13.md).
+For the next iteration, see the [Local Agent Handoff](docs/LOCAL_AGENT_HANDOFF_2026-10-13.md), [Engineering Master Plan](docs/ENGINEERING_MASTER_PLAN_2026-10-13.md), [Acceptance Matrix](docs/ACCEPTANCE_MATRIX_2026-10-13.md), and [Source & Review Contract](docs/SOURCE_AND_REVIEW_CONTRACT_2026-10-13.md).
 
 ## Evidence model
 
