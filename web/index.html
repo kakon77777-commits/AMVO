@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta name="description" content="AMVO — Independent verification of externally published AI mathematics, with evidence provenance and strict scope limits.">
+  <title>AMVO · AI Mathematics Verification Observatory</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到主要內容</a>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="./"><span class="brand-glyph" aria-hidden="true">∴</span> AMVO <span class="brand-sub">/ EveMissLab</span></a>
+      <nav aria-label="主要連結">
+        <a href="#records">公開登錄</a>
+        <a href="#method">驗證標準</a>
+        <a href="./data/index.json" download>JSON 資料</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero container" aria-labelledby="hero-title">
+      <p class="eyebrow">INDEPENDENT MATHEMATICAL EVIDENCE · 2026</p>
+      <h1 id="hero-title">證據先於聲望。<br><span>驗證先於結論。</span></h1>
+      <p class="hero-intro">AI Mathematics Verification Observatory — 為外部 AI 數學研究建立公開來源、版本追溯、可重現檢查和獨立審計紀錄。研究成果歸原作者；AMVO 只對自己實際完成的檢查負責。</p>
+      <div class="hero-actions"><a class="primary-link" href="#records">查看紀錄 <span aria-hidden="true">↗</span></a><a class="secondary-link" href="#method">理解驗證分級</a></div>
+      <p class="caution">v0.1 · 試驗基礎設施。任何示範通過皆不表示外部數學定理已獲證明。</p>
+    </section>
+    <section class="stats-panel container" aria-label="當前登錄統計">
+      <div class="stat"><strong id="total" class="number">—</strong><span>公開登錄</span></div>
+      <div class="stat"><strong id="checked" class="number">—</strong><span>有限檢查通過</span></div>
+      <div class="stat"><strong id="unchecked" class="number">—</strong><span>尚無檢查</span></div>
+      <div class="stat"><strong id="certified" class="number">0</strong><span>外部定理獲完整認證</span></div>
+    </section>
+    <section id="records" class="records-section container" aria-labelledby="records-title">
+      <div class="section-heading"><div><p class="eyebrow">PUBLIC CASE REGISTER</p><h2 id="records-title">來源與驗證紀錄</h2></div><p class="section-description">每筆結論限於對應的來源版本與實際證據。</p></div>
+      <div class="filterbar">
+        <label class="search-field" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜尋題名、來源或案例編號" autocomplete="off"></label>
+        <label class="select-label" for="outcome">檢查狀態</label>
+        <select id="outcome">
+          <option value="all">全部</option>
+          <option value="not_checked">未執行</option>
+          <option value="bounded_checks_pass">有限檢查通過</option>
+          <option value="checks_not_passed">檢查未通過</option>
+        </select>
+      </div>
+      <div id="load-status" class="load-status" role="status" aria-live="polite">正在讀取公開案例…</div>
+      <div id="records-list" class="record-grid" aria-live="polite"></div>
+    </section>
+    <section id="method" class="method-section" aria-labelledby="method-title">
+      <div class="container">
+        <p class="eyebrow">EVIDENCE ≠ AUTHORITY</p>
+        <h2 id="method-title">我們不混淆六種不同的證據</h2>
+        <div class="method-grid">
+          <article><span class="method-number">01</span><h3>公開來源</h3><p>保留作者歸屬、URL、版本、取用日期及授權狀態。</p></article>
+          <article><span class="method-number">02</span><h3>重算與重現</h3><p>檢查確定性運算、工件雜湊，以及是否能重新執行。</p></article>
+          <article><span class="method-number">03</span><h3>形式化核心</h3><p>只有實際運行指定版本證明檢查器，才可記錄 kernel 結果。</p></article>
+          <article><span class="method-number">04</span><h3>語義一致性</h3><p>核對形式命題是否忠實對應自然語言原始主張。</p></article>
+          <article><span class="method-number">05</span><h3>獨立數學審計</h3><p>查核依賴、量詞、邊界條件、反例、文獻與新穎性。</p></article>
+          <article><span class="method-number">06</span><h3>持續修訂</h3><p>保留錯誤、撤回與版本歷史，不因聲望或機構身分改變標準。</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><span>AMVO · EveMissLab · Independent verification infrastructure</span><span>Public evidence only · No trackers · No external model calls</span></div></footer>
+</body>
+</html>
