@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "id": "amvo-synthetic-fraction",
+  "type": "synthetic_fixture",
+  "title": "Synthetic exact rational identity (testing only)",
+  "source": {
+    "publisher": "AMVO fixture",
+    "title": "Deterministic arithmetic test case",
+    "authors": [
+      "AMVO maintainers"
+    ],
+    "url": "https://example.org/synthetic-fraction",
+    "version": "fixture-v1",
+    "captured_at": "2026-10-13",
+    "public": true
+  },
+  "rights": {
+    "mode": "metadata_only",
+    "note": "Original synthetic data created for this repository."
+  },
+  "claim": {
+    "statement": "1/3 + 1/6 = 1/2",
+    "scope": "Finite exact rational arithmetic; not an external research theorem"
+  },
+  "review": {
+    "status": "unreviewed"
+  },
+  "checks": [
+    {
+      "id": "fractions-exact",
+      "kind": "rational_sum",
+      "lhs": [
+        "1/3",
+        "1/6"
+      ],
+      "rhs": [
+        "1/2"
+      ]
+    }
+  ]
+}

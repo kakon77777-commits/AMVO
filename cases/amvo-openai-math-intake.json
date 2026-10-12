@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "id": "amvo-openai-math-intake",
+  "type": "public_source_intake",
+  "title": "OpenAI Math public corpus — source intake only",
+  "source": {
+    "publisher": "OpenAI",
+    "title": "OpenAI mathematics repository",
+    "authors": [
+      "OpenAI and listed contributing authors"
+    ],
+    "url": "https://github.com/openai/math",
+    "version": "rolling repository; pin commit before individual claims",
+    "captured_at": "2026-10-13",
+    "public": true
+  },
+  "rights": {
+    "mode": "metadata_only",
+    "note": "Only a public URL and attribution are included; no rights to republish original manuscripts are asserted."
+  },
+  "claim": {
+    "statement": "Public source indexed; no individual theorem submitted for AMVO independent verification.",
+    "scope": "Metadata discovery only"
+  },
+  "review": {
+    "status": "unreviewed"
+  },
+  "checks": []
+}
