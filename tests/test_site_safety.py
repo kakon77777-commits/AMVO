@@ -51,7 +51,7 @@ class SiteSafetyTests(unittest.TestCase):
             cases.mkdir()
             (cases / f"{rec['id']}.json").write_text(json.dumps(rec, ensure_ascii=False), "utf-8")
             out = Path(td) / "site"
-            self.assertEqual(main(["build-site", "--cases", str(cases), "--output", str(out)]), 0)
+            self.assertEqual(main(["build-site", "--cases", str(cases), "--root", td, "--output", str(out)]), 0)
             data = json.loads((out / "data" / "index.json").read_text("utf-8"))
             self.assertEqual(data["records"][0]["claim"]["statement"], hostile)
             for name in ("index.html", "app.js", "styles.css"):

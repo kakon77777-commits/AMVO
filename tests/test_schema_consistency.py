@@ -37,9 +37,11 @@ def schema_errors(value, schema, path="$"):
         return schema_errors(value, _resolve(SCHEMA, schema["$ref"]), path)
     errs = []
     t = schema.get("type")
-    kinds = {"object": dict, "array": list, "string": str}
-    if t is not None and not isinstance(value, kinds[t]):
+    kinds = {"object": dict, "array": list, "string": str, "integer": int}
+    if t is not None and (not isinstance(value, kinds[t]) or (t == "integer" and isinstance(value, bool))):
         return [f"{path}: not {t}"]
+    if t == "integer" and value < schema.get("minimum", value):
+        return [f"{path}: minimum"]
     if "const" in schema and value != schema["const"]:
         errs.append(f"{path}: const")
     if "enum" in schema and value not in schema["enum"]:
@@ -70,6 +72,8 @@ def schema_errors(value, schema, path="$"):
     if "oneOf" in schema:
         if sum(1 for sub in schema["oneOf"] if not schema_errors(value, sub, path)) != 1:
             errs.append(f"{path}: oneOf")
+    if "not" in schema and not schema_errors(value, schema["not"], path):
+        errs.append(f"{path}: not")
     for sub in schema.get("allOf", []):
         if "if" in sub:
             if not schema_errors(value, sub["if"], path):

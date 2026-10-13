@@ -19,6 +19,8 @@ jobs:
         python: ['3.11', '3.13']
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
@@ -34,6 +36,15 @@ jobs:
         run: python -m amvo verify --output build/verification.json
       - name: B06 build static website
         run: python -m amvo build-site --output site
+      - name: B07 ledgers are append-only
+        # events/ and evidence/provenance/ may gain files in a pull request, never lose or change one
+        # a pull_request run checks out the merge commit; its first parent is the base it merges into
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          changed="$(git diff --name-status --no-renames --diff-filter=DMT HEAD^1 HEAD -- events evidence/provenance)"
+          echo "$changed"
+          test -z "$changed"
       - name: B08 no unexpected tracked changes
         shell: bash
         run: |

@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
 VERSION = "0.1"                      # the case schema version
-ENGINE_VERSION = "0.1.3"             # this engine; must equal pyproject and amvo.__version__
+ENGINE_VERSION = "0.1.4"             # this engine; must equal pyproject and amvo.__version__
 VERIFIER_ID = f"amvo-stdlib-exact-v{ENGINE_VERSION}"
 ID_PATTERN = re.compile(r"^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRACTION_PATTERN = re.compile(r"^-?[0-9]{1,80}(?:/[0-9]{1,80})?$")
@@ -282,9 +282,12 @@ def check_one(check: dict, root: Path) -> dict:
             "result": "pass" if ok else "fail", "scope": details}
 
 
-def verify_record(record: dict, project_root: Path, pin_state: dict | None = None) -> dict:
+def verify_record(record: dict, project_root: Path, pin_state: dict | None = None,
+                  lineage: dict | None = None) -> dict:
     """`pin_state` is the declared pin's replay state (amvo.provenance.pin_state); without it the
-    pin is reported as declared only. Only a live, matching capture sets source_pin_verified."""
+    pin is reported as declared only. Only a live, matching capture sets source_pin_verified.
+    `lineage` is the record's entry from amvo.lineage.lineage; it sits beside the outcome and
+    never changes it."""
     validate_record(record)
     if pin_state is None:
         pin_state = {"status": "declared_only" if "pin" in record["source"] else "no_pin", "verified": False}
@@ -309,6 +312,8 @@ def verify_record(record: dict, project_root: Path, pin_state: dict | None = Non
         "source_pin_verified": pin_state["verified"] is True,
         "source_pin_status": pin_state["status"],
         "source_pin_capture": pin_state.get("capture"),
+        "lineage": lineage or {"state": "current", "superseded_by": None, "supersedes": [],
+                               "withdrawn_by": None, "corrections": [], "objections": [], "events": []},
         "record_sha256": sha256(canonical_bytes(record)),
         "engine": VERIFIER_ID,
         "outcome": outcome,
@@ -321,12 +326,17 @@ def verify_record(record: dict, project_root: Path, pin_state: dict | None = Non
     }
 
 
-def report(records: list[dict], project_root: Path, pin_lookup=None) -> dict:
-    """`pin_lookup(record, root)` returns a pin state; the CLI passes amvo.provenance.pin_state"""
+def report(records: list[dict], project_root: Path, pin_lookup=None, lineages: dict | None = None,
+           ledger: dict | None = None) -> dict:
+    """`pin_lookup(record, root)` returns a pin state; the CLI passes amvo.provenance.pin_state.
+    `lineages` maps record id to lineage and `ledger` names the event ledger head they came from."""
+    lineages = lineages or {}
     return {
         "report_schema": VERSION,
         "engine": VERIFIER_ID,
-        "cases": [verify_record(rec, project_root, pin_lookup(rec, project_root) if pin_lookup else None)
+        "event_ledger": ledger or {"events": 0, "head_sha256": "0" * 64},
+        "cases": [verify_record(rec, project_root, pin_lookup(rec, project_root) if pin_lookup else None,
+                                lineages.get(rec["id"]))
                   for rec in records],
         "disclaimer": (f"AMVO v{ENGINE_VERSION} certifies no external theorem. A source pin counts as "
                        "remotely verified only when a live capture on file matches it; that confirms the "
@@ -334,7 +344,7 @@ def report(records: list[dict], project_root: Path, pin_lookup=None) -> dict:
     }
 
 
-def audit_public(records: list[dict]) -> list[str]:
+def audit_public(records: list[dict], events: list[dict] = ()) -> list[str]:
     """Conservative source-intake disclosure gate. No raw secret values in findings."""
     suspicious = re.compile(
         r"(?i)(?:sk-proj-|ghp_[a-z0-9]{12}|github_pat_[a-z0-9]{12}|"
@@ -350,4 +360,7 @@ def audit_public(records: list[dict]) -> list[str]:
             findings.append(f"{rec['id']}: redistribution license needs human review")
         if rec["source"]["url"].startswith("https://example.org/") and rec["type"] != "synthetic_fixture":
             findings.append(f"{rec['id']}: placeholder URL in non-synthetic record")
+    for ev in events:
+        if suspicious.search(json.dumps(ev, ensure_ascii=False)):
+            findings.append(f"{ev['event_id']}: suspicious credential pattern")
     return findings

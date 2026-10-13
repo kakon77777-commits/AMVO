@@ -8,7 +8,7 @@ AMVO is an open-source research observatory maintained by EveMissLab. It records
 
 ## Status
 
-**v0.1.3 foundation** — source intake with declared immutable version pins for mathematical claims, opt-in replay of those pins against their public origin, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
+**v0.1.4 foundation** — source intake with declared immutable version pins for mathematical claims, opt-in replay of those pins against their public origin, an append-only ledger of withdrawals, replacements, corrections and objections, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
 
 ## Quick start
 
@@ -38,6 +38,10 @@ python -m amvo replay-pins --network --case <record-id>
 
 This asks the origin (GitHub's commit API, arXiv's export API, or an allowlisted file host) whether the pinned version exists and matches, and appends one capture — metadata and hashes, never the source text — under `evidence/provenance/<record-id>/`. Only `api.github.com`, `export.arxiv.org` and `raw.githubusercontent.com` are contacted, over HTTPS with no credentials; every resolved address must be public and the connection goes to the address that was checked; redirects are refused and responses are capped at 4 MB. `source_pin_verified` becomes `true` only for a live capture whose observation matches the pin; a fixture replay (`--fixtures DIR`, used by the tests) never counts, and an unreachable origin is `unavailable`, never a pass. A verified pin establishes which public version is meant. It is not evidence that any statement in it is true.
 
+### Corrections and withdrawals
+
+A record is never edited to say it was withdrawn, replaced, corrected or disputed. `python -m amvo record-event` appends an event to `events/` instead (`withdraws`, `supersedes`, `corrects`, `rebuttal`). Each event is bound to the hash of the record it names and to the hash of the event before it, so a quietly edited record or a rewritten event makes every command fail, and CI refuses a pull request that changes or deletes a ledger file. The report keeps each record's computed outcome and shows its lineage beside it; the dashboard never counts a withdrawn or superseded record as a current result. See [events/README.md](events/README.md).
+
 Delivered phases and their evidence are recorded in the [Phase Log](docs/PHASE_LOG.md). For the next iteration, see the [Local Agent Handoff](docs/LOCAL_AGENT_HANDOFF_2026-10-13.md), [Engineering Master Plan](docs/ENGINEERING_MASTER_PLAN_2026-10-13.md), [Acceptance Matrix](docs/ACCEPTANCE_MATRIX_2026-10-13.md), and [Source & Review Contract](docs/SOURCE_AND_REVIEW_CONTRACT_2026-10-13.md).
 
 ## Evidence model
@@ -64,7 +68,8 @@ AMRAL (autonomous mathematical research) and AMVO (external verification) are si
 - `amvo/` — deterministic verification engine and CLI (offline unless `replay-pins --network`)
 - `cases/` — public claim intake records and synthetic fixtures
 - `evidence/provenance/` — append-only pin replay captures
-- `schemas/` — JSON Schema contract
+- `events/` — append-only correction and withdrawal ledger
+- `schemas/` — JSON Schema contracts (records, events)
 - `web/` — static dashboard template
 - `tests/` — regression and abuse-case coverage
 - `docs/` — evidence policy, architecture, security, roadmap
