@@ -251,11 +251,14 @@ class ReportTests(unittest.TestCase):
 
 
 class MigrationTests(unittest.TestCase):
-    def test_repository_registry_is_exactly_the_migration_of_the_cases(self):
+    def test_repository_registry_holds_exactly_the_migration_of_the_cases(self):
+        """every migrated object is what migrating the cases gives today; anything else in the
+        registry was registered directly (it has no manifest) and must still validate"""
         objects, manifests = load_registry(ROOT / "registry")
         fresh_objects, fresh_manifests = migrate(RECORDS, {}, {})
-        self.assertEqual(objects, {x["id"]: x for x in fresh_objects})
         self.assertEqual(manifests, {m["case_id"]: m for m in fresh_manifests})
+        migrated = {item["id"] for m in manifests.values() for item in m["objects"]}
+        self.assertEqual({k: objects[k] for k in migrated}, {x["id"]: x for x in fresh_objects})
         check_registry(objects, manifests, RECORDS)
 
     def test_migration_is_deterministic_idempotent_and_keeps_the_cases(self):
@@ -358,7 +361,9 @@ class LocateAndRegisterTests(unittest.TestCase):
             out = root / "layered.json"
             self.assertEqual(run("registry-report", "--output", str(out)), 0)
             counts = json.loads(out.read_text("utf-8"))["counts"]
-            self.assertEqual((counts["sources"], counts["claims"], counts["current_claims_not_checked"]), (3, 2, 1))
+            base = registry_report(*load_registry(ROOT / "registry"), ROOT)["counts"]
+            self.assertEqual((counts["sources"], counts["claims"], counts["current_claims_not_checked"]),
+                             (base["sources"] + 1, base["claims"] + 1, base["current_claims_not_checked"] + 1))
 
 
 class RegistrySchemaConsistency(unittest.TestCase):
