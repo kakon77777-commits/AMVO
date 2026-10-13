@@ -7,6 +7,17 @@ const LABELS = {
   bounded_checks_pass: "有限檢查通過",
   checks_not_passed: "檢查未通過"
 };
+// source_pin_status from the report; a version check is about which source, never about the mathematics
+const PIN_STATES = {
+  verified: { text: "已向原始來源核對版本" },
+  declared_only: { text: "僅為聲明，未向原始來源核對" },
+  fixture_only: { text: "僅有測試夾具重放，不算核對", warn: true },
+  mismatch: { text: "原始來源回報的版本與聲明不符", warn: true },
+  not_found: { text: "原始來源查無此版本", warn: true },
+  unavailable: { text: "未能連上原始來源（不視為通過）", warn: true },
+  unsupported: { text: "此類版本目前無法向來源核對", warn: true },
+  capture_invalid: { text: "核對紀錄無效", warn: true }
+};
 let entries = [];
 
 function el(tag, css, value) {
@@ -42,8 +53,13 @@ function makeRecord(item) {
   footer.append(el("span", "", record.source.publisher + " · " + record.source.version));
   if (record.source.pin) {
     const pin = record.source.pin;
-    footer.append(el("span", "source-pin", "聲明版本："
-      + pin.kind + " · " + pin.value.slice(0, 12) + "…（未遠端核驗）"));
+    const state = PIN_STATES[result.source_pin_status] || PIN_STATES.declared_only;
+    // only a live, matching capture is shown as checked; everything else says what it is not
+    const checked = result.source_pin_verified === true && result.source_pin_status === "verified";
+    const stamp = checked ? String(result.source_pin_capture || "") : "";
+    const when = /^[0-9]{8}T/.test(stamp) ? "（" + stamp.slice(0, 4) + "-" + stamp.slice(4, 6) + "-" + stamp.slice(6, 8) + "）" : "";
+    footer.append(el("span", "source-pin" + (checked ? " verified" : state.warn ? " warn" : ""),
+      "來源版本：" + pin.kind + " · " + pin.value.slice(0, 12) + "… · " + state.text + when));
   }
   const url = safeUrl(record.source.url);
   if (url) {

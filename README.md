@@ -8,7 +8,7 @@ AMVO is an open-source research observatory maintained by EveMissLab. It records
 
 ## Status
 
-**v0.1.2 foundation** — source intake with declared immutable version pins for mathematical claims, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
+**v0.1.3 foundation** — source intake with declared immutable version pins for mathematical claims, opt-in replay of those pins against their public origin, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
 
 ## Quick start
 
@@ -24,11 +24,19 @@ python -m http.server 8000 --directory site
 
 Open http://localhost:8000/ after starting the server.
 
-The included synthetic arithmetic example demonstrates the verifier. The OpenAI public-repository intake is **metadata only** and has **not** been checked or endorsed.
+The included synthetic arithmetic example demonstrates the verifier. The OpenAI public-repository intake is **metadata only** and has **not** been checked or endorsed. One snapshot record pins a public commit of that repository; replaying the pin confirms which version a later claim would refer to — it says nothing about any mathematics in it.
 
 ### Source pinning
 
-New records of type `claim` must include `source.pin` (kind: `git_commit`, `arxiv_version`, or `sha256`) with a valid format. **A declared pin is not remotely checked by the offline v0.1.2 engine.** Pin acceptance verifies only data shape; remote provenance replay is a subsequent milestone. Intake-only source records can remain unpinned and must not be presented as verified theorems.
+New records of type `claim` must include `source.pin` (kind: `git_commit`, `arxiv_version`, or `sha256`) with a valid format. Accepting a record checks only the pin's shape; on its own a pin is reported as `declared_only`. Intake-only source records can remain unpinned and must not be presented as verified theorems.
+
+The network is used only when asked for:
+
+```bash
+python -m amvo replay-pins --network --case <record-id>
+```
+
+This asks the origin (GitHub's commit API, arXiv's export API, or an allowlisted file host) whether the pinned version exists and matches, and appends one capture — metadata and hashes, never the source text — under `evidence/provenance/<record-id>/`. Only `api.github.com`, `export.arxiv.org` and `raw.githubusercontent.com` are contacted, over HTTPS with no credentials; every resolved address must be public and the connection goes to the address that was checked; redirects are refused and responses are capped at 4 MB. `source_pin_verified` becomes `true` only for a live capture whose observation matches the pin; a fixture replay (`--fixtures DIR`, used by the tests) never counts, and an unreachable origin is `unavailable`, never a pass. A verified pin establishes which public version is meant. It is not evidence that any statement in it is true.
 
 Delivered phases and their evidence are recorded in the [Phase Log](docs/PHASE_LOG.md). For the next iteration, see the [Local Agent Handoff](docs/LOCAL_AGENT_HANDOFF_2026-10-13.md), [Engineering Master Plan](docs/ENGINEERING_MASTER_PLAN_2026-10-13.md), [Acceptance Matrix](docs/ACCEPTANCE_MATRIX_2026-10-13.md), and [Source & Review Contract](docs/SOURCE_AND_REVIEW_CONTRACT_2026-10-13.md).
 
@@ -53,8 +61,9 @@ AMRAL (autonomous mathematical research) and AMVO (external verification) are si
 
 ## Project map
 
-- `amvo/` — offline, deterministic verification engine and CLI
+- `amvo/` — deterministic verification engine and CLI (offline unless `replay-pins --network`)
 - `cases/` — public claim intake records and synthetic fixtures
+- `evidence/provenance/` — append-only pin replay captures
 - `schemas/` — JSON Schema contract
 - `web/` — static dashboard template
 - `tests/` — regression and abuse-case coverage

@@ -56,6 +56,8 @@ select { background: #172131; color: #e8eff7; border-radius: 8px; border: 1px so
 .pill { flex-shrink: 0; border: 1px solid #6f6850; color: #e6cb92; padding: 3px 9px; border-radius: 40px; font-size: 11px; white-space: nowrap; }
 .pill.pass { border-color: #478d7e; color: #92e4ce; }
 .pill.fail { border-color: #a76c73; color: #f3a9af; }
+.source-pin.verified { color: #92e4ce; }
+.source-pin.warn { color: #f3a9af; }
 .record h3 { font-size: 17px; line-height: 1.42; margin: 3px 0 0; overflow-wrap: anywhere; }
 .record p { color: #aab9ca; font-size: 13px; margin: 0; line-height: 1.85; overflow-wrap: anywhere; }
 .record .scope { font-size: 12px; color: #8e9fb1; }
