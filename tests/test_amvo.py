@@ -90,7 +90,12 @@ class CoreTests(unittest.TestCase):
             root = Path(td)
             (root / "evidence").mkdir()
             (root / "secret").write_text("hidden")
-            (root / "evidence" / "link").symlink_to(root / "secret")
+            try:
+                (root / "evidence" / "link").symlink_to(root / "secret")
+            except (OSError, NotImplementedError) as exc:
+                # Windows without Developer Mode or admin cannot create symlinks; the CI runs
+                # this on Linux. A host that cannot create one cannot be attacked with one.
+                self.skipTest(f"symlinks unavailable on this host: {exc.__class__.__name__}")
             check = {"id": "hash", "kind": "file_sha256",
                      "path": "evidence/link", "sha256": sha256(b"hidden")}
             bad = copy.deepcopy(self.sample)

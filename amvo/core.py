@@ -14,8 +14,9 @@ from fractions import Fraction
 from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
-VERSION = "0.1"
-VERIFIER_ID = "amvo-stdlib-exact-v0.1.1"
+VERSION = "0.1"                      # the case schema version
+ENGINE_VERSION = "0.1.2"             # this engine; must equal pyproject and amvo.__version__
+VERIFIER_ID = f"amvo-stdlib-exact-v{ENGINE_VERSION}"
 ID_PATTERN = re.compile(r"^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRACTION_PATTERN = re.compile(r"^-?[0-9]{1,80}(?:/[0-9]{1,80})?$")
 HASH_PATTERN = re.compile(r"^[0-9a-f]{64}$")
@@ -83,7 +84,18 @@ def _verify_url(url: object) -> None:
     _require(p.scheme == "https" and bool(host), "only HTTPS source URLs are allowed")
     _require(not p.username and not p.password and not p.query and not p.fragment,
              "source URL cannot contain userinfo, query parameters, or fragments")
-    _require(host not in {"localhost"} and not host.endswith((".localhost", ".local", ".internal")),
+    _check_public_host(host)
+
+
+def _check_public_host(host: str) -> None:
+    """A public DNS name or a global IP literal. Resolvers accept many spellings of a local
+    address that are not IP literals to `ipaddress` (127.1, 0x7f000001, 2130706433,
+    0177.0.0.1, 'localhost.'), so every all-numeric or hex-looking host that is not a
+    canonical global address is refused, and so is any single-label name."""
+    host = host.lower().rstrip(".")
+    _require(bool(host), "source URL host is empty")
+    _require(host != "localhost" and not host.endswith((".localhost", ".local", ".internal",
+                                                        ".lan", ".home.arpa")),
              "local hostname is not a public source")
     try:
         ip = ipaddress.ip_address(host)
@@ -91,6 +103,13 @@ def _verify_url(url: object) -> None:
         pass
     else:
         _require(ip.is_global, "local or non-global IP address is not a public source")
+        return
+    labels = host.split(".")
+    _require(len(labels) >= 2, "single-label hostname is not a public source")
+    _require(not all(re.fullmatch(r"(?:0x[0-9a-f]*|[0-9]+)", label) for label in labels),
+             "numeric host spelling that is not a canonical public IP address")
+    _require(all(re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label) for label in labels),
+             "invalid hostname label")
 
 
 def _validate_pin(pin: object) -> None:
@@ -301,7 +320,7 @@ def report(records: list[dict], project_root: Path) -> dict:
         "report_schema": VERSION,
         "engine": VERIFIER_ID,
         "cases": [verify_record(rec, project_root) for rec in records],
-        "disclaimer": "No external theorem or remotely declared source pin receives independent certification in AMVO v0.1.1."
+        "disclaimer": f"No external theorem or remotely declared source pin receives independent certification in AMVO v{ENGINE_VERSION}."
     }
 
 
