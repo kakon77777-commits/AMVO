@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from amvo.cli import main
+from amvo.cli import SITE_FILES, main
 from amvo.core import RecordError, list_records
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,7 +54,7 @@ class SiteSafetyTests(unittest.TestCase):
             self.assertEqual(main(["build-site", "--cases", str(cases), "--root", td, "--output", str(out)]), 0)
             data = json.loads((out / "data" / "index.json").read_text("utf-8"))
             self.assertEqual(data["records"][0]["claim"]["statement"], hostile)
-            for name in ("index.html", "app.js", "styles.css"):
+            for name in SITE_FILES:
                 self.assertEqual((out / name).read_bytes(), (WEB / name).read_bytes())
 
     def test_duplicate_record_ids_across_files_rejected(self):
@@ -69,3 +69,49 @@ class SiteSafetyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FrontEndReportTests(unittest.TestCase):
+    """P1-D: the page renders the layered report and never presents an unchecked item as checked"""
+
+    def js_keys(self, name):
+        text = (WEB / "app.js").read_text("utf-8")
+        body = re.search(r"const " + name + r" = \{(.*?)\n\};", text, re.S).group(1)
+        return set(re.findall(r"^\s*([A-Za-z_]+):", body, re.M))
+
+    def test_every_report_status_has_a_label_and_none_says_verified(self):
+        from amvo.registry import STATUSES
+        self.assertEqual(self.js_keys("STATUS"), set(STATUSES))
+        js = (WEB / "app.js").read_text("utf-8")
+        code = "\n".join(line.split("//", 1)[0] if not line.lstrip().startswith("//") else ""
+                         for line in js.splitlines())             # comments may name what is never shown
+        for word in ("VERIFIED", "已驗證", "已證明", "已獲證"):          # no label the script can render
+            self.assertNotIn(word, code)
+        self.assertNotIn("VERIFIED", (WEB / "index.html").read_text("utf-8"))
+
+    def test_every_pin_state_has_a_label(self):
+        from amvo.provenance import STATUSES as CAPTURE_STATUSES
+        states = set(CAPTURE_STATUSES) | {"declared_only", "no_pin", "fixture_only", "capture_invalid"}
+        self.assertEqual(self.js_keys("PIN_STATES"), states)
+
+    def test_site_carries_the_layered_report(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "site"
+            self.assertEqual(main(["build-site", "--output", str(out)]), 0)
+            data = json.loads((out / "data" / "index.json").read_text("utf-8"))
+            self.assertEqual(data["registry"]["report_schema"], "0.2")
+            self.assertEqual(data["registry"]["counts"]["theorems_proved"], 0)
+            self.assertTrue(all(c["theorem_proved"] is False for c in data["registry"]["claims"]))
+
+    def test_deployment_headers_and_worker_config(self):
+        headers = (WEB / "_headers").read_text("utf-8")
+        self.assertIn("frame-ancestors 'none'", headers)
+        self.assertIn("no-transform", headers)          # keeps the edge from injecting analytics scripts
+        self.assertIn("X-Content-Type-Options: nosniff", headers)
+        csp = re.search(r"Content-Security-Policy: (.+)", headers).group(1)
+        self.assertNotIn("unsafe-", csp)
+        config = (ROOT / "wrangler.jsonc").read_text("utf-8")
+        body = json.loads("\n".join(line for line in config.splitlines() if not line.lstrip().startswith("//")))
+        self.assertEqual(body["assets"]["directory"], "./site")
+        self.assertEqual(body["routes"], [{"pattern": "amvo.evemisslab.com", "custom_domain": True}])
+        self.assertNotIn("main", body)                  # assets only: no Worker code runs

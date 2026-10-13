@@ -1,0 +1,15 @@
+// AMVO — AI Mathematics Verification Observatory. Assets-only Worker on its own subdomain.
+// The site is generated, not committed: build it, then deploy (from this repo's root):
+//   python -m amvo build-site --output site
+//   npx wrangler deploy
+{
+  "name": "amvo",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./site",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "amvo.evemisslab.com", "custom_domain": true }
+  ]
+}

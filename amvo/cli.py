@@ -17,6 +17,7 @@ from .registry import (LAYERS, OBJECT_SCHEMA, canonical_url, check_registry, loa
                        ref, registry_report, slug, validate_object, write_manifest, write_object)
 
 ROOT = Path(__file__).resolve().parent.parent
+SITE_FILES = ("index.html", "404.html", "styles.css", "app.js", "_headers")
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -174,7 +175,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "build-site":
             destination = args.output or (ROOT / "site")
             destination.mkdir(parents=True, exist_ok=True)
-            for name in ("index.html", "styles.css", "app.js"):
+            for name in SITE_FILES:
                 shutil.copyfile(ROOT / "web" / name, destination / name)
             _write_json(destination / "data" / "index.json",
                         {"records": records, "verification": result, "events": events, "registry": layered,
