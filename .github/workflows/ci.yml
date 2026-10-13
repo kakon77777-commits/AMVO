@@ -10,26 +10,37 @@ permissions:
 
 jobs:
   verify:
-    name: Tests, policy and static build
-    runs-on: ubuntu-latest
+    name: Gates (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.13']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      - name: Compile Python
+          python-version: ${{ matrix.python }}
+      - name: B01 compile Python
         run: python -m compileall -q amvo tests
-      - name: Unit tests
+      - name: B02 unit tests
         run: python -m unittest discover -s tests -v
-      - name: Validate public records
+      - name: B03 validate public records
         run: python -m amvo validate
-      - name: Public data screening
+      - name: B04 public data screening
         run: python -m amvo audit-public
-      - name: Produce deterministic verification report
+      - name: B05 deterministic verification report
         run: python -m amvo verify --output build/verification.json
-      - name: Build static website
+      - name: B06 build static website
         run: python -m amvo build-site --output site
+      - name: B08 no unexpected tracked changes
+        shell: bash
+        run: |
+          git status --porcelain --untracked-files=no
+          test -z "$(git status --porcelain --untracked-files=no)"
       - name: Attach website bundle
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
         uses: actions/upload-artifact@v4
         with:
           name: amvo-static-site
