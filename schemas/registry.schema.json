@@ -1,0 +1,894 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kakon77777-commits/AMVO/blob/main/schemas/registry.schema.json",
+  "title": "AMVO layered registry object v0.2 contract (v0.1.5 implementation)",
+  "description": "One object in registry/<layer>/<id>.json, or a migration manifest (#/$defs/manifest) in registry/migrations/. References are {id, sha256} of the referent's canonical bytes. The runtime also checks what a schema cannot: that every reference resolves and still hashes the same, the layering rules (a claim needs a pinned revision unless its source is synthetic; evidence and its formal target concern the same claim; a publication cites only evidence of its own claims), duplicates (source URL, revision pin, claim statement, check), canonical URL spelling, calendar dates, public hosts and blank text.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/source"
+    },
+    {
+      "$ref": "#/$defs/revision"
+    },
+    {
+      "$ref": "#/$defs/claim"
+    },
+    {
+      "$ref": "#/$defs/formal_target"
+    },
+    {
+      "$ref": "#/$defs/evidence"
+    },
+    {
+      "$ref": "#/$defs/review"
+    },
+    {
+      "$ref": "#/$defs/publication"
+    }
+  ],
+  "$defs": {
+    "fractions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "string",
+        "pattern": "^-?[0-9]{1,80}(/[0-9]{1,80})?$"
+      }
+    },
+    "check": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "lhs",
+            "rhs"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "kind": {
+              "const": "rational_sum"
+            },
+            "lhs": {
+              "$ref": "#/$defs/fractions"
+            },
+            "rhs": {
+              "$ref": "#/$defs/fractions"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "lhs_coefficients",
+            "rhs_coefficients"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "kind": {
+              "const": "polynomial_coefficients"
+            },
+            "lhs_coefficients": {
+              "$ref": "#/$defs/fractions"
+            },
+            "rhs_coefficients": {
+              "$ref": "#/$defs/fractions"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "id",
+            "kind",
+            "path",
+            "sha256"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "kind": {
+              "const": "file_sha256"
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^evidence(/(?!\\.\\.?(/|$))[^/\\\\\\u0000]+)+$"
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "pin": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "git_commit"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "arxiv_version"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^[0-9]{4}\\.[0-9]{4,5}v[1-9][0-9]*$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "sha256"
+            },
+            "value": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "rights": {
+      "type": "object",
+      "required": [
+        "mode",
+        "note"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "metadata_only",
+            "redistribution_cleared"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        }
+      },
+      "additionalProperties": false
+    },
+    "ref_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-src-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ref_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-rev-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ref_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-clm-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ref_formal_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-fmt-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ref_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-evd-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ref_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-rvw-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "ref_publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-pub-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "title",
+        "publisher",
+        "authors",
+        "canonical_url",
+        "origin_type",
+        "public",
+        "rights",
+        "retrieved_at"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "source"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-src-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "authors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "canonical_url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200,
+          "pattern": "^https://"
+        },
+        "origin_type": {
+          "enum": [
+            "repository",
+            "preprint",
+            "paper",
+            "dataset",
+            "synthetic",
+            "other"
+          ]
+        },
+        "public": {
+          "const": true
+        },
+        "rights": {
+          "$ref": "#/$defs/rights"
+        },
+        "retrieved_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "source",
+        "version_label",
+        "pin",
+        "captured_at"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "revision"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-rev-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "source": {
+          "$ref": "#/$defs/ref_source"
+        },
+        "version_label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "pin": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/pin"
+            }
+          ]
+        },
+        "captured_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "revision",
+        "claim_type",
+        "statement",
+        "scope"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "claim"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-clm-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "revision": {
+          "$ref": "#/$defs/ref_revision"
+        },
+        "claim_type": {
+          "enum": [
+            "theorem",
+            "lemma",
+            "proposition",
+            "corollary",
+            "conjecture",
+            "computation",
+            "other"
+          ]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "assumptions": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1200
+          }
+        },
+        "parent_claims": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ref_claim"
+          }
+        }
+      }
+    },
+    "formal_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "claim",
+        "language",
+        "theorem_name",
+        "exact_statement",
+        "code_pin",
+        "toolchain",
+        "axiom_policy",
+        "correspondence"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "formal_target"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-fmt-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "claim": {
+          "$ref": "#/$defs/ref_claim"
+        },
+        "language": {
+          "enum": [
+            "lean4",
+            "coq",
+            "isabelle",
+            "other"
+          ]
+        },
+        "theorem_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400
+        },
+        "exact_statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        },
+        "code_pin": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "git_commit"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^([0-9a-f]{40}|[0-9a-f]{64})$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "value"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "sha256"
+                },
+                "value": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          ]
+        },
+        "toolchain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "axiom_policy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "correspondence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "claim",
+        "check",
+        "bounded_claim"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "evidence"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-evd-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "claim": {
+          "$ref": "#/$defs/ref_claim"
+        },
+        "formal_target": {
+          "$ref": "#/$defs/ref_formal_target"
+        },
+        "check": {
+          "$ref": "#/$defs/check"
+        },
+        "bounded_claim": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "claim",
+        "reviewer_class",
+        "independence",
+        "conflicts",
+        "scope",
+        "audit_state",
+        "references"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "review"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-rvw-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "claim": {
+          "$ref": "#/$defs/ref_claim"
+        },
+        "reviewer_class": {
+          "enum": [
+            "amvo_maintainer",
+            "independent_mathematician",
+            "original_author",
+            "automated_tool"
+          ]
+        },
+        "independence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "conflicts": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "audit_state": {
+          "enum": [
+            "in_progress",
+            "objection_raised",
+            "no_objection_in_scope",
+            "needs_revision"
+          ]
+        },
+        "references": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1200,
+            "pattern": "^https://"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reviewer_class": {
+                "const": "independent_mathematician"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "references": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object_schema",
+        "kind",
+        "id",
+        "title",
+        "claims",
+        "evidence",
+        "editorial_note",
+        "license_review"
+      ],
+      "properties": {
+        "object_schema": {
+          "const": "0.2"
+        },
+        "kind": {
+          "const": "publication"
+        },
+        "id": {
+          "type": "string",
+          "maxLength": 120,
+          "pattern": "^amvo-pub-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "claims": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ref_claim"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ref_evidence"
+          }
+        },
+        "editorial_note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "license_review": {
+          "enum": [
+            "pending",
+            "metadata_only",
+            "cleared"
+          ]
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_schema",
+        "case_id",
+        "record_sha256",
+        "objects",
+        "reused",
+        "not_carried"
+      ],
+      "properties": {
+        "manifest_schema": {
+          "const": "0.2"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^amvo-[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "record_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "sha256"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "maxLength": 120,
+                "pattern": "^amvo-(src|rev|clm|fmt|evd|rvw|pub)-[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "reused": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 120,
+            "pattern": "^amvo-(src|rev|clm|fmt|evd|rvw|pub)-[a-z0-9]+(?:-[a-z0-9]+)*$"
+          }
+        },
+        "not_carried": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600
+          }
+        }
+      }
+    }
+  }
+}

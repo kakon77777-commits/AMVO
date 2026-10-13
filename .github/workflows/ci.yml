@@ -37,12 +37,12 @@ jobs:
       - name: B06 build static website
         run: python -m amvo build-site --output site
       - name: B07 ledgers are append-only
-        # events/ and evidence/provenance/ may gain files in a pull request, never lose or change one
+        # events/, evidence/provenance/ and registry/ may gain files in a pull request, never lose or change one
         # a pull_request run checks out the merge commit; its first parent is the base it merges into
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
-          changed="$(git diff --name-status --no-renames --diff-filter=DMT HEAD^1 HEAD -- events evidence/provenance)"
+          changed="$(git diff --name-status --no-renames --diff-filter=DMT HEAD^1 HEAD -- events evidence/provenance registry ':(exclude,glob)**/README.md')"
           echo "$changed"
           test -z "$changed"
       - name: B08 no unexpected tracked changes

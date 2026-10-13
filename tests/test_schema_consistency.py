@@ -23,26 +23,28 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = json.loads((ROOT / "schemas" / "case.schema.json").read_text(encoding="utf-8"))
 
 
-def _resolve(schema, ref):
+def _resolve(root, ref):
     assert ref.startswith("#/")
-    node = SCHEMA
+    node = root
     for part in ref[2:].split("/"):
         node = node[part]
     return node
 
 
-def schema_errors(value, schema, path="$"):
-    """errors of `value` against the supported subset of JSON Schema; [] means valid"""
+def schema_errors(value, schema, path="$", root=None):
+    """errors of `value` against the supported subset of JSON Schema; [] means valid.
+    `root` is the document `$ref`s resolve against (default: the case schema)."""
+    root = SCHEMA if root is None else root
     if "$ref" in schema:
-        return schema_errors(value, _resolve(SCHEMA, schema["$ref"]), path)
+        return schema_errors(value, _resolve(root, schema["$ref"]), path, root)
     errs = []
     t = schema.get("type")
-    kinds = {"object": dict, "array": list, "string": str, "integer": int}
+    kinds = {"object": dict, "array": list, "string": str, "integer": int, "boolean": bool, "null": type(None)}
     if t is not None and (not isinstance(value, kinds[t]) or (t == "integer" and isinstance(value, bool))):
         return [f"{path}: not {t}"]
     if t == "integer" and value < schema.get("minimum", value):
         return [f"{path}: minimum"]
-    if "const" in schema and value != schema["const"]:
+    if "const" in schema and (value != schema["const"] or type(value) is not type(schema["const"])):
         errs.append(f"{path}: const")
     if "enum" in schema and value not in schema["enum"]:
         errs.append(f"{path}: enum")
@@ -56,9 +58,11 @@ def schema_errors(value, schema, path="$"):
     if isinstance(value, list):
         if len(value) < schema.get("minItems", 0) or len(value) > schema.get("maxItems", 10 ** 9):
             errs.append(f"{path}: items count")
+        if schema.get("uniqueItems") and len({json.dumps(x, sort_keys=True) for x in value}) != len(value):
+            errs.append(f"{path}: unique items")
         if "items" in schema:
             for i, item in enumerate(value):
-                errs += schema_errors(item, schema["items"], f"{path}[{i}]")
+                errs += schema_errors(item, schema["items"], f"{path}[{i}]", root)
     if isinstance(value, dict):
         for key in schema.get("required", []):
             if key not in value:
@@ -66,20 +70,20 @@ def schema_errors(value, schema, path="$"):
         props = schema.get("properties", {})
         for key, sub in props.items():
             if key in value:
-                errs += schema_errors(value[key], sub, f"{path}.{key}")
+                errs += schema_errors(value[key], sub, f"{path}.{key}", root)
         if schema.get("additionalProperties") is False:
             errs += [f"{path}: extra {k}" for k in value if k not in props]
     if "oneOf" in schema:
-        if sum(1 for sub in schema["oneOf"] if not schema_errors(value, sub, path)) != 1:
+        if sum(1 for sub in schema["oneOf"] if not schema_errors(value, sub, path, root)) != 1:
             errs.append(f"{path}: oneOf")
-    if "not" in schema and not schema_errors(value, schema["not"], path):
+    if "not" in schema and not schema_errors(value, schema["not"], path, root):
         errs.append(f"{path}: not")
     for sub in schema.get("allOf", []):
         if "if" in sub:
-            if not schema_errors(value, sub["if"], path):
-                errs += schema_errors(value, sub["then"], path)
+            if not schema_errors(value, sub["if"], path, root):
+                errs += schema_errors(value, sub["then"], path, root)
         else:
-            errs += schema_errors(value, sub, path)
+            errs += schema_errors(value, sub, path, root)
     return errs
 
 

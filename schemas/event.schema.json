@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/kakon77777-commits/AMVO/blob/main/schemas/event.schema.json",
-  "title": "AMVO correction and withdrawal event v0.1 contract (v0.1.4 implementation)",
+  "title": "AMVO correction and withdrawal event v0.1 contract (v0.1.5 implementation)",
   "description": "One append-only event in events/ev-<seq>.json. The runtime also checks what a schema cannot: the hash chain, that seq matches the file name and event_id, that recorded_at is a calendar time not earlier than the previous event, that the named records exist and still hash to target_sha256 / by_sha256, and that source_url names a public host.",
   "type": "object",
   "required": [

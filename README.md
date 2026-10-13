@@ -8,7 +8,7 @@ AMVO is an open-source research observatory maintained by EveMissLab. It records
 
 ## Status
 
-**v0.1.4 foundation** — source intake with declared immutable version pins for mathematical claims, opt-in replay of those pins against their public origin, an append-only ledger of withdrawals, replacements, corrections and objections, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
+**v0.1.5 foundation** — a layered registry (source, revision, claim, formal target, evidence, review, publication) with duplicate refusal and a migration from the v0.1 case format, source intake with declared immutable version pins for mathematical claims, opt-in replay of those pins against their public origin, an append-only ledger of withdrawals, replacements, corrections and objections, schema validation, deterministic bounded checks, auditable report generation, and a static dashboard. **No OpenAI, AMRAL, or other mathematical research result has been independently certified by this repository.**
 
 ## Quick start
 
@@ -37,6 +37,10 @@ python -m amvo replay-pins --network --case <record-id>
 ```
 
 This asks the origin (GitHub's commit API, arXiv's export API, or an allowlisted file host) whether the pinned version exists and matches, and appends one capture — metadata and hashes, never the source text — under `evidence/provenance/<record-id>/`. Only `api.github.com`, `export.arxiv.org` and `raw.githubusercontent.com` are contacted, over HTTPS with no credentials; every resolved address must be public and the connection goes to the address that was checked; redirects are refused and responses are capped at 4 MB. `source_pin_verified` becomes `true` only for a live capture whose observation matches the pin; a fixture replay (`--fixtures DIR`, used by the tests) never counts, and an unreachable origin is `unavailable`, never a pass. A verified pin establishes which public version is meant. It is not evidence that any statement in it is true.
+
+### Layered registry (v0.2)
+
+One paper can state many theorems, lemmas and conjectures, so AMVO files results by layer in `registry/`: Source → SourceRevision → Claim → FormalTarget / Evidence / Review → Publication. Each object refers to the ones below it by id and canonical hash, so evidence cannot rewrite its claim, a review cannot touch its source, and a publication can cite only evidence of its own claims. A claim needs a pinned revision. Duplicates are refused, and `python -m amvo locate --query <url or pin>` says where a result already lives before anything is added. The report (`python -m amvo registry-report`) counts sources, claims and checked claims separately and gives each claim statuses such as `NOT_CHECKED`, `BOUNDED_PASS`, `REPRODUCIBILITY_ONLY`, `SEMANTIC_ALIGNMENT_PENDING`, `OBJECTION_OPEN` or `WITHDRAWN` — never "verified". The v0.1 case files are kept unchanged and mapped by `python -m amvo migrate`. See [registry/README.md](registry/README.md).
 
 ### Corrections and withdrawals
 
@@ -69,7 +73,8 @@ AMRAL (autonomous mathematical research) and AMVO (external verification) are si
 - `cases/` — public claim intake records and synthetic fixtures
 - `evidence/provenance/` — append-only pin replay captures
 - `events/` — append-only correction and withdrawal ledger
-- `schemas/` — JSON Schema contracts (records, events)
+- `registry/` — layered v0.2 objects and migration manifests
+- `schemas/` — JSON Schema contracts (v0.1 records, events, v0.2 registry)
 - `web/` — static dashboard template
 - `tests/` — regression and abuse-case coverage
 - `docs/` — evidence policy, architecture, security, roadmap
