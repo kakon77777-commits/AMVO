@@ -16,7 +16,8 @@
     <div class="container topbar-inner">
       <a class="brand" href="./"><span class="brand-glyph" aria-hidden="true">∴</span> AMVO <span class="brand-sub">/ EveMissLab</span></a>
       <nav aria-label="主要連結">
-        <a href="#records">公開登錄</a>
+        <a href="#claims">命題登錄</a>
+        <a href="#sources">來源</a>
         <a href="#method">驗證標準</a>
         <a href="./data/index.json" download>JSON 資料</a>
       </nav>
@@ -27,31 +28,39 @@
       <p class="eyebrow">INDEPENDENT MATHEMATICAL EVIDENCE · 2026</p>
       <h1 id="hero-title">證據先於聲望。<br><span>驗證先於結論。</span></h1>
       <p class="hero-intro">AI Mathematics Verification Observatory — 為外部 AI 數學研究建立公開來源、版本追溯、可重現檢查和獨立審計紀錄。研究成果歸原作者；AMVO 只對自己實際完成的檢查負責。</p>
-      <div class="hero-actions"><a class="primary-link" href="#records">查看紀錄 <span aria-hidden="true">↗</span></a><a class="secondary-link" href="#method">理解驗證分級</a></div>
-      <p class="caution">v0.1 · 試驗基礎設施。任何示範通過皆不表示外部數學定理已獲證明。</p>
+      <div class="hero-actions"><a class="primary-link" href="#claims">查看命題 <span aria-hidden="true">↗</span></a><a class="secondary-link" href="#method">理解驗證分級</a></div>
+      <p class="caution">試驗基礎設施。任何「通過」都只指它實際算過的那一件事，不表示外部數學定理已獲證明；沒有實際檢查過的一律標為 NOT_CHECKED 或 UNKNOWN。</p>
     </section>
-    <section class="stats-panel container" aria-label="當前登錄統計">
-      <div class="stat"><strong id="total" class="number">—</strong><span>公開登錄</span></div>
-      <div class="stat"><strong id="checked" class="number">—</strong><span>有限檢查通過</span></div>
-      <div class="stat"><strong id="unchecked" class="number">—</strong><span>尚無檢查</span></div>
-      <div class="stat"><strong id="certified" class="number">0</strong><span>外部定理獲完整認證</span></div>
+    <section class="stats-panel container" aria-label="分層統計">
+      <div class="stat"><strong id="n-sources" class="number">—</strong><span>公開來源</span></div>
+      <div class="stat"><strong id="n-claims" class="number">—</strong><span>已登錄命題</span></div>
+      <div class="stat"><strong id="n-bounded" class="number">—</strong><span>現行命題・有限檢查通過</span></div>
+      <div class="stat"><strong id="n-unchecked" class="number">—</strong><span>現行命題・尚未檢查</span></div>
+      <div class="stat"><strong id="n-kernel" class="number">—</strong><span>形式化核心實際執行</span></div>
+      <div class="stat"><strong id="n-proved" class="number">—</strong><span>外部定理獲完整認證</span></div>
     </section>
-    <section id="records" class="records-section container" aria-labelledby="records-title">
-      <div class="section-heading"><div><p class="eyebrow">PUBLIC CASE REGISTER</p><h2 id="records-title">來源與驗證紀錄</h2></div><p class="section-description">每筆結論限於對應的來源版本與實際證據。</p></div>
+    <section id="claims" class="records-section container" aria-labelledby="claims-title">
+      <div class="section-heading"><div><p class="eyebrow">CLAIM REGISTER</p><h2 id="claims-title">命題登錄</h2></div><p class="section-description">一份來源可以有許多條命題，這裡逐條列出。每條只寫實際算過的結果，其餘標示為未檢查或未知。</p></div>
       <div class="filterbar">
-        <label class="search-field" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜尋題名、來源或案例編號" autocomplete="off"></label>
-        <label class="select-label" for="outcome">檢查狀態</label>
-        <select id="outcome">
+        <label class="search-field" for="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="搜尋命題、來源、作者或編號" autocomplete="off"></label>
+        <label class="select-label" for="status">狀態</label>
+        <select id="status">
           <option value="all">全部</option>
-          <option value="not_checked">未執行</option>
-          <option value="bounded_checks_pass">有限檢查通過</option>
-          <option value="checks_not_passed">檢查未通過</option>
-          <option value="withdrawn">已撤回</option>
-          <option value="superseded">已被新版取代</option>
+          <option value="current">僅現行命題</option>
+          <option value="NOT_CHECKED">尚未檢查</option>
+          <option value="BOUNDED_PASS">有限檢查通過</option>
+          <option value="REPRODUCIBILITY_ONLY">僅工件雜湊相符</option>
+          <option value="CHECKS_NOT_PASSED">檢查未通過</option>
+          <option value="OBJECTION_OPEN">有未結異議</option>
+          <option value="history">已撤回或被取代</option>
         </select>
       </div>
-      <div id="load-status" class="load-status" role="status" aria-live="polite">正在讀取公開案例…</div>
-      <div id="records-list" class="record-grid" aria-live="polite"></div>
+      <div id="load-status" class="load-status" role="status" aria-live="polite">正在讀取公開資料…</div>
+      <div id="claims-list" class="claim-list"></div>
+    </section>
+    <section id="sources" class="records-section sources-section container" aria-labelledby="sources-title">
+      <div class="section-heading"><div><p class="eyebrow">SOURCE REGISTER</p><h2 id="sources-title">來源與版本</h2></div><p class="section-description">來源的數量不等於命題的數量。來源已登錄，不代表其中有任何命題已被檢查。</p></div>
+      <div id="sources-list" class="record-grid"></div>
     </section>
     <section id="method" class="method-section" aria-labelledby="method-title">
       <div class="container">
@@ -65,9 +74,11 @@
           <article><span class="method-number">05</span><h3>獨立數學審計</h3><p>查核依賴、量詞、邊界條件、反例、文獻與新穎性。</p></article>
           <article><span class="method-number">06</span><h3>持續修訂</h3><p>保留錯誤、撤回與版本歷史，不因聲望或機構身分改變標準。</p></article>
         </div>
+        <h3 class="legend-title">狀態代碼</h3>
+        <dl id="legend" class="legend"></dl>
       </div>
     </section>
   </main>
-  <footer class="footer"><div class="container footer-inner"><span>AMVO · EveMissLab · Independent verification infrastructure</span><span>Public evidence only · No trackers · No external model calls</span></div></footer>
+  <footer class="footer"><div class="container footer-inner"><span id="engine">AMVO · EveMissLab · Independent verification infrastructure</span><span>Public evidence only · No trackers · No external model calls</span></div></footer>
 </body>
 </html>

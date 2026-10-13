@@ -24,6 +24,10 @@ python -m http.server 8000 --directory site
 
 Open http://localhost:8000/ after starting the server.
 
+The page renders the layered report claim by claim: original authors, source and source version (with its pin state), the checks actually computed and their results, what is still unknown (formal kernel `NOT_RUN`, semantic alignment, independent review, novelty, general truth), and the correction chain. Anything not actually checked reads `NOT_CHECKED` or `UNKNOWN`; no label says verified.
+
+The public site is an assets-only Cloudflare Worker (`wrangler.jsonc`, custom domain `amvo.evemisslab.com`); `web/_headers` sets the CSP, `no-referrer`, `nosniff`, `frame-ancestors 'none'` and `no-transform` (so the edge cannot inject an analytics script). Deploying is a separate, deliberate step — see [docs/PUBLISHING.md](docs/PUBLISHING.md).
+
 The included synthetic arithmetic example demonstrates the verifier. The OpenAI public-repository intake is **metadata only** and has **not** been checked or endorsed. One snapshot record pins a public commit of that repository; replaying the pin confirms which version a later claim would refer to — it says nothing about any mathematics in it.
 
 ### Source pinning

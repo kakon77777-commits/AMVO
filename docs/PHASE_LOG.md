@@ -216,3 +216,61 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Next executable gate:** P1-D — a front-end report from the layered data: original authors,
   source version, last check and its method, results, unknowns and the correction chain, with
   `UNKNOWN` / `NOT_CHECKED` for everything not actually checked and never `VERIFIED`.
+
+## P1-D — front-end report and site deployment configuration (engine unchanged, v0.1.5)
+
+- **Base:** P1-C `ce35403` (`feat/p1c-layered-registry`). Branch `feat/p1d-frontend-report`. The
+  engine and its reports are unchanged, so the version stays `0.1.5`; `data/index.json` is
+  byte-identical to P1-C's.
+- **Scope:**
+  - `web/index.html`, `web/app.js`, `web/styles.css`: the page renders the layered report
+    (`data/index.json` → `registry`) claim by claim. Each claim card shows its statuses, type and
+    location, the exact statement and scope, and then:
+    - original authors and publisher; the source, linked;
+    - source version with its pin state (only a live, matching capture reads as checked, with
+      its date);
+    - the checks actually computed — kind, PASS / FAIL / ERROR, and what the check bounds — or
+      `NOT_CHECKED`;
+    - who recomputed it (the engine id, at site build; not a human review);
+    - unknowns, always listed: formal kernel `NOT_RUN`, semantic alignment `UNKNOWN` /
+      `NOT_CHECKED`, independent review `NOT_CHECKED` (or the reviews on file), novelty
+      `UNKNOWN`, general truth `UNKNOWN`;
+    - the correction chain: every event naming the claim, its revision, its source or the v0.1
+      record it came from.
+    - Stats are per layer (sources, claims, current claims with a bounded pass / not checked,
+      kernel runs, theorems certified); a source register lists each source's revisions and how
+      many claims it has ("a registered source is not a checked claim"); a legend explains every
+      status code. An unknown status code renders as "unknown", never as a pass.
+  - `web/_headers` (CSP with `frame-ancestors 'none'`, `no-referrer`, `nosniff`,
+    `Permissions-Policy`, COOP, HSTS, `Cache-Control … no-transform`), `web/404.html`, and
+    `wrangler.jsonc` (assets-only Worker `amvo`, directory `./site`, custom domain
+    `amvo.evemisslab.com`, `not_found_handling: 404-page`). `build-site` copies all five web
+    files. `docs/PUBLISHING.md` gives the deploy steps; deploying stays a separate decision.
+  - Tests (`tests/test_site_safety.py`, 4 new): every report status has a label and every pin
+    state has a label (keys compared with the engine's constants); no label the script can
+    render says verified / proved; the built site carries the layered report with
+    `theorems_proved` 0; the headers and Worker config are as above and no Worker code runs.
+- **Checked in a browser:** with the repository data (1 claim, 2 sources) and with a synthetic
+  demo (a theorem with a failing check and a formal target, a lemma with a bounded pass, a
+  conjecture with a recorded objection): statuses, stats (1 source, 3 claims, 1 pass, 1 not
+  checked) and the chain render as described; console clean; at 375 px wide nothing overflows
+  (facts and legend single-column, stats two-column). Under `wrangler dev` (4.150.0, the same
+  assets runtime as production): `/` 200 with the CSP, `no-referrer`, `nosniff` and the
+  `no-transform` cache header; an unknown path 404 with the 404 page; `/_headers` not served;
+  `/data/index.json` served as `application/json`.
+- **Run (Windows):** Python 3.14.5 and 3.13.13 — **99 run, 98 pass, 1 skipped, 0 fail, 0 error**.
+  All CLI gates exit 0; two `build-site` runs give identical trees.
+- **Evidence (SHA-256):** `site/index.html` `9dfca7571b1da89b4b1be825cecb5440ded598b309a4692ca7c4f48b20d5a6d2`;
+  `site/app.js` `125adeb7b0e74e07869729a9ea8ec1a43f716b7d950700b4e8f690c3b128fa1a`;
+  `site/styles.css` `ab5f214a4256aeb5f61e4dc18aac3864c3427e0f295665cfdde43ef706a63863`;
+  `site/404.html` `eaaa62b22c20972e6fda8356d733c7f53515c5ae756494f2529e7d1f4cc1bd2b`;
+  `site/_headers` `37a2348518c664971bf3084927fba89ac599caf028e36a7cfea7a4807d0b7283`;
+  `site/data/index.json` `ae21ee661f5ae7b1309283c67c477c8063165ecea39c68dfea1f8aac8e41adac`;
+  `wrangler.jsonc` `482c9e9e9402119370cf6cf31c7acaea7602689a3fc9a87180f1578fc5f18b8a`.
+- **Not done:** the site is **not deployed** — that waits for the maintainer's go-ahead. The page
+  is in Traditional Chinese only. The v0.1 per-record view was replaced by the claim view (the
+  v0.1 records remain in `data/index.json`).
+- **Next executable gate:** deploy to `amvo.evemisslab.com` when approved and check the live
+  headers and data hash; then Phase 1's remaining exit item — metadata-only intake of about ten
+  public, clearly licensed, versioned sources of different kinds, claim by claim through
+  `locate` / `register`.
