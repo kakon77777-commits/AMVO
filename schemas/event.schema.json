@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/kakon77777-commits/AMVO/blob/main/schemas/event.schema.json",
+  "title": "AMVO correction and withdrawal event v0.1 contract (v0.1.4 implementation)",
+  "description": "One append-only event in events/ev-<seq>.json. The runtime also checks what a schema cannot: the hash chain, that seq matches the file name and event_id, that recorded_at is a calendar time not earlier than the previous event, that the named records exist and still hash to target_sha256 / by_sha256, and that source_url names a public host.",
+  "type": "object",
+  "required": [
+    "event_schema",
+    "seq",
+    "event_id",
+    "type",
+    "target",
+    "target_sha256",
+    "rationale",
+    "recorded_by",
+    "recorded_at",
+    "prev_sha256"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "event_schema": {
+      "const": "0.1"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^ev-[0-9]{6}$"
+    },
+    "type": {
+      "enum": [
+        "withdraws",
+        "supersedes",
+        "corrects",
+        "rebuttal"
+      ]
+    },
+    "target": {
+      "type": "string",
+      "pattern": "^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "target_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "by": {
+      "type": "string",
+      "pattern": "^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "by_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "pattern": "^https://"
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "recorded_by": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "recorded_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "prev_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "supersedes"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "by",
+          "by_sha256"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "withdraws",
+              "corrects",
+              "rebuttal"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "source_url"
+        ],
+        "allOf": [
+          {
+            "not": {
+              "required": [
+                "by"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "by_sha256"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

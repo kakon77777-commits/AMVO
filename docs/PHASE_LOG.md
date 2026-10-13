@@ -96,3 +96,54 @@ states what was run, on which commit, with what result; nothing here is inferred
   pin exists yet; CI never touches the network.
 - **Next executable gate:** P1-B — append-only correction / withdrawal events
   (`supersedes`, `corrects`, `withdraws`, `rebuttal`) with synthetic multi-version fixtures.
+
+## P1-B — correction and withdrawal events (v0.1.4)
+
+- **Base:** P1-A `9f9819d` (`feat/p1a-source-pin-replay`). Branch `feat/p1b-correction-events`.
+- **Scope:**
+  - `amvo/lineage.py` (new): an append-only ledger `events/ev-<seq>.json` with four event types
+    — `withdraws`, `supersedes` (with `by`), `corrects`, `rebuttal`; all but `supersedes` need a
+    public `source_url`. Each event stores `target_sha256` (and `by_sha256`) — the hash of the
+    record as it stood — and `prev_sha256`, the hash of the event before it.
+    - A record edited after an event named it, or removed, fails every command; the remedy is a
+      new record plus a `supersedes` event.
+    - An edited, removed or renumbered earlier event breaks the chain; `recorded_at` may not go
+      backwards. Withdrawing twice, superseding twice, self-supersession and supersession cycles
+      are refused.
+    - Closing an objection is not modelled, so a recorded objection is never silently closed.
+  - `record-event` CLI: builds the next event, checks it with the whole ledger, and creates the
+    file exclusively; a refused event writes nothing.
+  - Report: each case gains `lineage` (`state` current / superseded / withdrawn, with pointers
+    and event lists); the report gains `event_ledger` (count and head hash). Outcomes are not
+    rewritten by events. `audit-public` also screens event text.
+  - `schemas/event.schema.json` (new) and `tests/test_event_schema.py`: 30 ledgers, every schema
+    rejection is a runtime rejection; six runtime-only rules (calendar time, blank text, public
+    host, event id matches seq, hash chain, record exists and is unchanged), each exercised.
+  - Dashboard: a withdrawn or superseded record is labelled as such, its outcome shown only as
+    "before withdrawal / before replacement"; it is not counted in the current-result totals and
+    the outcome filters show current records only (two new filters list the others).
+  - CI: gate **B07** fails a pull request that modifies, deletes or retypes any file under
+    `events/` or `evidence/provenance/` (diff of the merge commit against its first parent;
+    checkout depth 2). Checked on a throwaway clone: an edited capture is reported, an added
+    event is not.
+- **Acceptance:** matrix C S10 (withdrawn record kept, shown as withdrawn) and S11 (a new
+  version is a new record; the old one keeps its hash, time and objections); Phase 2 exit
+  "withdrawn is not read as currently established" — on a synthetic demo site (one superseded
+  record with an objection, its replacement with a correction, one withdrawn record) the
+  page counts 1 current pass out of 3, labels the other two, and the "bounded pass" filter
+  lists only the current one. Console clean.
+- **Run (Windows):** Python 3.14.5 and 3.13.13 — `python -m unittest discover -s tests` →
+  **73 run, 72 pass, 1 skipped, 0 fail, 0 error** (17 new). `validate` → 3 records, 0 events;
+  `audit-public` → passed; `verify` twice → identical bytes; `build-site` exit 0.
+- **Evidence (SHA-256):** `build/verification.json`
+  `abe05b26c8b9f7f2308dadfbc5e05414fb719c340a3c0b7e7da692ee54fe6096`; `site/data/index.json`
+  `6dfb259377552729c5177e8ff5311ee279c101c5afca8ef74931fb7d40f32a82`;
+  `schemas/case.schema.json` `e58fe44f95988960f6b19d8f1f9ac8d1d19c0e04754ef2fdb65f3b35fc4649ee`;
+  `schemas/event.schema.json` `6f81db70a2b67cb187848839127b9e3e253f27a23c9137810b444719247ed0b9`.
+- **Real data:** none. The ledger is empty; per the handoff, multi-version and conflict cases are
+  synthetic only in this phase.
+- **Limits:** removing or editing the newest event is not visible to the chain itself; only B07
+  catches it, and only in a pull request (a direct push to `main` bypasses it). Events are not
+  signed: `recorded_by` is a declared role, not an authenticated identity.
+- **Next executable gate:** P1-C — Source / Claim / FormalTarget / Evidence / Review /
+  Publication layering, with a v0.1 → v0.2 migration that keeps the old records' bytes and hashes.

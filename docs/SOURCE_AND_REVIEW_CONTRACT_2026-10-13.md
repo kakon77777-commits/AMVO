@@ -24,6 +24,8 @@ Python 標準函式庫核心實際可解析：
 
 v0.1.3（P1-A）公開修改此規則：`python -m amvo replay-pins --network` 向來源查核 pin，並在 `evidence/provenance/<id>/` 追加一份 capture（只存 metadata 與雜湊）。報告新增 `source_pin_status`（no_pin / declared_only / fixture_only / verified / mismatch / not_found / unavailable / unsupported / capture_invalid）與 `source_pin_capture`；`source_pin_verified` 只有在最新 capture 為 live 且 status=verified 時為 true。fixture 重放永遠不算；來源失聯為 unavailable，不得變成 PASS。pin 已核對只表示指的是哪個公開版本，不表示其中任何命題成立。
 
+v0.1.4（P1-B）新增修訂事件帳本：`events/ev-<seq>.json`，格式見 `schemas/event.schema.json`。事件型別 withdraws / supersedes / corrects / rebuttal；除 supersedes 外都須附公開 source_url。每筆事件記錄所指紀錄的 SHA-256（target_sha256，supersedes 另有 by_sha256）與前一筆事件的 SHA-256（prev_sha256）：被指涉的紀錄事後若被修改，所有命令都會失敗——要改，就發布新紀錄並加一筆 supersedes；改寫或刪除較早的事件會使雜湊鏈斷裂；CI B07 拒絕任何修改或刪除 events/ 與 evidence/provenance/ 既有檔案的 PR。報告新增 `lineage`（state = current / superseded / withdrawn、superseded_by、supersedes、withdrawn_by、corrections、objections、events）與 `event_ledger`（事件數與鏈頭雜湊）；事件不改寫 outcome。異議的「結案」尚未建模，所以已記錄的異議不會被悄悄關閉。
+
 ## 2. v0.2 新增建議格式（目前不可當成已實作）
 
 應另外新增 source revisions、claims、formal_targets、checks、reviews 與 events 的版本化 canonical JSON 格式。避免直接把舊 case 覆寫成新語義。維持向下相容，提供 migration CLI 和對照測試。

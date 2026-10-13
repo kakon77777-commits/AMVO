@@ -18,7 +18,16 @@ const PIN_STATES = {
   unsupported: { text: "此類版本目前無法向來源核對", warn: true },
   capture_invalid: { text: "核對紀錄無效", warn: true }
 };
+// lineage.state from the report; a record that is not current is never shown as a current result
+const LINEAGE = {
+  withdrawn: { pill: "已撤回", before: "撤回前的檢查結果：" },
+  superseded: { pill: "已被新版取代", before: "被取代前的檢查結果：" }
+};
 let entries = [];
+
+function isCurrent(result) {
+  return !result.lineage || result.lineage.state === "current";
+}
 
 function el(tag, css, value) {
   const node = document.createElement(tag);
@@ -43,12 +52,23 @@ function makeRecord(item) {
   const card = el("article", "record");
   const header = el("div", "record-header");
   header.append(el("span", "record-id", record.id));
-  const label = el("span", "pill" + (result.outcome === "bounded_checks_pass" ? " pass" : result.outcome === "checks_not_passed" ? " fail" : ""), LABELS[result.outcome] || "未知");
+  const lin = result.lineage || {};
+  const past = LINEAGE[lin.state];
+  const label = past
+    ? el("span", "pill fail", past.pill)
+    : el("span", "pill" + (result.outcome === "bounded_checks_pass" ? " pass" : result.outcome === "checks_not_passed" ? " fail" : ""), LABELS[result.outcome] || "未知");
   header.append(label);
   card.append(header);
   card.append(el("h3", "", record.title));
   card.append(el("p", "", record.claim.statement));
   card.append(el("p", "scope", "範圍：" + record.claim.scope));
+  if (past) card.append(el("p", "scope", past.before + (LABELS[result.outcome] || "未知")));
+  if (lin.state === "superseded" && lin.superseded_by) card.append(el("p", "scope", "新版：" + lin.superseded_by));
+  if (lin.supersedes && lin.supersedes.length) card.append(el("p", "scope", "取代：" + lin.supersedes.join("、")));
+  const notes = [];
+  if (lin.corrections && lin.corrections.length) notes.push("更正 " + lin.corrections.length + " 則");
+  if (lin.objections && lin.objections.length) notes.push("異議紀錄 " + lin.objections.length + " 則");
+  if (notes.length) card.append(el("p", "scope lineage-notes", notes.join(" · ") + "（見 JSON 資料 events）"));
   const footer = el("div", "record-footer");
   footer.append(el("span", "", record.source.publisher + " · " + record.source.version));
   if (record.source.pin) {
@@ -79,7 +99,9 @@ function update() {
   const list = $("records-list");
   list.replaceChildren();
   const found = entries.filter(({record, result}) => {
-    if (filter !== "all" && result.outcome !== filter) return false;
+    if (filter === "withdrawn" || filter === "superseded") {
+      if (!result.lineage || result.lineage.state !== filter) return false;
+    } else if (filter !== "all" && (result.outcome !== filter || !isCurrent(result))) return false;
     const haystack = [record.title, record.id, record.source.publisher, record.claim.statement]
       .join(" ").toLocaleLowerCase();
     return haystack.includes(text);
@@ -97,8 +119,9 @@ async function init() {
     entries = (data.records || []).filter(r => lookup.has(r.id))
       .map(record => ({record, result: lookup.get(record.id)}));
     $("total").textContent = entries.length;
-    $("checked").textContent = entries.filter(x => x.result.outcome === "bounded_checks_pass").length;
-    $("unchecked").textContent = entries.filter(x => x.result.outcome === "not_checked").length;
+    // only current records count as results; withdrawn and superseded ones stay listed as history
+    $("checked").textContent = entries.filter(x => isCurrent(x.result) && x.result.outcome === "bounded_checks_pass").length;
+    $("unchecked").textContent = entries.filter(x => isCurrent(x.result) && x.result.outcome === "not_checked").length;
     // The initial engine does not implement theorem certification.
     $("certified").textContent = "0";
     $("search").addEventListener("input", update);
