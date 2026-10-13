@@ -147,3 +147,72 @@ states what was run, on which commit, with what result; nothing here is inferred
   signed: `recorded_by` is a declared role, not an authenticated identity.
 - **Next executable gate:** P1-C — Source / Claim / FormalTarget / Evidence / Review /
   Publication layering, with a v0.1 → v0.2 migration that keeps the old records' bytes and hashes.
+
+## P1-C — layered registry and v0.1 → v0.2 migration (v0.1.5)
+
+- **Base:** P1-B `1ac50d3` (`feat/p1b-correction-events`). Branch `feat/p1c-layered-registry`.
+- **Scope:**
+  - `amvo/registry.py` (new): record format v0.2, one immutable object per file in
+    `registry/<layer>/<id>.json` — Source, SourceRevision, Claim, FormalTarget, Evidence, Review,
+    Publication — with ids that name their layer (`amvo-src-…`, `amvo-clm-…`, …) and references
+    `{id, sha256}` to the referent's canonical bytes.
+    - Hard rules from the master plan, enforced: evidence cannot rewrite its claim (editing a
+      referenced object fails validation), a review has no source fields, a publication cites
+      only evidence objects of the claims it reports (an id of another layer is refused), an
+      evidence object and its formal target belong to the same claim, a claim needs a pinned
+      revision unless its source is synthetic (T06). No object stores a verdict.
+    - Duplicates refused: one source per canonical URL (GitHub repository paths lower-cased,
+      `.git` and sub-paths dropped; arXiv sources versionless, the `vN` goes in a revision),
+      one revision per pin, one claim per whitespace-normalised statement in a revision, one
+      evidence object per check of a claim.
+  - `locate --query <url | pin | id>` names the source, revision and claims a result already
+    has, or the source id and canonical URL a new one would get; `register --draft FILE` adds
+    one object from a draft with bare-id references, checked against everything registered,
+    written exclusively (an identical file is "unchanged", a different one is refused).
+  - `migrate`: each v0.1 case becomes v0.2 objects plus `registry/migrations/<case-id>.json`
+    binding the case's canonical SHA-256; the case files are not touched; re-running adds
+    nothing. Intake placeholder claim text is not turned into a Claim; a `review.status` is not
+    turned into a Review. The repository's three cases are migrated (2 sources, 2 revisions,
+    1 claim, 1 evidence object); the two openai/math records share one source, and the second
+    manifest says which of its source fields (rights) were not carried.
+  - `registry-report`: per-layer counts (sources, revisions, pinned / pin-verified revisions,
+    claims by type, current claims with a bounded pass / not checked / not passed, formal
+    kernel runs = 0, theorems proved = 0) and per-claim statuses from the contract vocabulary
+    (`NOT_CHECKED`, `REPRODUCIBILITY_ONLY` for hash-only evidence, `BOUNDED_PASS`,
+    `CHECKS_NOT_PASSED`, `SEMANTIC_ALIGNMENT_PENDING`, `OBJECTION_OPEN`, `SUPERSEDED`, `WITHDRAWN`,
+    `INDEPENDENT_REPLICATION_PENDING`, `PUBLISHED_REPORT`). A claim inherits its v0.1 record's
+    events through the manifest and withdrawal from its revision or source; a revision's pin
+    state reads captures filed under its own id or under the v0.1 records it came from — the
+    openai/math snapshot revision is `verified` through the P1-A capture. `build-site` adds the
+    report to `data/index.json` as `registry`.
+  - `schemas/registry.schema.json` (new; its check, pin, fraction and rights definitions are
+    copied from the case schema and a test keeps them equal) with a one-way consistency test of
+    33 registries; six runtime-only rules (canonical spelling, public host, calendar date, blank
+    text, duplicate, unresolved reference), each exercised.
+  - `amvo/core.py`: the check validator is shared by v0.1 records and v0.2 evidence.
+  - CI B07 also covers `registry/` (README files excepted).
+- **Acceptance:** P06 — a synthetic paper with a theorem, a lemma and a conjecture counts as
+  1 source and 3 claims, 1 of them with a bounded pass, 0 theorems proved; T02 — hash-only
+  evidence is `REPRODUCIBILITY_ONLY`, never `BOUNDED_PASS`; T04/T05 — a formal target gives
+  `SEMANTIC_ALIGNMENT_PENDING` and `formal_kernel: not_run`; T06 — unpinned real revisions are
+  refused; T07/S10 — a withdrawal of a revision withdraws its claims without erasing their
+  computed results; S11 — a new arXiv version is a new revision beside the old one.
+- **Run (Windows):** Python 3.14.5 and 3.13.13 — `python -m unittest discover -s tests` →
+  **95 run, 94 pass, 1 skipped, 0 fail, 0 error** (22 new in `tests/test_registry.py`).
+  `validate`, `audit-public`, `verify` (twice, identical), `registry-report` (twice,
+  identical), `build-site`, and a second `migrate` (0 new objects) all exit 0.
+- **Evidence (SHA-256):** `build/verification.json`
+  `6676590840cf1b8043e9898fe88f8287f517bd66e94c51a438c0ab6cddaecc7e`; `build/registry.json`
+  `2272ac15369f0fe587b61064f9da39859d3f128416f4b93ac0c63fdfd8b95233`; `site/data/index.json`
+  `ae21ee661f5ae7b1309283c67c477c8063165ecea39c68dfea1f8aac8e41adac`;
+  `schemas/case.schema.json` `06e23ad3e249ba5e94bef18306ba7f1a0d32bfd049f734600d227f2dd86454af`;
+  `schemas/event.schema.json` `475374d693ebd1ee22223484537dfaaac33ac57cac1cb71186ce20b625d063a6`;
+  `schemas/registry.schema.json` `5473f73ab4bfb3131f41ef8d4172a611ab1c2ae0b8f196e851d7d9908481bc25`.
+- **Real data:** the migrated repository cases only; no new external source was added.
+- **Limits:** claim decomposition of a real paper is not automated — a person registers each
+  claim from a draft; duplicate detection is exact after normalisation, so a reworded statement
+  of the same theorem is not caught; `replay-pins` still replays v0.1 records only (v0.2
+  revisions read their captures); the dashboard does not yet render the layered report (P1-D).
+- **Next executable gate:** P1-D — a front-end report from the layered data: original authors,
+  source version, last check and its method, results, unknowns and the correction chain, with
+  `UNKNOWN` / `NOT_CHECKED` for everything not actually checked and never `VERIFIED`.

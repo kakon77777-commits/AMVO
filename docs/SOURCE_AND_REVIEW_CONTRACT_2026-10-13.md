@@ -26,7 +26,11 @@ v0.1.3（P1-A）公開修改此規則：`python -m amvo replay-pins --network` �
 
 v0.1.4（P1-B）新增修訂事件帳本：`events/ev-<seq>.json`，格式見 `schemas/event.schema.json`。事件型別 withdraws / supersedes / corrects / rebuttal；除 supersedes 外都須附公開 source_url。每筆事件記錄所指紀錄的 SHA-256（target_sha256，supersedes 另有 by_sha256）與前一筆事件的 SHA-256（prev_sha256）：被指涉的紀錄事後若被修改，所有命令都會失敗——要改，就發布新紀錄並加一筆 supersedes；改寫或刪除較早的事件會使雜湊鏈斷裂；CI B07 拒絕任何修改或刪除 events/ 與 evidence/provenance/ 既有檔案的 PR。報告新增 `lineage`（state = current / superseded / withdrawn、superseded_by、supersedes、withdrawn_by、corrections、objections、events）與 `event_ledger`（事件數與鏈頭雜湊）；事件不改寫 outcome。異議的「結案」尚未建模，所以已記錄的異議不會被悄悄關閉。
 
-## 2. v0.2 新增建議格式（目前不可當成已實作）
+## 2. v0.2 分層格式（v0.1.5 / P1-C 起實作）
+
+已實作：`registry/<layer>/<id>.json`，格式見 `schemas/registry.schema.json`，說明見 `registry/README.md`。層：Source、SourceRevision、Claim、FormalTarget、Evidence、Review、Publication；CorrectionEvent 沿用 P1-B 的 `events/`（事件可直接指向 v0.2 物件）。所有引用為 `{id, sha256}`。規則：Claim 必須指向有 pin 的 revision（合成來源除外）；Evidence 只存檢查規格，結果由報告計算；Evidence 與其 FormalTarget 必須屬於同一 Claim；Publication 只能引用自己所報導 Claim 的 Evidence；Review 沒有任何來源欄位。重複拒絕：同一 canonical URL、同一 pin、同一 revision 內同一命題（空白正規化後）、同一 Claim 的同一檢查。`migrate` 把 v0.1 case 對應成 v0.2 物件，`registry/migrations/<case-id>.json` 記錄 case 的 canonical SHA-256 與對應物件；舊檔不刪不改。intake 的佔位 claim 文字不轉成 Claim；`review.status` 不轉成 Review（狀態不是審查）。報告的命題狀態使用下方 §3 的詞彙，另加 CHECKS_NOT_PASSED 與 SUPERSEDED；FORMAL_TARGET_PASS 與 SEMANTIC_ALIGNMENT_PASS 在本引擎不會出現（未執行任何 kernel，也沒有對齊程序）。
+
+以下為原始建議，保留作設計依據：
 
 應另外新增 source revisions、claims、formal_targets、checks、reviews 與 events 的版本化 canonical JSON 格式。避免直接把舊 case 覆寫成新語義。維持向下相容，提供 migration CLI 和對照測試。
 

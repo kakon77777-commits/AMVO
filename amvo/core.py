@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
 VERSION = "0.1"                      # the case schema version
-ENGINE_VERSION = "0.1.4"             # this engine; must equal pyproject and amvo.__version__
+ENGINE_VERSION = "0.1.5"             # this engine; must equal pyproject and amvo.__version__
 VERIFIER_ID = f"amvo-stdlib-exact-v{ENGINE_VERSION}"
 ID_PATTERN = re.compile(r"^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRACTION_PATTERN = re.compile(r"^-?[0-9]{1,80}(?:/[0-9]{1,80})?$")
@@ -202,32 +202,37 @@ def validate_record(record: object) -> dict:
              "source intake cannot contain computed checks")
     seen = set()
     for check in checks:
-        _require(isinstance(check, dict), "check must be an object")
-        check_id = check.get("id")
-        _require(_is_nonempty(check_id, limit=80) and check_id not in seen,
-                 "duplicate or invalid check id")
-        seen.add(check_id)
-        kind = check.get("kind")
-        _require(isinstance(kind, str) and kind in CHECK_TYPES, f"unsupported check kind: {kind}")
-        if kind == "rational_sum":
-            allowed = {"id", "kind", "lhs", "rhs"}
-        elif kind == "polynomial_coefficients":
-            allowed = {"id", "kind", "lhs_coefficients", "rhs_coefficients"}
-        else:
-            allowed = {"id", "kind", "path", "sha256"}
-        _require(set(check).issubset(allowed), "unknown check fields")
-        if kind == "rational_sum":
-            _fractions(check.get("lhs"))
-            _fractions(check.get("rhs"))
-        elif kind == "polynomial_coefficients":
-            _fractions(check.get("lhs_coefficients"))
-            _fractions(check.get("rhs_coefficients"))
-        else:
-            _require(_is_safe_evidence_path(check.get("path")), "unsafe evidence path")
-            _require(isinstance(check.get("sha256"), str)
-                     and HASH_PATTERN.fullmatch(check["sha256"]) is not None,
-                     "file_sha256 requires a hex SHA-256 digest")
+        validate_check(check)
+        _require(check["id"] not in seen, "duplicate or invalid check id")
+        seen.add(check["id"])
     return record
+
+
+def validate_check(check: object) -> dict:
+    """one check specification; shared by v0.1 records and v0.2 evidence objects"""
+    _require(isinstance(check, dict), "check must be an object")
+    _require(_is_nonempty(check.get("id"), limit=80), "duplicate or invalid check id")
+    kind = check.get("kind")
+    _require(isinstance(kind, str) and kind in CHECK_TYPES, f"unsupported check kind: {kind}")
+    if kind == "rational_sum":
+        allowed = {"id", "kind", "lhs", "rhs"}
+    elif kind == "polynomial_coefficients":
+        allowed = {"id", "kind", "lhs_coefficients", "rhs_coefficients"}
+    else:
+        allowed = {"id", "kind", "path", "sha256"}
+    _require(set(check).issubset(allowed), "unknown check fields")
+    if kind == "rational_sum":
+        _fractions(check.get("lhs"))
+        _fractions(check.get("rhs"))
+    elif kind == "polynomial_coefficients":
+        _fractions(check.get("lhs_coefficients"))
+        _fractions(check.get("rhs_coefficients"))
+    else:
+        _require(_is_safe_evidence_path(check.get("path")), "unsafe evidence path")
+        _require(isinstance(check.get("sha256"), str)
+                 and HASH_PATTERN.fullmatch(check["sha256"]) is not None,
+                 "file_sha256 requires a hex SHA-256 digest")
+    return check
 
 
 def load_record(path: Path) -> dict:
@@ -344,7 +349,7 @@ def report(records: list[dict], project_root: Path, pin_lookup=None, lineages: d
     }
 
 
-def audit_public(records: list[dict], events: list[dict] = ()) -> list[str]:
+def audit_public(records: list[dict], events: list[dict] = (), objects: list[dict] = ()) -> list[str]:
     """Conservative source-intake disclosure gate. No raw secret values in findings."""
     suspicious = re.compile(
         r"(?i)(?:sk-proj-|ghp_[a-z0-9]{12}|github_pat_[a-z0-9]{12}|"
@@ -363,4 +368,12 @@ def audit_public(records: list[dict], events: list[dict] = ()) -> list[str]:
     for ev in events:
         if suspicious.search(json.dumps(ev, ensure_ascii=False)):
             findings.append(f"{ev['event_id']}: suspicious credential pattern")
+    for obj in objects:
+        if suspicious.search(json.dumps(obj, ensure_ascii=False)):
+            findings.append(f"{obj['id']}: suspicious credential pattern")
+        if (obj["kind"] == "source" and obj["origin_type"] != "synthetic"
+                and obj["canonical_url"].startswith("https://example.org/")):
+            findings.append(f"{obj['id']}: placeholder URL in non-synthetic source")
+        if obj["kind"] == "source" and obj["rights"]["mode"] == "redistribution_cleared":
+            findings.append(f"{obj['id']}: redistribution license needs human review")
     return findings
