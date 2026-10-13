@@ -22,6 +22,8 @@ Python 標準函式庫核心實際可解析：
 
 以上 pin 僅檢查格式。「宣告的 SHA」不表示已真正從遠端取回並核對。v0.1.1 報告將 source_pin_verified 固定為 false，不能默默修改。source.url 是公開來源指向，但有些網址本身仍非 immutable；v0.2 必須增加遠端 replay 的證據。
 
+v0.1.3（P1-A）公開修改此規則：`python -m amvo replay-pins --network` 向來源查核 pin，並在 `evidence/provenance/<id>/` 追加一份 capture（只存 metadata 與雜湊）。報告新增 `source_pin_status`（no_pin / declared_only / fixture_only / verified / mismatch / not_found / unavailable / unsupported / capture_invalid）與 `source_pin_capture`；`source_pin_verified` 只有在最新 capture 為 live 且 status=verified 時為 true。fixture 重放永遠不算；來源失聯為 unavailable，不得變成 PASS。pin 已核對只表示指的是哪個公開版本，不表示其中任何命題成立。
+
 ## 2. v0.2 新增建議格式（目前不可當成已實作）
 
 應另外新增 source revisions、claims、formal_targets、checks、reviews 與 events 的版本化 canonical JSON 格式。避免直接把舊 case 覆寫成新語義。維持向下相容，提供 migration CLI 和對照測試。

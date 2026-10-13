@@ -12,7 +12,7 @@ Public intake files in cases/
 -> signed-by-content reproducibility report (case SHA-256)
 -> static JSON and HTML dashboard.
 
-The first version is **offline** and runs only Python standard-library code. It never downloads papers, invokes proprietary models, runs downloaded proof scripts, or claims Lean kernel verification.
+The first version is **offline** and runs only Python standard-library code. It never downloads papers, invokes proprietary models, runs downloaded proof scripts, or claims Lean kernel verification. The one exception is opt-in: `replay-pins --network` (v0.1.3) asks three allowlisted public APIs whether a declared pin exists and keeps only metadata and hashes; nothing fetched is executed.
 
 ## Data objects
 

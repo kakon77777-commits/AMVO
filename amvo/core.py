@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from urllib.parse import urlsplit
 
 VERSION = "0.1"                      # the case schema version
-ENGINE_VERSION = "0.1.2"             # this engine; must equal pyproject and amvo.__version__
+ENGINE_VERSION = "0.1.3"             # this engine; must equal pyproject and amvo.__version__
 VERIFIER_ID = f"amvo-stdlib-exact-v{ENGINE_VERSION}"
 ID_PATTERN = re.compile(r"^amvo-[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRACTION_PATTERN = re.compile(r"^-?[0-9]{1,80}(?:/[0-9]{1,80})?$")
@@ -282,8 +282,12 @@ def check_one(check: dict, root: Path) -> dict:
             "result": "pass" if ok else "fail", "scope": details}
 
 
-def verify_record(record: dict, project_root: Path) -> dict:
+def verify_record(record: dict, project_root: Path, pin_state: dict | None = None) -> dict:
+    """`pin_state` is the declared pin's replay state (amvo.provenance.pin_state); without it the
+    pin is reported as declared only. Only a live, matching capture sets source_pin_verified."""
     validate_record(record)
+    if pin_state is None:
+        pin_state = {"status": "declared_only" if "pin" in record["source"] else "no_pin", "verified": False}
     outcomes = []
     for check in record["checks"]:
         try:
@@ -302,7 +306,9 @@ def verify_record(record: dict, project_root: Path) -> dict:
         "source_url": record["source"]["url"],
         "source_version": record["source"]["version"],
         "source_pin": record["source"].get("pin"),
-        "source_pin_verified": False,
+        "source_pin_verified": pin_state["verified"] is True,
+        "source_pin_status": pin_state["status"],
+        "source_pin_capture": pin_state.get("capture"),
         "record_sha256": sha256(canonical_bytes(record)),
         "engine": VERIFIER_ID,
         "outcome": outcome,
@@ -315,12 +321,16 @@ def verify_record(record: dict, project_root: Path) -> dict:
     }
 
 
-def report(records: list[dict], project_root: Path) -> dict:
+def report(records: list[dict], project_root: Path, pin_lookup=None) -> dict:
+    """`pin_lookup(record, root)` returns a pin state; the CLI passes amvo.provenance.pin_state"""
     return {
         "report_schema": VERSION,
         "engine": VERIFIER_ID,
-        "cases": [verify_record(rec, project_root) for rec in records],
-        "disclaimer": f"No external theorem or remotely declared source pin receives independent certification in AMVO v{ENGINE_VERSION}."
+        "cases": [verify_record(rec, project_root, pin_lookup(rec, project_root) if pin_lookup else None)
+                  for rec in records],
+        "disclaimer": (f"AMVO v{ENGINE_VERSION} certifies no external theorem. A source pin counts as "
+                       "remotely verified only when a live capture on file matches it; that confirms the "
+                       "version exists, not that its mathematics is correct.")
     }
 
 
