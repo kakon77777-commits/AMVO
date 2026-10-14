@@ -338,3 +338,22 @@ states what was run, on which commit, with what result; nothing here is inferred
   omission found by this first real use).
 - **Run:** 104 run, 103 pass, 1 skipped. Re-running the intake: 0 new, 9 unchanged, 1 corrected,
   18 manuscripts listed.
+
+## Intake batch 1 of 4 — openai/math results 004–098
+
+- **Base:** `e786f79` (`fix/openai-math-intake-parser`). Branch `feat/intake-batch-1`.
+- **How:** the remaining 362 result families are planned in four batches (91, 91, 91, 89, by
+  number). They are prepared in a separate private intake workspace that keeps every family and
+  manuscript at the pinned commit with provenance per value; it was first checked to reproduce
+  the nine uncorrected pilot claims byte for byte (and to differ, as it should, on r107, under its
+  erratum). Each batch is built with this repository's own `claim_for` and checked by its own
+  registry rules before anything is written; this repository does not read the workspace.
+- **This batch:** 91 claims, results 004–098 (skipping the pilot's 054), 45 with a Lean link,
+  184 manuscripts listed. All read `NOT_CHECKED` / `INDEPENDENT_REPLICATION_PENDING`.
+- **Counts:** 2 sources, 102 claims, 1 current claim with a bounded pass (the synthetic one),
+  101 not checked, 0 kernel runs, 0 theorems proved.
+- **Run (Windows):** Python 3.14.5 and 3.13.13 — 104 run, 103 pass, 1 skipped. `validate`,
+  `audit-public` pass; the page renders 102 claims, console clean.
+- **Evidence (SHA-256):** `build/registry.json`
+  `149de3a2e09a945201c61d67d7efe561c2fdd68eaafd3349e3c98ef68eefd88a`; `site/data/index.json`
+  `8e31342d04e6bb728880b96167d0ed6246a7378e26f3de7531e425ebb0b8f4b4`.

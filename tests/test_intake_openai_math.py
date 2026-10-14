@@ -88,11 +88,13 @@ class IntakeTests(unittest.TestCase):
             fake.write_text(SNIPPET, "utf-8")
             self.assertEqual(intake.main(["--contents", str(fake), "--root", td]), 2)
 
-    def test_the_registered_pilot_is_the_fixed_sample_and_unchecked(self):
+    def test_registered_openai_math_claims_include_the_pilot_and_are_unchecked(self):
+        """the pilot sample is registered; later batches add families, and every one stays unchecked"""
         objects, manifests = load_registry(ROOT / "registry")
         pilot = {k: v for k, v in objects.items() if k.startswith("amvo-clm-openai-math-r")}
-        self.assertEqual(sorted(int(k[-3:]) for k in pilot), list(intake.SAMPLE))
+        self.assertTrue(set(intake.SAMPLE) <= {int(k[-3:]) for k in pilot})
         self.assertEqual(len(intake.SAMPLE), 10)
+        self.assertLessEqual(len(pilot), 372)
         for c in pilot.values():
             self.assertEqual(c["revision"]["id"], intake.REVISION)
             self.assertIn(intake.CONTENTS_SHA256[:16], c["scope"])
