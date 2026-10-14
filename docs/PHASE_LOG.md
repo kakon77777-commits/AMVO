@@ -316,5 +316,5 @@ states what was run, on which commit, with what result; nothing here is inferred
   public, licensed, versioned corpus; result summaries are the source's own wording, and the
   manuscripts may state more or less than the summary; the summary text keeps its inline
   HTML/LaTeX exactly as published, so the page shows it raw.
-- **Next:** the intake database (SEDB with ISQL-DB, to be designed) for the remaining 362
+- **Next:** a separate, private intake workspace (to be designed) for the remaining 362
   families, exported to this registry through `register`.
