@@ -382,3 +382,129 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Run (Windows, Python 3.14.5):** Ran 104 tests in 8.253s, OK (skipped=1); `validate` and `audit-public` pass.
 - **Evidence (SHA-256):** `build/registry.json` `054bdf7730e866118ad2ab8cbdd5424f3bd876ee4c6c5937c1cd0c33c4fad635`; `site/data/index.json` `d02c7fef788f8fc348abcd1b05c34b68a7ea76fe850ee22f29e1b48caecb36e7`.
 - **Corpus complete:** all 372 result families of openai/math at `1581d4c` are registered — 719 manuscripts listed, 242 Lean links — each as a claim nobody here has checked. The counts match the totals CONTENTS.md states.
+
+## Cloud pilot — statements inside the ten pilot families, and their Lean formal targets
+
+- **Base:** `5b96144` (`docs/cloud-pilot-brief`: the brief `docs/tasks/CLOUD_PILOT_2026-10-14.md` on main `92a4ce9`);
+  CI green on both (runs 47 and 48). Branch `claude/friendly-sagan-bg5hof`, one cloud session. Baseline on Linux,
+  Python 3.13.16: 104 run, OK; `build/registry.json` and `site/data/index.json` byte-identical to batch 4's.
+- **Read, not run:** CONTENTS.md, the 18 manuscripts, the 6 Lean pages, the 11 comparator `.lean` files they list
+  with their `.json` configurations, `lean/lean-toolchain`, `lean/lake-manifest.json` and the comparator README —
+  55 files, 12.7 MB, from raw.githubusercontent.com at `1581d4c`. Every file's git blob id equals the one in that
+  commit's tree (read from a blob-less bare clone; no checkout). No Lean, lake, comparator or script from the
+  source was installed or run. Nothing fetched is committed except the quoted statements and hashes.
+- **A. Statements.** Text from `pdftotext -raw -enc UTF-8` (poppler 24.02.0; raw mode keeps TeX's content order,
+  so displayed formulas stay inside their statements); two extractions of each PDF are byte-identical, and
+  `--pdfs` mode re-extracts and must reproduce the recorded text hash. Candidates: every line that begins with a
+  numbered theorem, proposition, corollary or conjecture label set in bold in the PDF (284 such lines; 20 were
+  cross-references that merely start a line). No numbered conjecture occurs. 423 lemma headings were not taken:
+  no manuscript calls a lemma a main result. A statement runs from its heading to the line before the first
+  upright prose line, `Proof` or the next heading, read from the PDF's fonts with pdfminer.six 20260107 (theorem
+  bodies are italic); every boundary was reviewed, two were cut by hand at recorded text. The check — heading and
+  statement, whitespace normalised, found in the normalised text on the recorded PDF pages — found **264 of
+  264**. Kept **248** (45 theorems, 154 propositions, 49 corollaries) as claims
+  `amvo-clm-openai-math-rNNN-msK-<thm|prop|cor>-<label>`, each with its family claim as parent, quoting the
+  extracted text exactly (control and private-use characters the PDF fonts carry are kept; the scope says so).
+  No duplicate statement occurred.
+
+  | family · ms | pages | found | kept | held | rejected | lemma headings | fetch s | pdftotext s | pdfminer s |
+  |---|---|---|---|---|---|---|---|---|---|
+  | r001 ms1 Milne's rationality conjecture | 36 | 10 | 10 | 0 | 0 | 11 | 0.64 | 0.20 | 3.2 |
+  | r002 ms1 Exact BSD from low Selmer corank | 94 | 28 | 22 | 6 | 0 | 45 | 0.72 | 0.57 | 6.2 |
+  | r002 ms2 Selmer converse at every prime | 82 | 19 | 16 | 3 | 0 | 31 | 0.31 | 0.48 | 4.9 |
+  | r002 ms3 Two-primary BSD, corank ≤ 1 | 164 | 52 | 50 | 2 | 0 | 84 | 0.36 | 1.01 | 13.5 |
+  | r003 ms1 Quasi-Riemann hypothesis 7/8 | 199 | 17 | 16 | 0 | 1 | 47 | 0.32 | 1.23 | 15.8 |
+  | r003 ms2 Quasi-Riemann hypothesis 11/12 | 49 | 8 | 8 | 0 | 0 | 15 | 0.33 | 0.36 | 5.0 |
+  | r003 ms3 Landau–Siegel zeros | 9 | 2 | 2 | 0 | 0 | 4 | 0.29 | 0.07 | 1.3 |
+  | r054 ms1 Irrational cubic fourfolds | 62 | 19 | 18 | 1 | 0 | 27 | 0.27 | 0.40 | 4.5 |
+  | r107 ms1 Upper bound 9/4 | 13 | 3 | 3 | 0 | 0 | 6 | 0.26 | 0.11 | 1.0 |
+  | r107 ms2 Below 2.258 (secondary writeup) | 83 | 20 | 19 | 1 | 0 | 26 | 0.27 | 0.42 | 6.1 |
+  | r107 ms3 Staggered extraction | 35 | 5 | 5 | 0 | 0 | 6 | 0.35 | 0.20 | 2.6 |
+  | r160 ms1 van der Waerden numbers | 25 | 8 | 8 | 0 | 0 | 15 | 0.28 | 0.14 | 1.6 |
+  | r213 ms1 Percolation on the cubic lattice | 20 | 3 | 3 | 0 | 0 | 9 | 0.32 | 0.13 | 1.5 |
+  | r213 ms2 Quasi-transitive graphs | 42 | 13 | 12 | 1 | 0 | 10 | 0.30 | 0.24 | 2.9 |
+  | r266 ms1 Mutually unbiased bases in dim. 6 | 76 | 14 | 14 | 0 | 0 | 42 | 0.30 | 0.45 | 5.1 |
+  | r266 ms2 Fourier certificates, order 6 | 35 | 7 | 7 | 0 | 0 | 7 | 0.29 | 0.16 | 2.7 |
+  | r319 ms1 Hahn–Wilson counterexamples | 79 | 29 | 28 | 1 | 0 | 30 | 0.34 | 0.54 | 4.2 |
+  | r372 ms1 Elasticity inverse problem | 24 | 7 | 7 | 0 | 0 | 8 | 0.35 | 0.14 | 2.0 |
+  | **total, 18 manuscripts** | 1,127 | 264 | 248 | 15 | 1 | 423 | 6.3 | 6.9 | 84 |
+
+  `ms` numbers a family's manuscripts in CONTENTS.md order (r107 ms2 is the manuscript added by `ev-000001`).
+- **Not kept (one line each).** Rejected: r003 ms1 Proposition 5.1 (Completed cubic reflection) — 6,143
+  characters, over the registry's 4,000-character statement limit. Held — the manuscript presents the result as
+  someone else's, so the family attribution the brief asks for would credit it to the citing manuscript (a
+  conflict with AGENTS.md rule 6, so it is stopped here, not decided); the manuscript's own words:
+  - r002 ms1 Theorem 2.1 — "This is [23, Theorem 1.1]."
+  - r002 ms1 Theorem 2.2 — "This is [24, Theorem 1.1]."
+  - r002 ms1 Theorem 2.3 — "This is the Gross–Zagier–Kolyvagin theorem, using modularity [12, 17, 4]."
+  - r002 ms1 Proposition 2.4 — "These are the arithmetic-volume identities of Cassels and the restriction-of-scalars comparison of Milne [6, 19]."
+  - r002 ms1 Theorem 2.5 — "We use the theorem at the scope stated in [22, Theorem 1.2]."
+  - r002 ms1 Theorem 2.7 — "The first formula is the conductor-one split Gross–Zagier formula in the normalization used in [12, Chapters I and V]"
+  - r002 ms2 Theorems 2.1 and 2.2 — "These are OpenAI [62, Theorems 1.1 and 1.2]."
+  - r002 ms2 Theorem 8.4 — "Existence, polarization and the de Rham assertions are Barnet-Lamb et al. [6, Theorem 1.2];"
+  - r002 ms3 Theorem 2.2 — "We use the conductor-one Gross–Zagier theorem at a coprime split level"
+  - r002 ms3 Theorem 11.3 — "The determinant assertion is the Johnson-Leung–Kings theorem in the form of [11,"
+  - r054 ms1 Theorem 2.5 — "This is the projective case of [2, Theorem 0.1.1];"
+  - r107 ms2 Theorem 3.2 — heading "Theorem 3.2 (Asymptotic sum inequality, Schönhage [24])"
+  - r213 ms2 Theorem 2.2 — "We now invoke precisely the following external result. Theorem 2.2 (Hutchcroft [19, Theorem 1.2])"
+  - r319 ms1 Theorem 7.1 — "We use the construction in the November 14, 2018 version (v2) of Pstrągowski’s preprint."
+
+  Their verbatim statements stay in the data file, checked, so registering them later needs only an attribution
+  decision.
+- **B. Formal targets.** 15 FormalTargets, one per theorem the comparator configurations name for the 6 Lean
+  pages: r003 5 (ζ, Dirichlet and Hecke 7/8 bounds; two Siegel-zero statements), r107 4 (ω ≤ 9/4, α > 93/200,
+  rectangular ω < 523/250; ω < 2.371054886006746 over every field), r160 1, r213 2, r266 2, r372 1. Each records
+  the declaration exactly as written (checked: occurs once in its file and is followed by `:=`), code pin
+  `1581d4c`, toolchain `leanprover/lean4:v4.34.1` with Mathlib `d13f23b7`, the permitted axioms the configuration
+  *declares* (propext, Quot.sound, Classical.choice — not checked), and the page's own words for what it
+  formalises, quoted. They attach to the family claims, not to the new statement claims: matching a Lean
+  statement to a manuscript statement would be the judgement this layer does not make. The six family claims
+  now read `SEMANTIC_ALIGNMENT_PENDING` with `formal_kernel: not_run`. Lean page 266 itself says its formal
+  statement is weaker than the paper (at most five bases, not three); that sentence is quoted in the target.
+- **Tools:** `tools/intake/openai_math_statements.py` (+ `openai_math_statements.json`, the 264 candidates with
+  PDF and text hashes) and `tools/intake/openai_math_formal.py` (+ `openai_math_formal_targets.json`, the 15
+  targets with the hashes of the 33 files they rest on). Both check before writing, write through the registry's
+  checks, refuse to rewrite an object and write nothing on a re-run (checked: 0 new, 248 / 15 unchanged).
+- **Tests:** `tests/test_intake_openai_math_statements.py`, 8 new, offline (synthetic texts and Lean files):
+  verbatim and page check, paraphrase / wrong page / unnormalised text refused, a cut-short quote is still found
+  (the check proves a quote real, not complete), hold / too long / duplicate / foreign text, a whole declaration
+  required, the page must contain every quoted sentence, a changed file refused, and every registered statement
+  and target equal to what the data files produce. `tests/test_intake_openai_math.py`: family claims are now
+  selected by `rNNN` exactly, and a family with a formal target expects `SEMANTIC_ALIGNMENT_PENDING` as well.
+  Run (Linux, Python 3.13.16): **112 run, OK**; `validate` (621 claims, 15 formal targets), `audit-public`,
+  `verify`, `registry-report` and `build-site` exit 0; reports identical across two runs. The built page, in
+  headless Chromium: 621 claim cards, 6 marked 語義對齊未評估, no horizontal overflow at 1280 or 375 px.
+- **Counts:** 2 sources, 621 claims (417 theorems, 154 propositions, 49 corollaries, 1 computation),
+  15 formal targets, 1 current claim with a bounded pass (the synthetic one), 620 not checked, 0 kernel runs,
+  0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json`
+  `2710e0d1ade5bcda39d90fc657adb8a3ca4ac38418782a4461cc2bb4e15cdef4`; `site/data/index.json`
+  `e8fcd5d5fa24b9047ef7e6c8849a42be56c5d768a437e8197c19b88a977a822d`; `build/verification.json` unchanged
+  `fcd1e68ea4cbf5493ef0f234f0a718460c570259e0491e74c66d346cd1b260fb`;
+  `tools/intake/openai_math_statements.json` `8d93a9b8f1434af0bcc9b6cf0da6b44eff012ce77fd64f17057e314a58472575`;
+  `tools/intake/openai_math_formal_targets.json` `799c3f3ced031b3a21dd4e337966ee0755aec60c7f639968c5daa83b463355d8`.
+- **Cost (measured; container clock, UTC):** session 15:07:57 → 15:40:01 at the commit, about 32 minutes
+  of wall time in all. Machine time is small: fetching 55 files 17 s, `pdftotext` 6.9 s and the
+  pdfminer font pass 84 s for all 18 PDFs (1,127 pages); a full `--pdfs` re-check 16 s. The rest is the agent:
+  setup and baseline 2 min; fetch, extraction and reading the Lean pages 6 min; building the boundary aid and
+  reviewing the 18 manuscripts 8.5 min (3 short ones during calibration, then 9 s – 70 s each, longest r003 ms1
+  and r002 ms1); data files, tools, tests and registration 10 min; gates, browser check and this log the rest.
+  Tokens: the session's visible context counter fell from 15,000,000 to about 14.5 million, ≈ 0.5 M tokens of
+  context in all, of which ≈ 0.17 M went to reading candidates (≈ 0.65 K per candidate, ≈ 9 K per manuscript on
+  average, roughly proportional to the candidates shown) and the rest to setup, tooling, tests and records.
+  Billed tokens and credits are not visible to the session. *Assumption, for planning only:* the remaining 701
+  manuscripts of the corpus (719 − 18; the brief says 699) at the pilot's density (≈ 14.7 candidates and ≈ 28 s of
+  review per manuscript) would mean ≈ 10,000 candidates, ≈ 7 M context tokens of review and ≈ 5–6 hours of agent
+  time, split across sessions, plus about 6 s of machine time per manuscript; the tooling would not need
+  to be rebuilt. The pilot sample was chosen by number, so its density need not be the corpus's.
+- **Limits:** the quotes are extracted text, not typeset mathematics — superscripts, fractions, large operators
+  and delimiters come out flattened or as font codes, so a quote can be hard to read and the PDF stays
+  authoritative; the check proves a quote is real, not that it is complete — where a statement ends is the
+  font hint plus review, which can be wrong; a statement that crosses a page keeps the page number between;
+  near-duplicates are not detected (e.g. r003 ms1 Theorem 3.1 and r003 ms2 Theorem 1.1 both state the 11/12
+  half-plane, in different words, and are both kept); whether a candidate is someone else's result was judged
+  from the text around it and may have missed cases; formal targets carry declarations only, and the
+  definitions they use are fixed by the code pin, not quoted.
+- **Not done:** no merge, no deployment, no Lean run. The 15 held statements wait for an attribution decision.
+- **Next:** decide how cited results are attributed (a separate attribution field, or none registered); then the
+  remaining manuscripts in batches with the same two tools, measuring the same costs.

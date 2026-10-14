@@ -1,6 +1,7 @@
 """Phase 1 pilot: the openai/math intake parses, samples by number and registers claims only."""
 import importlib.util
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -89,9 +90,12 @@ class IntakeTests(unittest.TestCase):
             self.assertEqual(intake.main(["--contents", str(fake), "--root", td]), 2)
 
     def test_registered_openai_math_claims_include_the_pilot_and_are_unchecked(self):
-        """the pilot sample is registered; later batches add families, and every one stays unchecked"""
+        """the pilot sample is registered; later batches add families, and every one stays unchecked.
+        Family claims are amvo-clm-openai-math-rNNN; the statements inside the manuscripts are their children
+        (tests/test_intake_openai_math_statements.py), and a family whose Lean page names formal targets
+        also reads SEMANTIC_ALIGNMENT_PENDING - still not checked."""
         objects, manifests = load_registry(ROOT / "registry")
-        pilot = {k: v for k, v in objects.items() if k.startswith("amvo-clm-openai-math-r")}
+        pilot = {k: v for k, v in objects.items() if re.fullmatch(r"amvo-clm-openai-math-r[0-9]{3}", k)}
         self.assertTrue(set(intake.SAMPLE) <= {int(k[-3:]) for k in pilot})
         self.assertEqual(len(intake.SAMPLE), 10)
         self.assertLessEqual(len(pilot), 372)
@@ -105,7 +109,8 @@ class IntakeTests(unittest.TestCase):
         report = registry_report(objects, manifests, ROOT, lineages=lineage(list(objects.values()), events))
         for c in report["claims"]:
             if c["id"] in pilot:
-                self.assertEqual(c["statuses"], ["NOT_CHECKED", "INDEPENDENT_REPLICATION_PENDING"])
+                aligned = ["SEMANTIC_ALIGNMENT_PENDING"] if c["formal_targets"] else []
+                self.assertEqual(c["statuses"], ["NOT_CHECKED"] + aligned + ["INDEPENDENT_REPLICATION_PENDING"])
                 self.assertFalse(c["theorem_proved"])
 
 
