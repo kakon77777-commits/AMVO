@@ -243,6 +243,31 @@ class FormalTargetTests(unittest.TestCase):
             with self.assertRaisesRegex(RecordError, "permitted_axioms"):
                 fm.check_target(dict(t, permitted_axioms=["propext"]), read, tc)
 
+    def test_a_declaration_ends_at_its_own_assignment_not_at_a_binding_inside_it(self):
+        lean = ("-- a comment with := in it\ntheorem pair.{u} (α : Type u) :\n    let n := 2 -- := here too\n"
+                "    letI := (⟨fun _ => 0⟩ : Inhabited α); /- also := -/ n = n ∧ (⟨1, 2⟩ : ℕ × ℕ) = { fst := 1, snd := 2 } := by\n"
+                "  sorry\n")
+        start = lean.index("theorem")
+        end = fm.declaration_end(lean, start)
+        self.assertTrue(lean[end:].startswith(":= by\n  sorry"))
+        whole = lean[start:end].rstrip()
+        cfg = dict(CONFIG, theorem_names=["OAI.pair"])
+        files = {"lean/ComparatorChallenges/C.lean": lean.encode(), "lean/ComparatorChallenges/C.json": json.dumps(cfg).encode(),
+                 "lean/docs/003.md": DOC.replace("Widgets.lean", "C.lean").encode(), "lean/lean-toolchain": b"t\n",
+                 "lean/lake-manifest.json": json.dumps({"packages": [{"name": "mathlib", "rev": "m"}]}).encode()}
+        t = {"lean_file": "lean/ComparatorChallenges/C.lean", "config": "lean/ComparatorChallenges/C.json",
+             "theorem_name": "OAI.pair", "exact_statement": whole, "solution_module": "OAI.Widgets.Main",
+             "permitted_axioms": CONFIG["permitted_axioms"], "enable_nanoda": False, "doc": "lean/docs/003.md",
+             "result": "Widget bound", "papers": ["A synthetic paper"], "doc_quotes": []}
+        tc = {"lean_toolchain": "t", "mathlib_rev": "m"}
+        fm.check_target(t, files.__getitem__, tc)                                     # universe suffix, bindings, comments
+        with self.assertRaisesRegex(RecordError, "stops at a := inside the statement"):
+            fm.check_target(dict(t, exact_statement=whole[:whole.index(" := 2")]), files.__getitem__, tc)
+        with self.assertRaisesRegex(RecordError, "enable_nanoda"):
+            fm.check_target(dict(t, enable_nanoda=None), files.__getitem__, tc)
+        files["lean/ComparatorChallenges/C.json"] = json.dumps({k: v for k, v in cfg.items() if k != "enable_nanoda"}).encode()
+        fm.check_target(dict(t, enable_nanoda=None), files.__getitem__, tc)        # a configuration may leave it unset
+
     def test_registers_a_target_once_and_refuses_a_changed_file(self):
         with tempfile.TemporaryDirectory() as td:
             root = sandbox(td)
@@ -259,14 +284,22 @@ class FormalTargetTests(unittest.TestCase):
             self.assertEqual(fm.main(argv), 2)
 
     def test_registered_targets_are_exactly_the_recorded_ones_and_nothing_is_proved(self):
-        data = json.loads(fm.DATA.read_text(encoding="utf-8"))
         objects, manifests = load_registry(ROOT / "registry")
         targets = {k: o for k, o in objects.items() if o["kind"] == "formal_target"}
-        built = [fm.target_for(t, data, objects[f"amvo-clm-openai-math-r{t['family']:03d}"]) for t in data["targets"]]
+        built, docs = [], set()
+        for path in sorted((ROOT / "tools" / "intake").glob("openai_math_formal_targets*.json")):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(data["commit"], fm.COMMIT)
+            self.assertFalse(docs & {t["doc"] for t in data["targets"]})              # each Lean page in one file
+            docs |= {t["doc"] for t in data["targets"]}
+            built += [fm.target_for(t, data, objects[f"amvo-clm-openai-math-r{t['family']:03d}"]) for t in data["targets"]]
+            if path == fm.DATA:
+                pilot = {o["claim"]["id"] for o in built}
+                self.assertEqual(len(built), 15)
+                self.assertEqual(pilot, {f"amvo-clm-openai-math-r{n:03d}" for n in (3, 107, 160, 213, 266, 372)})
         self.assertEqual({o["id"]: o for o in built}, targets)
-        self.assertEqual(len(targets), 15)
+        self.assertEqual((len(targets), len(docs)), (536, 241))
         families = {o["claim"]["id"] for o in built}
-        self.assertEqual(families, {f"amvo-clm-openai-math-r{n:03d}" for n in (3, 107, 160, 213, 266, 372)})
         report = registry_report(objects, manifests, ROOT,
                                  lineages=lineage(list(objects.values()), load_events(ROOT / "events")))
         for c in report["claims"]:
@@ -275,7 +308,7 @@ class FormalTargetTests(unittest.TestCase):
                 self.assertIn("NOT_CHECKED", c["statuses"])
                 self.assertEqual(c["formal_kernel"], "not_run")
         self.assertEqual((report["counts"]["formal_targets"], report["counts"]["formal_kernel_runs"],
-                          report["counts"]["theorems_proved"]), (15, 0, 0))
+                          report["counts"]["theorems_proved"]), (536, 0, 0))
 
 
 if __name__ == "__main__":

@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -33,10 +34,52 @@ from amvo.registry import (OBJECT_SCHEMA, check_registry, load_registry, ref,   
 
 COMMIT = "1581d4cbdd69a0faf34b2089614fe2a814316a6a"
 DATA = ROOT / "tools" / "intake" / "openai_math_formal_targets.json"
+BINDING = re.compile(r"(?:let|have|letI|haveI)\s")
 
 
 def git_blob(data: bytes) -> str:
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def blank_comments(lean: str) -> str:
+    """the Lean text with comments replaced by spaces, so that offsets are kept"""
+    out, i, depth = [], 0, 0
+    while i < len(lean):
+        if lean.startswith("/-", i) or (depth and lean.startswith("-/", i)):
+            depth += 1 if lean[i] == "/" else -1
+            out.append("  ")
+            i += 2
+        elif depth or lean.startswith("--", i):
+            j = i + 1 if depth else (lean.find("\n", i) if "\n" in lean[i:] else len(lean))
+            out.append("".join(c if c == "\n" else " " for c in lean[i:j]))
+            i = j
+        else:
+            out.append(lean[i])
+            i += 1
+    return "".join(out)
+
+
+def declaration_end(lean: str, start: int) -> int:
+    """index of the := that ends the declaration beginning at start: the first at bracket depth 0 that does not
+    complete a let / have binding inside the statement itself"""
+    text, depth, pending, i = blank_comments(lean), 0, {}, start
+    while i < len(text):
+        ch = text[i]
+        if ch in "([{⦃⟨":
+            depth += 1
+        elif ch in ")]}⦄⟩":
+            depth -= 1
+        elif BINDING.match(text, i) and not (text[i - 1].isalnum() or text[i - 1] in "_.'"):
+            pending[depth] = pending.get(depth, 0) + 1
+        elif text.startswith(":=", i):
+            if pending.get(depth):
+                pending[depth] -= 1
+            elif depth == 0:
+                return i
+            i += 2
+            continue
+        i += 1
+    raise RecordError("a declaration has no := after it")
 
 
 def check_target(t: dict, read, toolchain: dict) -> None:
@@ -47,8 +90,10 @@ def check_target(t: dict, read, toolchain: dict) -> None:
         raise RecordError(f"{t['theorem_name']}: the declaration does not occur exactly once in {t['lean_file']}")
     if not lean[lean.index(stmt) + len(stmt):].lstrip(" \n").startswith(":="):
         raise RecordError(f"{t['theorem_name']}: the quoted declaration is not the whole statement (no := after it)")
+    if lean[lean.index(stmt):declaration_end(lean, lean.index(stmt))].rstrip() != stmt:
+        raise RecordError(f"{t['theorem_name']}: the quoted declaration stops at a := inside the statement")
     keyword, _, rest = stmt.partition(" ")
-    declared = rest.split(None, 1)[0] if rest else ""
+    declared = re.sub(r"\.\{[^}]*\}$", "", rest.split(None, 1)[0]) if rest else ""
     if keyword not in ("theorem", "lemma") or not (t["theorem_name"] == declared
                                                    or t["theorem_name"].endswith("." + declared)):
         raise RecordError(f"{t['theorem_name']}: the quoted declaration declares {declared!r}")
@@ -56,7 +101,7 @@ def check_target(t: dict, read, toolchain: dict) -> None:
     if t["theorem_name"] not in cfg["theorem_names"]:
         raise RecordError(f"{t['config']} does not name {t['theorem_name']}")
     for field in ("solution_module", "permitted_axioms", "enable_nanoda"):
-        if cfg[field] != t[field]:
+        if cfg.get(field) != t[field]:
             raise RecordError(f"{t['config']}: {field} differs from the record")
     doc = read(t["doc"]).decode("utf-8")
     name = t["lean_file"].rsplit("/", 1)[1]
@@ -89,11 +134,13 @@ def target_for(t: dict, data: dict, family: dict) -> dict:
         "and ran nothing.")
     axiom_policy = (
         f"Declared, not checked: {t['config']} lists permitted_axioms " + ", ".join(t["permitted_axioms"])
-        + f" for this theorem (enable_nanoda {str(t['enable_nanoda']).lower()}). AMVO ran no comparator and no Lean "
+        + f" for this theorem (enable_nanoda {'not set' if t['enable_nanoda'] is None else str(t['enable_nanoda']).lower()})."
+        " AMVO ran no comparator and no Lean "
         "kernel and inspected no proof, so neither the proof nor its axioms are known to AMVO.")
     return validate_object({
         "object_schema": OBJECT_SCHEMA, "kind": "formal_target",
-        "id": f"amvo-fmt-openai-math-r{t['family']:03d}-" + slug(t["theorem_name"].removeprefix("OAI."), 90),
+        "id": f"amvo-fmt-openai-math-r{t['family']:03d}-" + slug(t["theorem_name"].removeprefix("OAI."), 90)
+              + t.get("id_suffix", ""),
         "claim": ref(family), "language": "lean4", "theorem_name": t["theorem_name"],
         "exact_statement": t["exact_statement"], "code_pin": {"kind": "git_commit", "value": COMMIT},
         "toolchain": toolchain, "axiom_policy": axiom_policy, "correspondence": correspondence,
@@ -132,6 +179,8 @@ def main(argv: list[str] | None = None) -> int:
             if family is None or f"Lean: {t['doc']}" not in family.get("location", ""):
                 raise RecordError(f"{t['doc']} is not the Lean page of a registered family claim")
             target = target_for(t, data, family)
+            if target["id"] in {o["id"] for o in fresh}:
+                raise RecordError(f"two targets map to {target['id']}; give the later one an id_suffix")
             old = objects.get(target["id"])
             if old is not None and old != target:
                 raise RecordError(f"{target['id']} is registered with different content; objects are never rewritten")

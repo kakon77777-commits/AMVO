@@ -624,3 +624,41 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Counts:** 2 sources, 8,677 claims (1 computation, 1,280 corollaries, 4,768 propositions, 2,628 theorems), 15 formal targets, 8,676 not checked, 0 kernel runs, 0 theorems proved.
 - **Evidence (SHA-256):** `build/registry.json` `79dfcbc75c3729282334d08ddbfa932969033f9461325a01d37031822edabb12`; `site/data/index.json` `8263060801fc5d3944a00f7abe8846bb89f91a216197cbac189a07d6afad09ec`; `tools/intake/openai_math_statements_r350-r377.json` `4d84e4f4870c8e816f53da00c38a789e56ed705e921fda8d3ef6b081aa356188`.
 - **Cost:** 17:00 → 17:08 UTC wall time; 37 s of machine time to fetch, extract (twice) and font-scan the 49 PDFs; about 25 K tokens of context.
+
+## Formal targets, every other Lean page
+
+- **Scope:** the 236 `lean/docs/NNN.md` pages of openai/math at `1581d4c` that the pilot did not cover, with
+  the comparator files and configurations they list (1,042 files, fetched as git blobs from the pinned tree
+  and checked against their blob ids; read as text, nothing installed, compiled or run).
+- **Result:** **521 FormalTargets on 235 family claims**, one per theorem a comparator configuration names
+  (510 `theorem`, 11 `lemma`). With the pilot's 15: 536 targets on 241 families, all
+  `SEMANTIC_ALIGNMENT_PENDING` with `formal_kernel: not_run`. Not registered: r169's only configuration
+  (ElementaryPositivity.json) names definitions and no theorem; 14 rows list a comparator file a page already
+  lists under another result, so its theorems are registered once, under the first row; r376
+  ForcedNavierStokesComputation.lean declares `OAI.BalancedTransport.balanced_three_stack_realization` again
+  (the same declaration as BalancedThreeStack.lean), and the registry holds one target per theorem name and
+  claim, so only the first file is registered.
+- **Declarations:** each `exact_statement` runs from `theorem`/`lemma` to the `:=` that ends the declaration.
+  Scanning found that the first `:=` at bracket depth 0 is not always that one: six statements bind names
+  inside the statement (`let x := …`, `letI := …`), and stopping there would have cut them short while
+  still passing the pilot's "followed by `:=`" check. `openai_math_formal.py` now finds the end itself
+  (comments blanked, brackets and `let`/`have`/`letI`/`haveI` bindings tracked) and refuses a quoted
+  declaration that stops early; it also accepts universe parameters in the declared name
+  (`theorem one_sample.{u}`), records an `enable_nanoda` a configuration leaves unset as unset (2
+  configurations), and refuses two targets that map to one id. The pilot's 15 objects are unchanged.
+- **Quotes:** the correspondence field holds at most 1,200 characters, so the page's words are chosen by a
+  fixed rule rather than by hand: the Scope section's paragraphs in page order, whole, as many as fit; then
+  the leading whole sentences of the next paragraph that fit. All of Scope is quoted for 246 targets, its
+  opening for 275. The quote is the page's description, not a match of this row to a paragraph.
+- **Tests:** 114 run, OK (one new: a declaration ends at its own `:=`, not at a binding or a comment inside
+  it; a cut-short declaration and an unset `enable_nanoda` are refused or recorded; the data test now covers
+  every formal-target file); `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+  Re-running the tool: 0 new, 521 unchanged.
+- **Counts:** 2 sources, 8,677 claims, 536 formal targets, 8,676 not checked, 0 kernel runs, 0 theorems
+  proved.
+- **Evidence (SHA-256):** `build/registry.json` `a6586dfcbd6893ff9c229afeb32ad041acc5c543680282d9253cc54f109691f4`;
+  `site/data/index.json` `ee61fd8c5a1f6308f25a77c9f14065e86c7d73cf3aab07ef4ec398fcab577483`;
+  `tools/intake/openai_math_formal_targets_rest.json`
+  `99bf740bb1f4526dffcb56f07c2f982ecef148a923658cf964fd08dbd2ecc891`.
+- **Cost:** 17:09 → 17:26 UTC wall time, of which 6 min fetching the 1,077 Lean-tree blobs; about 60 K tokens
+  of context.
