@@ -7,6 +7,7 @@ from pathlib import Path
 
 from amvo.cli import SITE_FILES, main
 from amvo.core import RecordError, list_records
+from amvo.registry import load_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
@@ -102,6 +103,19 @@ class FrontEndReportTests(unittest.TestCase):
             self.assertEqual(data["registry"]["report_schema"], "0.2")
             self.assertEqual(data["registry"]["counts"]["theorems_proved"], 0)
             self.assertTrue(all(c["theorem_proved"] is False for c in data["registry"]["claims"]))
+            # the card calls a type the source's label only where the location names the heading it was quoted under
+            js = (WEB / "app.js").read_text("utf-8")
+            self.assertIn('"原稿標示："', js)
+            self.assertIn('"（非原稿標示）"', js)
+            objects, _ = load_registry(ROOT / "registry")
+            for c in data["registry"]["claims"]:
+                self.assertEqual(c["location"], objects[c["id"]].get("location"))
+                named = any(part.startswith(c["claim_type"].capitalize() + " ")
+                            for part in (c["location"] or "").split(", "))
+                if re.fullmatch(r"amvo-clm-openai-math-r[0-9]{3}", c["id"]):
+                    self.assertFalse(named, c["id"])                  # a family's type is AMVO's, not a heading
+                elif c["id"].startswith("amvo-clm-openai-math-r"):
+                    self.assertTrue(named, c["id"])                   # a statement's type is its heading's word
 
     def test_deployment_headers_and_worker_config(self):
         headers = (WEB / "_headers").read_text("utf-8")

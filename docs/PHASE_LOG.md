@@ -662,3 +662,19 @@ states what was run, on which commit, with what result; nothing here is inferred
   `99bf740bb1f4526dffcb56f07c2f982ecef148a923658cf964fd08dbd2ecc891`.
 - **Cost:** 17:09 → 17:26 UTC wall time, of which 6 min fetching the 1,077 Lean-tree blobs; about 60 K tokens
   of context.
+
+## Presentation — whose word "theorem" is
+
+- **Change:** a claim card no longer opens with a bare type word. Where the claim's location names the numbered
+  heading it was quoted under, the card reads `原稿標示：Theorem · 未檢查 · <location>` (the manuscript's own
+  label); otherwise `AMVO 歸類：theorem（非原稿標示）· 未檢查 · <location>`. The status word is `未檢查` while the
+  claim is `NOT_CHECKED` and `已有檢查，見下` otherwise. The registry report now carries each claim's `location`
+  (the page already tried to show it, but the report never passed it). No registry object changes.
+- **What the page now says (headless Chromium, 1280 and 375 px, 8,677 cards, no horizontal overflow):**
+  2,256 `原稿標示：Theorem`, 4,768 `原稿標示：Proposition`, 1,280 `原稿標示：Corollary`; 372 family claims read
+  `AMVO 歸類：theorem（非原稿標示）` — their type was set by AMVO's family intake from CONTENTS.md summaries, not
+  by any manuscript heading, and those objects are already on main; 1 synthetic demo reads
+  `AMVO 歸類：computation（非原稿標示）· 已有檢查，見下`.
+- **Tests:** 114 run, OK (the site test now checks that the report's location is the object's, and that every
+  statement claim's location names its heading while no family claim's does); `validate`, `audit-public`,
+  `verify`, `registry-report`, `build-site` exit 0.
