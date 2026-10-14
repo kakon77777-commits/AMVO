@@ -1,22 +1,25 @@
-"""Cloud pilot, part A: the statements inside the manuscripts of the ten pilot families of openai/math.
+"""Statements inside the manuscripts of openai/math: the cloud pilot (part A) and the batches after it.
 
     python tools/intake/openai_math_statements.py --pdfs DIR     # DIR holds preprints/... at the pinned commit
     python tools/intake/openai_math_statements.py --texts DIR    # or the texts already extracted, DIR/<path>.txt
-    (add --dry-run to check and report without writing)
+    (--data FILE picks a batch file, default the pilot's; --dry-run checks and reports without writing)
 
-Reads tools/intake/openai_math_statements.json. For each of the 18 manuscripts it records the PDF's SHA-256,
-the SHA-256 of the text that pdftotext -raw extracts from it, and the candidates read from that text: every
-numbered theorem, proposition and corollary (no numbered conjecture occurs), with the paper's label, page and
-statement. With --pdfs the PDF must hash to the recorded value and pdftotext must be the recorded version;
-either way the text must hash to the recorded value.
+A data file (tools/intake/openai_math_statements*.json) records for each manuscript the PDF's SHA-256, the
+SHA-256 of the text that pdftotext -raw extracts from it, and the candidates read from that text: every
+numbered theorem, proposition, corollary and conjecture, with the paper's label, page and statement. With
+--pdfs the PDF must hash to the recorded value and pdftotext must be the recorded version; either way the text
+must hash to the recorded value.
 
 For every candidate the mechanical check is run and printed: its heading and statement, whitespace normalised,
 must occur in the normalised text, beginning and ending on the recorded PDF pages. A paraphrase, a completed
 formula or a cleaned-up statement fails it. A candidate that passes and is marked `register` becomes a Claim
 on the pinned revision, child of its family claim, through the registry's own checks; a duplicate statement is
-refused and the first one kept. A candidate marked `hold` is reported, not registered. Finding a quote shows
-that the manuscript states it, not that it is true: every claim reads NOT_CHECKED. Re-running writes nothing.
-No manuscript text other than the registered statements is stored, and nothing from the source repository runs.
+refused and the first one kept. A candidate marked `cited` is one the manuscript presents as someone else's
+result: it is registered with that work credited in the manuscript's own words (the citing sentence and any
+bibliography entries, each also checked to occur in the text). A candidate marked `hold` is only reported.
+Finding a quote shows that the manuscript states it, not that it is true: every claim reads NOT_CHECKED.
+Re-running writes nothing. No manuscript text other than the quotes is stored, and nothing from the source
+repository runs.
 """
 from __future__ import annotations
 
@@ -80,12 +83,19 @@ def check_candidate(text: str, cand: dict) -> str | None:
         return "not found verbatim in the extracted text"
     if (cand["page"], cand["end_page"]) not in hits:
         return f"found, but not on PDF page(s) {cand['page']}-{cand['end_page']} (found on {hits[0][0]}-{hits[0][1]})"
+    if cand["decision"] == "cited":
+        norm = normalise(text)[0]
+        for quote in [cand["cited_by"]] + cand["references"]:
+            if not quote or normalise(quote)[0] not in norm:
+                return f"the citation quote {quote[:40]!r} is not found verbatim in the extracted text"
     return None
 
 
 def claim_id(ms: dict, cand: dict) -> str:
+    """rNNN-msK-<kind>-<label>; a label the manuscript uses twice carries the recorded suffix on its later use"""
     number = cand["label"].split(" ", 1)[1]
-    return f"amvo-clm-openai-math-r{ms['family']:03d}-ms{ms['ms']}-{ABBR[cand['claim_type']]}-{slug(number, 20)}"
+    return (f"amvo-clm-openai-math-r{ms['family']:03d}-ms{ms['ms']}-{ABBR[cand['claim_type']]}-{slug(number, 20)}"
+            + cand.get("id_suffix", ""))
 
 
 def claim_for(ms: dict, cand: dict, extractor: dict, revision: dict, family: dict) -> dict:
@@ -102,13 +112,21 @@ def claim_for(ms: dict, cand: dict, extractor: dict, revision: dict, family: dic
              "authoritative.")
     if cand["page"] != cand["end_page"]:
         scope += " The quote crosses a page break and includes whatever the extraction places there, such as a page number."
+    attribution = ATTRIBUTION
+    if cand["decision"] == "cited":
+        scope += (" The manuscript presents this as a result of other work, which it uses; the attribution names "
+                  "that work in the manuscript's own words.")
+        attribution = ("Credited to the work the manuscript cites, not to OpenAI or the manuscript's authors. The "
+                       f"manuscript says: “{cand['cited_by']}”"
+                       + ("".join(f" Its bibliography: “{r}”" for r in cand["references"]))
+                       + " Quoted from openai/math (Apache-2.0); AMVO has not consulted or checked the cited work.")
     scope += (" Finding the quote shows that the manuscript states it, not that it is true. "
               "AMVO has checked nothing about this claim.")
     location = f"{ms['path']}, {cand['label']}, {pages}"
     return validate_object({
         "object_schema": OBJECT_SCHEMA, "kind": "claim", "id": claim_id(ms, cand),
         "revision": ref(revision), "claim_type": cand["claim_type"], "statement": cand["statement"],
-        "scope": scope, "location": location, "parent_claims": [ref(family)], "attribution": ATTRIBUTION,
+        "scope": scope, "location": location, "parent_claims": [ref(family)], "attribution": attribution,
     })
 
 
@@ -157,7 +175,7 @@ def main(argv: list[str] | None = None) -> int:
             raise RecordError(f"{REVISION} is not registered")
         taken = {" ".join(o["statement"].split()): o["id"] for o in objects.values()
                  if o["kind"] == "claim" and o["revision"]["id"] == REVISION}
-        fresh, kept, report = [], 0, []
+        fresh, kept, report, ids = [], 0, [], set()
         # a family's manuscripts: those its claim lists, and those a recorded `corrects` event adds (r107)
         corrections = {}
         for ev in load_events(args.root / "events"):
@@ -168,7 +186,7 @@ def main(argv: list[str] | None = None) -> int:
             if family is None or f"({ms['path']})" not in family["scope"] + corrections.get(family["id"], ""):
                 raise RecordError(f"{ms['path']} is not a manuscript of a registered family claim")
             text = text_for(ms, args, data["extractor"])
-            counts = {"found": len(ms["candidates"]), "kept": 0, "held": 0, "rejected": 0}
+            counts = {"found": len(ms["candidates"]), "kept": 0, "cited": 0, "held": 0, "rejected": 0}
             for cand in ms["candidates"]:
                 where = f"r{ms['family']:03d} ms{ms['ms']} {cand['label']}"
                 reason = check_candidate(text, cand)
@@ -188,17 +206,22 @@ def main(argv: list[str] | None = None) -> int:
                     report.append(f"REJECTED: {where}: {reason}")
                     continue
                 claim = claim_for(ms, cand, data["extractor"], revision, family)
+                if claim["id"] in ids:
+                    raise RecordError(f"two candidates map to {claim['id']}; give the later one an id_suffix")
+                ids.add(claim["id"])
                 old = objects.get(claim["id"])
                 if old is not None and old != claim:
                     raise RecordError(f"{claim['id']} is registered with different content; claims are never rewritten")
                 taken[cand["statement"]] = claim["id"]
                 counts["kept"] += 1
+                counts["cited"] += cand["decision"] == "cited"
                 if old is None:
                     fresh.append(claim)
                 else:
                     kept += 1
             report.append(f"MANUSCRIPT: r{ms['family']:03d} ms{ms['ms']} {ms['path']}: {counts['found']} found, "
-                          f"{counts['kept']} kept, {counts['held']} held, {counts['rejected']} rejected; "
+                          f"{counts['kept']} kept ({counts['cited']} credited to cited work), {counts['held']} held, "
+                          f"{counts['rejected']} rejected; "
                           f"{ms['lemma_headings_not_taken']} lemma headings not taken")
         check_registry(dict(objects, **{c["id"]: c for c in fresh}), manifests, records)
         if not args.dry_run:

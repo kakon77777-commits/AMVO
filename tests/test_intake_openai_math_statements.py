@@ -130,30 +130,55 @@ class StatementCheckTests(unittest.TestCase):
             (texts / (FAMILY1.removesuffix(".pdf") + ".txt")).write_text(TEXT + " ", "utf-8")
             self.assertEqual(st.main(["--texts", str(texts), "--data", str(data), "--root", str(root)]), 2)
 
+    def test_a_cited_result_is_credited_to_the_cited_work(self):
+        cited = dict(candidate("Proposition 2.1", "Every gadget is a widget.", 2), decision="cited",
+                     cited_by="More text follows here.", references=[])
+        with tempfile.TemporaryDirectory() as td:
+            root = sandbox(td)
+            bad = dict(cited, label="Corollary 2.2", heading="Corollary 2.2.", claim_type="corollary",
+                       statement="No gadget is 3 a sprocket.", page=3, end_page=4, cited_by="This is [9].")
+            texts, data = self._data(td, [cited, bad])
+            self.assertEqual(st.main(["--texts", str(texts), "--data", str(data), "--root", str(root)]), 0)
+            added = set(load_registry(root / "registry")[0]) - set(load_registry(ROOT / "registry")[0])
+            self.assertEqual(added, {"amvo-clm-openai-math-r001-ms9-prop-2-1"})     # a quote not in the text: refused
+            claim = load_registry(root / "registry")[0]["amvo-clm-openai-math-r001-ms9-prop-2-1"]
+            self.assertTrue(claim["attribution"].startswith("Credited to the work the manuscript cites, not to OpenAI"))
+            self.assertIn("“More text follows here.”", claim["attribution"])
+            self.assertIn("presents this as a result of other work", claim["scope"])
+
     def test_registered_statements_are_exactly_the_recorded_candidates(self):
-        data = json.loads(st.DATA.read_text(encoding="utf-8"))
         objects, manifests = load_registry(ROOT / "registry")
         revision = objects[st.REVISION]
         children = {k for k, o in objects.items() if o["kind"] == "claim" and o.get("parent_claims")
                     and o["parent_claims"][0]["id"].startswith("amvo-clm-openai-math-r")}
-        expected, found, held, too_long = set(), 0, 0, 0
-        for ms in data["manuscripts"]:
-            family = objects[f"amvo-clm-openai-math-r{ms['family']:03d}"]
-            for c in ms["candidates"]:
-                found += 1
-                self.assertEqual(c["statement"], st.normalise(c["statement"])[0])
-                if c["decision"] == "hold":
-                    held += 1
-                    self.assertNotIn(st.claim_id(ms, c), objects)
-                elif len(c["statement"]) > st.MAX_STATEMENT:
-                    too_long += 1
-                    self.assertNotIn(st.claim_id(ms, c), objects)
-                else:
-                    claim = st.claim_for(ms, c, data["extractor"], revision, family)
-                    self.assertEqual(objects[claim["id"]], claim)                    # byte-for-byte reproducible
-                    expected.add(claim["id"])
+        expected, first = set(), {}
+        for path in sorted(st.DATA.parent.glob("openai_math_statements*.json")):            # pilot, then batches
+            data = json.loads(path.read_text(encoding="utf-8"))
+            found, cited, held, too_long, kept = 0, 0, 0, 0, 0
+            for ms in data["manuscripts"]:
+                family = objects[f"amvo-clm-openai-math-r{ms['family']:03d}"]
+                for c in ms["candidates"]:
+                    found += 1
+                    self.assertEqual(c["statement"], st.normalise(c["statement"])[0])
+                    if c["decision"] == "hold":
+                        held += 1
+                        self.assertNotIn(st.claim_id(ms, c), objects)
+                    elif len(c["statement"]) > st.MAX_STATEMENT:
+                        too_long += 1
+                        self.assertNotIn(st.claim_id(ms, c), objects)
+                    elif first.get(c["statement"], st.claim_id(ms, c)) != st.claim_id(ms, c):
+                        self.assertNotIn(st.claim_id(ms, c), objects)                # a duplicate: the first is kept
+                    else:
+                        first[c["statement"]] = st.claim_id(ms, c)
+                        claim = st.claim_for(ms, c, data["extractor"], revision, family)
+                        self.assertEqual(objects[claim["id"]], claim)                # byte-for-byte reproducible
+                        expected.add(claim["id"])
+                        kept += 1
+                        cited += c["decision"] == "cited"
+            if path == st.DATA:                                                  # the pilot, as logged
+                self.assertEqual((len(data["manuscripts"]), found, kept, cited, held, too_long),
+                                 (18, 264, 263, 15, 0, 1))
         self.assertEqual(children, expected)
-        self.assertEqual((len(data["manuscripts"]), found, len(expected), held, too_long), (18, 264, 248, 15, 1))
         report = registry_report(objects, manifests, ROOT,
                                  lineages=lineage(list(objects.values()), load_events(ROOT / "events")))
         for c in report["claims"]:

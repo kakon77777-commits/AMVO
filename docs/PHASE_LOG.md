@@ -508,3 +508,43 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Not done:** no merge, no deployment, no Lean run. The 15 held statements wait for an attribution decision.
 - **Next:** decide how cited results are attributed (a separate attribution field, or none registered); then the
   remaining manuscripts in batches with the same two tools, measuring the same costs.
+
+## Statements, batch r004–r049 — and the pilot's cited results registered
+
+- **Decision (maintainer, 2026-10-14):** a result that a manuscript presents as someone else's is that work's
+  result. It is registered, credited to that work in the manuscript's own words; anything wrong is later
+  corrected by an event, never by rewriting. `openai_math_statements.py` gained the decision `cited`: the claim's
+  attribution reads "Credited to the work the manuscript cites, not to OpenAI or the manuscript's authors", then
+  the citing sentence and the manuscript's bibliography entries for its keys, each checked to occur verbatim in
+  the extracted text. The 15 pilot candidates held above are now registered this way (pilot data file edited:
+  `hold` → `cited`; its statements are unchanged). Pilot: 263 of 264 kept, 15 of them credited to cited work.
+- **Batch:** result families 004–049 without the pilot's (45 families, 100 manuscripts, 4,715 pages, 59.3 MB),
+  same commit, same extraction, same check. Base: `d8006e3` on this branch.
+- **Process, changed from the pilot to read less:** the boundary aid now (a) stops on an upright line only when
+  it starts at the left margin, so displayed formulas with roman words (`log`, `dim`, "odd and squarefree") no
+  longer end a statement early; (b) skips and trims capitalised running heads and feet; (c) looks for a heading's
+  bold row on its own page first. Review is by exception: only candidates with a boundary flag (statement not
+  ending in `.`, `)`, `]` or `}`; empty; overlapping another heading; a label used twice) or a citation phrase
+  near them were read — 127 of 1,219, with every decision recorded in the data file.
+- **Result:** 1,219 bold-heading lines; 3 were cross-references that begin a line (not candidates); **1,216
+  candidates, all found verbatim** on their recorded pages; **1,206 kept** (329 theorems, 712 propositions, 175
+  corollaries — 55 of them credited to cited work); 9 statement ends cut by hand at recorded text; 1,690 lemma
+  headings not taken. **Rejected (10), each a duplicate statement, the first kept:** r018 ms2 Theorem 4.1 (= r018
+  ms1 Theorem 8.1); r034 ms4 Theorem 3.1, Propositions 4.1, 6.3, 6.6, 6.8, 6.10 and Corollary 6.4 (= r034 ms3 C.1,
+  D.3, F.3, F.6, F.8, F.9, F.4); r034 ms13 Proposition 3.3 (= r034 ms11 Proposition 7.1); r036 ms3 Proposition 3.4
+  (= r034 ms4 Proposition 10.1).
+- **Tools and tests:** the statements tool takes `--data` per batch file, refuses two candidates mapping to one id
+  before writing anything (a run that hit this was discarded before commit), and lets a repeated label carry an
+  `id_suffix`. Tests: 113 run, OK (1 new: a cited result is credited to the cited work, and a citing quote not in
+  the text is refused; the data test now covers every data file and the duplicate rule).
+- **Counts:** 2 sources, 1,842 claims (758 theorems, 860 propositions, 223 corollaries, 1 computation), 15 formal
+  targets, 1 bounded pass (synthetic), 1,841 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json`
+  `0fcc31c951a7b393526914cabf76fe6fac01f1e87cdd986fa2f9517fc8aa11c3`; `site/data/index.json`
+  `6d495eaba9e701ce5ff254dabbca0d8f01ae97598a0caaf3910520f532071fe4`;
+  `tools/intake/openai_math_statements_r004-r049.json` `b14290cb18da82abd8ca8434d495c919a2924430fb74f57c327feccb19deb203`;
+  `tools/intake/openai_math_statements.json` (after the edit) `7b40520857dce99fb47a7ba64fcd47bed1888abdb7a93aa88dd3ec7de61e4298`.
+- **Cost:** 16:26 → 16:41 UTC, about 15 minutes of wall time, including the tool changes above. Machine time:
+  83 s to fetch, extract (twice) and font-scan the 100 PDFs with 8 workers. Context used: about 0.14 M tokens
+  (≈ 1.4 K per manuscript, ≈ 0.11 K per candidate) — a third of the pilot's rate per manuscript because only
+  flagged candidates are read.

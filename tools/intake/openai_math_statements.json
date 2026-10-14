@@ -171,8 +171,11 @@
      "end_page": 7,
      "statement": "For every elliptic curve A/Q, every prime q, and u ∈ {0, 1}, the equality sq(A) = u implies a(A) = r(A) = u, # Sha(A/Q) < ∞.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “This is [23, Theorem 1.1].”"
+     "decision": "cited",
+     "cited_by": "This is [23, Theorem 1.1].",
+     "references": [
+      "[23] OpenAI, The Selmer converse for elliptic curves at every prime, OpenAI Math Release preprint OAI:The-Selmer-converse-for-elliptic-curves-at-every-prime-October-7-2026, 2026."
+     ]
     },
     {
      "label": "Theorem 2.2",
@@ -183,8 +186,11 @@
      "end_page": 7,
      "statement": "For every elliptic curve A/Q with s2(A) ≤ 1, the quotient QA of (1.3), with the total real period and the full-lattice regulator of (1.1), is a positive rational number, and v2(QA) = v2(# Sha(A/Q)).",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “This is [24, Theorem 1.1].”"
+     "decision": "cited",
+     "cited_by": "This is [24, Theorem 1.1].",
+     "references": [
+      "[24] OpenAI, The two-primary Birch–Swinnerton-Dyer formula in Selmer corank at most one, OpenAI Math Release preprint OAI:The-two-primary-Birch-Swinnerton-Dyer-formula-in- Selmer-corank-at-most-one-October-6-2026, 2026."
+     ]
     },
     {
      "label": "Theorem 2.3",
@@ -195,8 +201,13 @@
      "end_page": 7,
      "statement": "If an elliptic curve A/Q has a(A) ≤ 1, then r(A) = a(A) and the entire group Sha(A/Q) is finite.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “This is the Gross–Zagier–Kolyvagin theorem, using modularity [12, 17, 4].”"
+     "decision": "cited",
+     "cited_by": "This is the Gross–Zagier–Kolyvagin theorem, using modularity [12, 17, 4].",
+     "references": [
+      "[12] B. H. Gross and D. B. Zagier, Heegner points and derivatives of L-series, Invent. Math. 84 (1986), no. 2, 225–320. doi:10.1007/BF01388809.",
+      "[17] V. A. Kolyvagin, Euler systems, in The Grothendieck Festschrift, Vol. II, Progr. Math. 87, Birkhäuser, Boston, 1990, 435–483. Publisher’s reprint.",
+      "[4] C. Breuil, B. Conrad, F. Diamond, and R. Taylor, On the modularity of elliptic curves over Q: wild 3-adic exercises, J. Amer. Math. Soc. 14 (2001), no. 4, 843–939. doi:10.1090/S0894- 0347-01-00370-8."
+     ]
     },
     {
      "label": "Proposition 2.4",
@@ -207,8 +218,12 @@
      "end_page": 8,
      "statement": "Suppose A and A′ are isogenous elliptic curves over Q of analytic rank at most one. Then QA # Sha(A/Q) = QA′ # Sha(A′/Q) . In particular X(A) = X(A′). Over a number field, the corresponding analytic-to-arithmetic BSD ratio is likewise invariant under isogeny when the Tate–Shafarevich groups are finite. It is compatible with products and restriction of scalars.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “These are the arithmetic-volume identities of Cassels and the restriction-of-scalars comparison of Milne [6, 19].”"
+     "decision": "cited",
+     "cited_by": "These are the arithmetic-volume identities of Cassels and the restriction-of-scalars com- parison of Milne [6, 19].",
+     "references": [
+      "[6] J. W. S. Cassels, Arithmetic on curves of genus 1. VIII. On conjectures of Birch and Swinnerton-Dyer, J. Reine Angew. Math. 217 (1965), 180–199. doi:10.1515/crll.1965.217.180.",
+      "[19] J. S. Milne, On the arithmetic of abelian varieties, Invent. Math. 17 (1972), 177–190. doi:10.1007/BF01425446."
+     ]
     },
     {
      "label": "Theorem 2.5",
@@ -219,8 +234,11 @@
      "end_page": 8,
      "statement": "For every elliptic curve A/Q, among nonzero squarefree integers d ordered by |d|, the twists Ad of analytic rank zero and one each have density 1/2. Consequently the set of d with a(Ad) ≥ 2 has density zero.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “We use the theorem at the scope stated in [22, Theorem 1.2].”"
+     "decision": "cited",
+     "cited_by": "We use the theorem at the scope stated in [22, Theorem 1.2].",
+     "references": [
+      "[22] OpenAI, Goldfeld’s analytic density conjecture and the 2-converse for elliptic curves, Ope- nAI Math Release preprint OAI:Goldfelds-analytic-density-conjecture-and-the-2-converse-for- elliptic-curves-October-7-2026, 2026."
+     ]
     },
     {
      "label": "Theorem 2.7",
@@ -231,8 +249,11 @@
      "end_page": 10,
      "statement": "With the preceding conventions, D odd funda- mental, (D, N) = 1, all level primes split, and O× K = {±1}, one has √ dK 8π2(f, f)N L′ (f/K, 1) = 2Habs,f(PX), (2.3) L′ (E/K, 1) = AE √ dK c2 E · 2Habs(PK). (2.4) In the simple-zero case PK is nontorsion.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “The first formula is the conductor-one split Gross–Zagier formula in the normalization used in [12, Chapters I and V]”"
+     "decision": "cited",
+     "cited_by": "The first formula is the conductor-one split Gross–Zagier formula in the normalization used in [12, Chapters I and V]",
+     "references": [
+      "[12] B. H. Gross and D. B. Zagier, Heegner points and derivatives of L-series, Invent. Math. 84 (1986), no. 2, 225–320. doi:10.1007/BF01388809."
+     ]
     },
     {
      "label": "Proposition 2.8",
@@ -499,8 +520,11 @@
      "end_page": 7,
      "statement": "If E/Q is any elliptic curve and corankZ2 Sel2∞ (E/Q) = r ∈ {0, 1}, then ords=1 L(E, s) = rank E(Q) = r, Sha(E/Q) is finite.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “These are OpenAI [62, Theorems 1.1 and 1.2].”"
+     "decision": "cited",
+     "cited_by": "These are OpenAI [62, Theorems 1.1 and 1.2].",
+     "references": [
+      "[62] OpenAI. Goldfeld’s analytic density conjecture and the 2-converse for elliptic curves. OpenAI Math Release preprint OAI:Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic- curves-October-7-2026, 2026."
+     ]
     },
     {
      "label": "Theorem 2.2",
@@ -511,8 +535,11 @@
      "end_page": 7,
      "statement": "For any elliptic curve E/Q, among nonzero squarefree integers d ordered by |d|, the quadratic twists E(d) of analytic rank zero and one each have density 1/2. In particular the exceptional set of twists of analytic rank at least two has density zero.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “These are OpenAI [62, Theorems 1.1 and 1.2].”"
+     "decision": "cited",
+     "cited_by": "These are OpenAI [62, Theorems 1.1 and 1.2].",
+     "references": [
+      "[62] OpenAI. Goldfeld’s analytic density conjecture and the 2-converse for elliptic curves. OpenAI Math Release preprint OAI:Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic- curves-October-7-2026, 2026."
+     ]
     },
     {
      "label": "Proposition 2.4",
@@ -622,8 +649,11 @@
      "end_page": 56,
      "statement": "Let Π be a regular algebraic conjugate-self-dual cuspidal representation of GLd(AL) and fix ι : Qp ≃ C. There is a continuous semisimple representation rp(Π) of GL, with rp(Π)c ≃ rp(Π)∨ ϵ1−d . It is de Rham above p. If its first infinitesimal coordinates at an embedding are b1, . . . , bd, its de Rham weights there are (d − 1)/2 − bj. At every finite place w, ι WD rp(Π)|GLw \u0001F-ss ⪯ recw Πw ⊗ | det |(1−d)/2 w \u0001 . (8.3) Here ⪯ means equality after semisimplifying the Weil representation and domination of monodromy partitions on each inertial class. At spherical places away from p the representation is unramified, and at spherical places above p it is crystalline.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “Existence, polarization and the de Rham assertions are Barnet-Lamb et al. [6, Theorem 1.2];”"
+     "decision": "cited",
+     "cited_by": "Existence, polarization and the de Rham assertions are Barnet-Lamb et al. [6, Theorem 1.2];",
+     "references": [
+      "[6] Tom Barnet-Lamb, David Geraghty, Michael Harris, and Richard Taylor. A family of Calabi–Yau varieties and potential automorphy II. Publications of the Research Institute for Mathematical Sciences, 47(1):29–98, 2011. doi: 10.2977/PRIMS/31. URL https://ems.press/journals/p rims/articles/4468."
+     ]
     },
     {
      "label": "Proposition 8.5",
@@ -769,8 +799,13 @@
      "end_page": 9,
      "statement": "With the preceding hypotheses and units modulo signs one, √ D 8π2(f, f)N L′ (f/K, 1) = 2Habs,f(PX). (GZ)",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “We use the conductor-one Gross–Zagier theorem at a coprime split level”"
+     "decision": "cited",
+     "cited_by": "We use the conductor-one Gross–Zagier theorem at a coprime split level, with the normal- ization in [27, Chapter I, (4.3) and (6.4); Chapter V, Theorem (2.1)]; see also [15, 19].",
+     "references": [
+      "[27] B. H. Gross and D. B. Zagier, Heegner points and derivatives of L-series, Invent. Math. 84 (1986), 225–320. doi:10.1007/BF01388809.",
+      "[15] L. Cai, J. Shu, and Y. Tian, Explicit Gross–Zagier and Waldspurger formulae, Algebra Number Theory 8 (2014), no. 10, 2523–2572. Article.",
+      "[19] B. Conrad, Gross–Zagier revisited, with an appendix by W. R. Mann, in Heegner Points and Rankin L-Series, H. Darmon and S.-W. Zhang (eds.), Math. Sci. Res. Inst. Publ. 49, Cambridge University Press, 2004, 67–163. Author manuscript dated February 11, 2003."
+     ]
     },
     {
      "label": "Corollary 2.3",
@@ -1045,8 +1080,12 @@
      "end_page": 104,
      "statement": "Let Γ ≃ Z2 2 be the free pro-2 factor of the ray-tower group, let ΛO = O[[Γ]], and let Λ(χ)(1) have the finite-character and regular variable actions of [11, Section 4.1]. If fχ | f, then, inside generic rank-one cohomology, ΛOz2∞f = −1 det ΛO RΓ OL[1/2f], Λ(χ)(1) \u0001 . For the character motive of type (1, 0) in the ideal-character convention of Lemma 11.1, a modulus divisible by its conductor, and a compatible Betti vector γ, elliptic-unit reciprocity gives the period equation per exp∗ z(γ) \u0001 = L2f(φ̄, 1)γ on the holomorphic component, with the corresponding labeling of φ. The equation includes the case of a zero L-value.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “The determinant assertion is the Johnson-Leung–Kings theorem in the form of [11,”"
+     "decision": "cited",
+     "cited_by": "The determinant assertion is the Johnson-Leung–Kings theorem in the form of [11, Theorem 4.1], applied to one finite character at a time. That theorem includes p = 2. The period equation is Kato’s reciprocity law [30, Proposition 15.9]",
+     "references": [
+      "[11] A. Burungale and M. Flach, The conjecture of Birch and Swinnerton-Dyer for certain elliptic curves with complex multiplication, Cambridge J. Math. 12 (2024), no. 2, 357–415. The theorem numbering used here is that of arXiv:2206.09874v2 (2022).",
+      "[30] K. Kato, p-adic Hodge theory and values of zeta functions of modular forms, Astérisque 295 (2004), 117–290. Article and bibliographic record."
+     ]
     },
     {
      "label": "Proposition 11.7",
@@ -1685,8 +1724,11 @@
      "end_page": 9,
      "statement": "A birational map between smooth projective varieties over C factors into a finite zigzag of blow-ups and blow-downs along smooth connected centers, with all intermediate varieties smooth and projective. Nontrivial steps may be taken to have centers of codimension at least two.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “This is the projective case of [2, Theorem 0.1.1];”"
+     "decision": "cited",
+     "cited_by": "This is the projective case of [2, Theorem 0.1.1];",
+     "references": [
+      "[2] Dan Abramovich, Kalle Karu, Kenji Matsuki, and Jarosław Włodarczyk. Torification and factorization of birational maps. Journal of the American Mathematical Society, 15(3):531–572, 2002."
+     ]
     },
     {
      "label": "Theorem 3.3",
@@ -1923,8 +1965,11 @@
      "end_page": 10,
      "statement": "If a tensor U degenerates to LL ℓ=1⟨aℓ, bℓ, cℓ⟩, with all dimensions positive integers, then L ∑ ℓ=1 (aℓbℓcℓ)ω/3 ≤ R(U). In particular, if T⊗n ⊗ A ⊵ LL ℓ=1⟨a, b, c⟩ and R(A) ≤ R, then L(abc)ω/3 ≤ 3n R. (3.3)",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “Theorem 3.2 (Asymptotic sum inequality, Schönhage [24])”"
+     "decision": "cited",
+     "cited_by": "Theorem 3.2 (Asymptotic sum inequality, Schönhage [24])",
+     "references": [
+      "[24] Arnold Schönhage. Partial and total matrix multiplication. SIAM Journal on Comput- ing, 10(3):434–455, 1981. doi: 10.1137/0210032. URL https://doi.org/10.1137/ 0210032."
+     ]
     },
     {
      "label": "Theorem 3.7",
@@ -2376,8 +2421,11 @@
      "end_page": 6,
      "statement": "If a connected locally finite quasi-transitive graph satisfies lim infr→∞ |B(x, r)|1/r > 1, then it has almost surely no infinite Bernoulli bond cluster at its critical probability.",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “We now invoke precisely the following external result. Theorem 2.2 (Hutchcroft [19, Theorem 1.2])”"
+     "decision": "cited",
+     "cited_by": "We now invoke precisely the following external result. Theorem 2.2 (Hutchcroft [19, Theorem 1.2])",
+     "references": [
+      "[19] Tom Hutchcroft. Critical percolation on any quasi-transitive graph of exponential growth has no infinite clusters. Comptes Rendus. Mathématique, 354(9):944–947, 2016. doi: 10.1016/j.cr ma.2016.07.013. URL https://comptes-rendus.academie-sciences.fr/mathematique/ar ticles/10.1016/j.crma.2016.07.013/."
+     ]
     },
     {
      "label": "Proposition 3.1",
@@ -3002,8 +3050,11 @@
      "end_page": 57,
      "statement": "For p > 8 there is a triangulated equivalence F : hSpE −→ D(M) whose sheaf homology is naturally identified, under descent and the periodic regrading below, with the E∗E-comodule homology functor E∗(−). Its suspension structure gives natural isomorphisms F(Σj Z) ∼ = (FZ)[j] (j ∈ Z).",
      "boundary": "italic-body hint",
-     "decision": "hold",
-     "hold_reason": "the manuscript presents this as a result of other work; registering it with the family attribution would credit it to the citing manuscript (AGENTS.md rule 6). The manuscript's own words: “We use the construction in the November 14, 2018 version (v2) of Pstrągowski’s preprint.”"
+     "decision": "cited",
+     "cited_by": "We use the construction in the November 14, 2018 version (v2) of Pstrągowski’s preprint. Its Corollary 6.9 gives the range p > n2 + n + 2, hence p > 8 at height two, by comparing homotopy 2-categories [27, Corollary 6.9].",
+     "references": [
+      "[27] Piotr Pstrągowski, Chromatic homotopy theory is algebraic when p > n2 + n + 1, Advances in Mathematics 391 (2021), article 107958. doi:10.1016/j.aim.2021.107958. The numbered locators used here refer to arXiv:1810.12250v2, version of November 14, 2018."
+     ]
     },
     {
      "label": "Proposition 7.3",
