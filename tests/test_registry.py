@@ -357,6 +357,10 @@ class LocateAndRegisterTests(unittest.TestCase):
             self.assertEqual(run("register", "--draft", draft("c.json", c)), 0)
             self.assertEqual(run("register", "--draft", draft("c2.json", dict(c, revision="amvo-rev-missing"))), 2)
             self.assertEqual(run("validate"), 0)
+            self.assertEqual(run("record-event", "--type", "corrects", "--target", "amvo-clm-arxiv-2610-12345-thm-1",
+                                 "--source-url", "https://arxiv.org/abs/2610.12345v3", "--rationale", "an erratum",
+                                 "--recorded-by", "AMVO maintainers"), 0)   # events may name registry objects
+            self.assertEqual(run("validate"), 0)
             self.assertEqual(run("locate", "--query", "https://arxiv.org/abs/2610.12345v2"), 0)
             out = root / "layered.json"
             self.assertEqual(run("registry-report", "--output", str(out)), 0)

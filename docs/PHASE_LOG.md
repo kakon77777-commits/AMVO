@@ -318,3 +318,23 @@ states what was run, on which commit, with what result; nothing here is inferred
   HTML/LaTeX exactly as published, so the page shows it raw.
 - **Next:** a separate, private intake workspace (to be designed) for the remaining 362
   families, exported to this registry through `register`.
+
+## Erratum to the P1 pilot — result 107 listed 2 of its 3 manuscripts
+
+- **Found** while measuring the whole corpus before the full intake: CONTENTS.md has 719
+  manuscript lines, the pilot's parser read 717. One line carries an annotation after its link
+  ("— secondary writeup", result 107 — in the pilot) and one path contains parentheses
+  ("CAT(0)", result 337 — not in the pilot); the parser's pattern skipped both without saying so.
+  The pilot entry above therefore says 17 manuscripts; the true number for the ten families is 18.
+- **Recorded, not rewritten:** the registered claim `amvo-clm-openai-math-r107` stays as it was;
+  `events/ev-000001.json` (`corrects`, source: CONTENTS.md at the pinned commit) names the
+  omitted manuscript. It is the ledger's first real event and shows in the claim's correction
+  chain on the site.
+- **Fixed:** the parser now accepts an annotation and parentheses in a path, refuses any result
+  or manuscript line it cannot parse, and checks the totals CONTENTS.md states in its header
+  (719 manuscripts, 372 families — numbered 1 to 377 with five numbers unused). A re-run stops
+  if a registered claim differs from today's parse unless a `corrects` event for it is on
+  record. `record-event` can now name v0.2 registry objects (it only saw v0.1 records — a P1-C
+  omission found by this first real use).
+- **Run:** 104 run, 103 pass, 1 skipped. Re-running the intake: 0 new, 9 unchanged, 1 corrected,
+  18 manuscripts listed.

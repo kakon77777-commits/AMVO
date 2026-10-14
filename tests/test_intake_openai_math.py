@@ -15,6 +15,8 @@ spec.loader.exec_module(intake)
 
 SNIPPET = """# Mathematics manuscript collection
 
+**2 manuscripts covering 2 result families.**
+
 <tbody><tr>
 <td>
 
@@ -28,6 +30,8 @@ SNIPPET = """# Mathematics manuscript collection
 &emsp;[Widgets are gadgets](preprints/Widgets-October-1-2026/paper.pdf)
 
 An abstract that is not copied.
+
+&emsp;[Gadgets in CAT(0) spaces](preprints/Gadgets-in-CAT(0)-spaces-October-2-2026/paper.pdf) — secondary writeup
 
 </td>
 </tr></tbody>
@@ -48,10 +52,24 @@ class IntakeTests(unittest.TestCase):
         self.assertEqual(results[1]["title"], "A synthetic result.")
         self.assertEqual(results[1]["summary"], "Proves that every widget is a gadget.")   # Lean marker removed
         self.assertEqual(results[1]["lean"], "lean/docs/001.md")
-        self.assertEqual(results[1]["manuscripts"], [("Widgets are gadgets", "preprints/Widgets-October-1-2026/paper.pdf")])
+        self.assertEqual(results[1]["manuscripts"], [
+            ("Widgets are gadgets", "preprints/Widgets-October-1-2026/paper.pdf", ""),
+            ("Gadgets in CAT(0) spaces", "preprints/Gadgets-in-CAT(0)-spaces-October-2-2026/paper.pdf",
+             "— secondary writeup")])                     # an annotation and a path with parentheses
         self.assertEqual((results[2]["lean"], results[2]["manuscripts"]), (None, []))
         with self.assertRaisesRegex(RecordError, "appears twice"):
             intake.parse(SNIPPET + "\n**001. A synthetic result.** Again.\n")
+
+    def test_parse_refuses_rather_than_skips(self):
+        """the pilot's first parser skipped a manuscript line silently; now nothing is skipped"""
+        with self.assertRaisesRegex(RecordError, "manuscript line that does not parse"):
+            intake.parse(SNIPPET + "\n&emsp;[Broken link](preprints/no-extension)\n")
+        with self.assertRaisesRegex(RecordError, "result line that does not parse"):
+            intake.parse(SNIPPET + "\n**003 Missing the dot.** Text.\n")
+        with self.assertRaisesRegex(RecordError, "states 3 manuscripts"):
+            intake.parse(SNIPPET.replace("**2 manuscripts", "**3 manuscripts"))
+        with self.assertRaisesRegex(RecordError, "no .* header"):
+            intake.parse(SNIPPET.replace("**2 manuscripts covering 2 result families.**", ""))
 
     def test_claim_quotes_the_summary_and_lists_manuscripts_without_their_text(self):
         objects, _ = load_registry(ROOT / "registry")
@@ -59,6 +77,8 @@ class IntakeTests(unittest.TestCase):
         self.assertEqual(claim["statement"], "A synthetic result. Proves that every widget is a gadget.")
         self.assertEqual(claim["location"], "CONTENTS.md result 001; Lean: lean/docs/001.md")
         self.assertIn("Widgets are gadgets (preprints/Widgets-October-1-2026/paper.pdf)", claim["scope"])
+        self.assertIn("(preprints/Gadgets-in-CAT(0)-spaces-October-2-2026/paper.pdf) — secondary writeup",
+                      claim["scope"])
         self.assertNotIn("abstract", claim["scope"])
         self.assertIn("AMVO has checked nothing", claim["scope"])
 
@@ -76,7 +96,11 @@ class IntakeTests(unittest.TestCase):
         for c in pilot.values():
             self.assertEqual(c["revision"]["id"], intake.REVISION)
             self.assertIn(intake.CONTENTS_SHA256[:16], c["scope"])
-        report = registry_report(objects, manifests, ROOT)
+        from amvo.lineage import lineage, load_events
+        events = load_events(ROOT / "events")
+        fixes = [e for e in events if e["type"] == "corrects" and e["target"] in pilot]
+        self.assertEqual([e["target"] for e in fixes], ["amvo-clm-openai-math-r107"])   # the one recorded erratum
+        report = registry_report(objects, manifests, ROOT, lineages=lineage(list(objects.values()), events))
         for c in report["claims"]:
             if c["id"] in pilot:
                 self.assertEqual(c["statuses"], ["NOT_CHECKED", "INDEPENDENT_REPLICATION_PENDING"])
