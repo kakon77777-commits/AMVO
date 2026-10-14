@@ -556,6 +556,17 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Not candidates:** r055m1 line 943 — a section line that begins with the label; the heading is at line 948; r068m6 line 769 — a line that begins with the label after the statement; the heading is at line 745.
 - **Rejected (3):** r056 ms5 Corollary 2.5: duplicate of amvo-clm-openai-math-r056-ms4-cor-2-5 (the first is kept); r056 ms5 Corollary 4.7: duplicate of amvo-clm-openai-math-r056-ms4-cor-4-7 (the first is kept); r056 ms5 Proposition A.1: duplicate of amvo-clm-openai-math-r056-ms4-prop-a-1 (the first is kept).
 - **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
-- **Counts:** 2 sources, 2,796 claims (1 computation, 394 corollarys, 1,392 propositions, 1,009 theorems), 15 formal targets, 2,795 not checked, 0 kernel runs, 0 theorems proved.
+- **Counts:** 2 sources, 2,796 claims (1 computation, 394 corollaries, 1,392 propositions, 1,009 theorems), 15 formal targets, 2,795 not checked, 0 kernel runs, 0 theorems proved.
 - **Evidence (SHA-256):** `build/registry.json` `9449cf5a9ae7421a4bddc0f60e3cd98856a914551fc6d7db1848be113e98233d`; `site/data/index.json` `38731ad21ab0200df09c2a572a976b8becf57556ba901c9a287b0cf88ba1fd5f`; `tools/intake/openai_math_statements_r050-r099.json` `7376fd7fc9545f3a38fa35c0c527a7ea0fe63f3f02c60d1c636d55d81514262c`.
 - **Cost:** 16:41 → 16:46 UTC wall time; 68 s of machine time to fetch, extract (twice) and font-scan the 87 PDFs; about 35 K tokens of context.
+
+## Statements, batch r100–r149
+
+- **Batch:** result families 100–149 without the pilot's (48 families, 85 manuscripts, 3,304 pages, 46.4 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 679 bold-heading lines; 1 of them not candidates (below); **678 candidates, all found verbatim** on their recorded pages; **677 kept** (253 theorems, 293 propositions, 131 corollaries — 19 of them credited to cited work); 6 statement ends cut by hand at recorded text; 1,186 lemma headings not taken.
+- **Not candidates:** r108m1 line 1233 — a line that begins with the label after the statement; the heading is at line 1207.
+- **Rejected (1):** r136 ms1 Theorem 6.1: statement has 4079 characters; the registry's limit is 4000.
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 3,473 claims (1 computation, 525 corollaries, 1,685 propositions, 1,262 theorems), 15 formal targets, 3,472 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `290d6ccc113391963754fd7250721c2cc317286a7f84acc26106341e1d431581`; `site/data/index.json` `10a39fb6fd2b5268b173e6898f3f46d7abe2dc456e9266152d6f2039837fbb6c`; `tools/intake/openai_math_statements_r100-r149.json` `9d2b4e3c1e263082b6d5e3f7138819b309af348ebce83f260809c96729e76694`.
+- **Cost:** 16:44 → 16:49 UTC wall time; 64 s of machine time to fetch, extract (twice) and font-scan the 85 PDFs; about 30 K tokens of context.
