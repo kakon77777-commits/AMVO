@@ -127,7 +127,8 @@ def main(argv: list[str] | None = None) -> int:
                       file=sys.stderr)
                 return 2
             now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-            event = next_event(records, events, args.type, args.target, rationale=args.rationale,
+            event = next_event(records + [objects[k] for k in sorted(objects)], events, args.type, args.target,
+                               rationale=args.rationale,
                                recorded_by=args.recorded_by, recorded_at=now, source_url=args.source_url,
                                by=args.by)
             path = write_event(events_dir, event)
