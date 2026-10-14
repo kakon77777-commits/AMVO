@@ -613,3 +613,14 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Counts:** 2 sources, 8,233 claims (1 computation, 1,224 corollaries, 4,517 propositions, 2,491 theorems), 15 formal targets, 8,232 not checked, 0 kernel runs, 0 theorems proved.
 - **Evidence (SHA-256):** `build/registry.json` `14e7d31506e110ce2874f777de11468e393ae0bd0b9a4b376d793d8f7bdc8102`; `site/data/index.json` `2ebbd1776748af4f10e77d26adf28baba1807556fc27c71b2f19f4bb2e06d3de`; `tools/intake/openai_math_statements_r300-r349.json` `2639ee4b16b8abe7edc58a6e4796d942320fa22df866d7b86277f9a6a5dcc8de`.
 - **Cost:** 16:58 → 17:05 UTC wall time; 57 s of machine time to fetch, extract (twice) and font-scan the 78 PDFs; about 45 K tokens of context.
+
+## Statements, batch r350–r377
+
+- **Batch:** result families 350–377 without the pilot's (27 families, 49 manuscripts, 2,049 pages, 27.2 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 447 bold-heading lines; 2 of them not candidates (below); **445 candidates, all found verbatim** on their recorded pages; **444 kept** (137 theorems, 251 propositions, 56 corollaries — 13 of them credited to cited work); 3 statement ends cut by hand at recorded text; 771 lemma headings not taken.
+- **Not candidates:** r350m1 line 203 — a second bold heading for Theorem 2.2 (repeat of line 175) with no statement; r356m1 line 1811 — a second bold heading for Theorem 4.1 (repeat of line 1784) with no statement.
+- **Rejected (1):** r355 ms1 Proposition 4.4: statement has 6067 characters; the registry's limit is 4000.
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 8,677 claims (1 computation, 1,280 corollaries, 4,768 propositions, 2,628 theorems), 15 formal targets, 8,676 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `79dfcbc75c3729282334d08ddbfa932969033f9461325a01d37031822edabb12`; `site/data/index.json` `8263060801fc5d3944a00f7abe8846bb89f91a216197cbac189a07d6afad09ec`; `tools/intake/openai_math_statements_r350-r377.json` `4d84e4f4870c8e816f53da00c38a789e56ed705e921fda8d3ef6b081aa356188`.
+- **Cost:** 17:00 → 17:08 UTC wall time; 37 s of machine time to fetch, extract (twice) and font-scan the 49 PDFs; about 25 K tokens of context.
