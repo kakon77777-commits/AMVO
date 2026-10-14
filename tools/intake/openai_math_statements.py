@@ -24,6 +24,7 @@ repository runs.
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import re
 import subprocess
@@ -46,6 +47,7 @@ ABBR = {"theorem": "thm", "proposition": "prop", "corollary": "cor", "conjecture
 MAX_STATEMENT = 4000
 
 
+@functools.lru_cache(maxsize=8)                     # a manuscript's text is normalised once, not per candidate
 def normalise(text: str) -> tuple[str, list[int]]:
     """whitespace (str.isspace) collapsed to single spaces and trimmed; with each kept character's original offset"""
     out, where, gap = [], [], False
