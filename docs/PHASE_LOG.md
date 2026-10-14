@@ -274,3 +274,47 @@ states what was run, on which commit, with what result; nothing here is inferred
   headers and data hash; then Phase 1's remaining exit item — metadata-only intake of about ten
   public, clearly licensed, versioned sources of different kinds, claim by claim through
   `locate` / `register`.
+
+## Site deployment (after P1-D)
+
+- **2026-10-13:** `amvo.evemisslab.com` deployed by the maintainer from main `f208395`
+  (`python -m amvo build-site --output site`, then `npx wrangler deploy`, wrangler 4.150.0;
+  Worker `amvo`, version `5964e6ab-f588-4111-a53d-68b7560ba0f1`).
+- **Checked live:** the CSP (with `frame-ancestors 'none'`), `no-referrer`, `nosniff`, HSTS,
+  COOP, Permissions-Policy and `Cache-Control … no-transform` are served; `/`, `app.js`,
+  `styles.css` and `data/index.json` are byte-identical to the build (`data/index.json`
+  `ae21ee661f5ae7b1309283c67c477c8063165ecea39c68dfea1f8aac8e41adac`); the only script on the
+  page is `app.js` (nothing injected at the edge); an unknown path returns 404 with the site's
+  page; `/_headers` is not served; `http://` redirects to `https://`.
+
+## P1 pilot — ten openai/math result families, metadata only
+
+- **Base:** main `f208395`. Branch `feat/p1-openai-math-pilot`.
+- **Scope:** `tools/intake/openai_math.py` reads `CONTENTS.md` of `openai/math` at the
+  already-verified commit `1581d4c` (fetched through AMVO's allowlisted fetcher, or from a
+  local copy that must hash to `cc7c0b8a1cdedd845a777e77cf682657308503daf8346c1349e06e9259d063c2`),
+  parses its 372 result families and 719 manuscript entries, and registers a fixed sample —
+  results 001–003 and every 53rd from 054 to 372 (054, 107, 160, 213, 266, 319, 372), chosen by
+  number rather than content — as ten Claims on the pinned revision, through the registry's own
+  checks. Each claim quotes the repository's one-paragraph summary (Apache-2.0), lists its
+  constituent manuscripts by title and path (no manuscript text is copied), notes a Lean link
+  where CONTENTS.md gives one (6 of the 10), and reads `NOT_CHECKED` /
+  `INDEPENDENT_REPLICATION_PENDING`. Re-running writes nothing. No formal target is registered
+  yet: a Lean link is not a formal target until its statement, code pin, toolchain and axioms
+  are recorded.
+- **Counts after the pilot:** 2 sources, 2 revisions, 11 claims (10 theorems as stated by the
+  source + 1 synthetic computation), 1 current claim with a bounded pass, 10 not checked,
+  0 kernel runs, 0 theorems proved.
+- **Run (Windows):** Python 3.14.5 and 3.13.13 — **103 run, 102 pass, 1 skipped** (4 new in
+  `tests/test_intake_openai_math.py`, offline: parser, quoting without manuscript text, a copy
+  that is not the pinned file refused, the registered pilot is exactly the fixed sample and
+  unchecked). The page renders the eleven claims; no horizontal overflow at 1280 or 375 px.
+- **Evidence (SHA-256):** `build/registry.json`
+  `b5b68d1464f27bff45af32554bb280fc756507141e726ac69a4a6469ebdaccc8`; `site/data/index.json`
+  `968cb195aeda939572662721c0ef1be9386619847df8dc7192534ee3ffc5a85a`.
+- **Limits:** one source, not ten of different kinds — the pilot covers ten results of one
+  public, licensed, versioned corpus; result summaries are the source's own wording, and the
+  manuscripts may state more or less than the summary; the summary text keeps its inline
+  HTML/LaTeX exactly as published, so the page shows it raw.
+- **Next:** the intake database (SEDB with ISQL-DB, to be designed) for the remaining 362
+  families, exported to this registry through `register`.
