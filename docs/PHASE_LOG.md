@@ -373,3 +373,12 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Counts:** 2 sources, 284 claims, 1 with a bounded pass (the synthetic one), 283 not checked, 0 kernel runs, 0 theorems proved.
 - **Run (Windows, Python 3.14.5):** Ran 104 tests in 8.064s, OK (skipped=1); `validate` and `audit-public` pass.
 - **Evidence (SHA-256):** `build/registry.json` `2332c9471151a1edea32deee64773b799c6ced03330dba743e07a8c54a645b8f`; `site/data/index.json` `cc10e9cd1b047487404c56009981b19ea757bb4f1c9fcf45b9090e2665dc75b7`.
+
+## Intake batch 4 of 4 — openai/math results 287–377
+
+- **Base:** `feat/intake-batch-3`. Branch `feat/intake-batch-4`.
+- **This batch:** 89 claims, results 287–377 (the pilot's families in this range aside), 53 with a Lean link. Built and checked as batch 1 was; before exporting, the intake workspace reproduced every claim registered so far byte for byte (r107 aside, under its erratum). All read `NOT_CHECKED` / `INDEPENDENT_REPLICATION_PENDING`.
+- **Counts:** 2 sources, 373 claims, 1 with a bounded pass (the synthetic one), 372 not checked, 0 kernel runs, 0 theorems proved.
+- **Run (Windows, Python 3.14.5):** Ran 104 tests in 8.253s, OK (skipped=1); `validate` and `audit-public` pass.
+- **Evidence (SHA-256):** `build/registry.json` `054bdf7730e866118ad2ab8cbdd5424f3bd876ee4c6c5937c1cd0c33c4fad635`; `site/data/index.json` `d02c7fef788f8fc348abcd1b05c34b68a7ea76fe850ee22f29e1b48caecb36e7`.
+- **Corpus complete:** all 372 result families of openai/math at `1581d4c` are registered — 719 manuscripts listed, 242 Lean links — each as a claim nobody here has checked. The counts match the totals CONTENTS.md states.
