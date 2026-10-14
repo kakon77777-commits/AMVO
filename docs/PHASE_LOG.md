@@ -548,3 +548,14 @@ states what was run, on which commit, with what result; nothing here is inferred
   83 s to fetch, extract (twice) and font-scan the 100 PDFs with 8 workers. Context used: about 0.14 M tokens
   (≈ 1.4 K per manuscript, ≈ 0.11 K per candidate) — a third of the pilot's rate per manuscript because only
   flagged candidates are read.
+
+## Statements, batch r050–r099
+
+- **Batch:** result families 050–099 without the pilot's (47 families, 87 manuscripts, 3,905 pages, 50.9 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 959 bold-heading lines; 2 of them not candidates (below); **957 candidates, all found verbatim** on their recorded pages; **954 kept** (251 theorems, 532 propositions, 171 corollaries — 28 of them credited to cited work); 10 statement ends cut by hand at recorded text; 1,417 lemma headings not taken.
+- **Not candidates:** r055m1 line 943 — a section line that begins with the label; the heading is at line 948; r068m6 line 769 — a line that begins with the label after the statement; the heading is at line 745.
+- **Rejected (3):** r056 ms5 Corollary 2.5: duplicate of amvo-clm-openai-math-r056-ms4-cor-2-5 (the first is kept); r056 ms5 Corollary 4.7: duplicate of amvo-clm-openai-math-r056-ms4-cor-4-7 (the first is kept); r056 ms5 Proposition A.1: duplicate of amvo-clm-openai-math-r056-ms4-prop-a-1 (the first is kept).
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 2,796 claims (1 computation, 394 corollarys, 1,392 propositions, 1,009 theorems), 15 formal targets, 2,795 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `9449cf5a9ae7421a4bddc0f60e3cd98856a914551fc6d7db1848be113e98233d`; `site/data/index.json` `38731ad21ab0200df09c2a572a976b8becf57556ba901c9a287b0cf88ba1fd5f`; `tools/intake/openai_math_statements_r050-r099.json` `7376fd7fc9545f3a38fa35c0c527a7ea0fe63f3f02c60d1c636d55d81514262c`.
+- **Cost:** 16:41 → 16:46 UTC wall time; 68 s of machine time to fetch, extract (twice) and font-scan the 87 PDFs; about 35 K tokens of context.
