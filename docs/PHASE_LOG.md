@@ -382,3 +382,299 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Run (Windows, Python 3.14.5):** Ran 104 tests in 8.253s, OK (skipped=1); `validate` and `audit-public` pass.
 - **Evidence (SHA-256):** `build/registry.json` `054bdf7730e866118ad2ab8cbdd5424f3bd876ee4c6c5937c1cd0c33c4fad635`; `site/data/index.json` `d02c7fef788f8fc348abcd1b05c34b68a7ea76fe850ee22f29e1b48caecb36e7`.
 - **Corpus complete:** all 372 result families of openai/math at `1581d4c` are registered — 719 manuscripts listed, 242 Lean links — each as a claim nobody here has checked. The counts match the totals CONTENTS.md states.
+
+## Cloud pilot — statements inside the ten pilot families, and their Lean formal targets
+
+- **Base:** `5b96144` (`docs/cloud-pilot-brief`: the brief `docs/tasks/CLOUD_PILOT_2026-10-14.md` on main `92a4ce9`);
+  CI green on both (runs 47 and 48). Branch `claude/friendly-sagan-bg5hof`, one cloud session. Baseline on Linux,
+  Python 3.13.16: 104 run, OK; `build/registry.json` and `site/data/index.json` byte-identical to batch 4's.
+- **Read, not run:** CONTENTS.md, the 18 manuscripts, the 6 Lean pages, the 11 comparator `.lean` files they list
+  with their `.json` configurations, `lean/lean-toolchain`, `lean/lake-manifest.json` and the comparator README —
+  55 files, 12.7 MB, from raw.githubusercontent.com at `1581d4c`. Every file's git blob id equals the one in that
+  commit's tree (read from a blob-less bare clone; no checkout). No Lean, lake, comparator or script from the
+  source was installed or run. Nothing fetched is committed except the quoted statements and hashes.
+- **A. Statements.** Text from `pdftotext -raw -enc UTF-8` (poppler 24.02.0; raw mode keeps TeX's content order,
+  so displayed formulas stay inside their statements); two extractions of each PDF are byte-identical, and
+  `--pdfs` mode re-extracts and must reproduce the recorded text hash. Candidates: every line that begins with a
+  numbered theorem, proposition, corollary or conjecture label set in bold in the PDF (284 such lines; 20 were
+  cross-references that merely start a line). No numbered conjecture occurs. 423 lemma headings were not taken:
+  no manuscript calls a lemma a main result. A statement runs from its heading to the line before the first
+  upright prose line, `Proof` or the next heading, read from the PDF's fonts with pdfminer.six 20260107 (theorem
+  bodies are italic); every boundary was reviewed, two were cut by hand at recorded text. The check — heading and
+  statement, whitespace normalised, found in the normalised text on the recorded PDF pages — found **264 of
+  264**. Kept **248** (45 theorems, 154 propositions, 49 corollaries) as claims
+  `amvo-clm-openai-math-rNNN-msK-<thm|prop|cor>-<label>`, each with its family claim as parent, quoting the
+  extracted text exactly (control and private-use characters the PDF fonts carry are kept; the scope says so).
+  No duplicate statement occurred.
+
+  | family · ms | pages | found | kept | held | rejected | lemma headings | fetch s | pdftotext s | pdfminer s |
+  |---|---|---|---|---|---|---|---|---|---|
+  | r001 ms1 Milne's rationality conjecture | 36 | 10 | 10 | 0 | 0 | 11 | 0.64 | 0.20 | 3.2 |
+  | r002 ms1 Exact BSD from low Selmer corank | 94 | 28 | 22 | 6 | 0 | 45 | 0.72 | 0.57 | 6.2 |
+  | r002 ms2 Selmer converse at every prime | 82 | 19 | 16 | 3 | 0 | 31 | 0.31 | 0.48 | 4.9 |
+  | r002 ms3 Two-primary BSD, corank ≤ 1 | 164 | 52 | 50 | 2 | 0 | 84 | 0.36 | 1.01 | 13.5 |
+  | r003 ms1 Quasi-Riemann hypothesis 7/8 | 199 | 17 | 16 | 0 | 1 | 47 | 0.32 | 1.23 | 15.8 |
+  | r003 ms2 Quasi-Riemann hypothesis 11/12 | 49 | 8 | 8 | 0 | 0 | 15 | 0.33 | 0.36 | 5.0 |
+  | r003 ms3 Landau–Siegel zeros | 9 | 2 | 2 | 0 | 0 | 4 | 0.29 | 0.07 | 1.3 |
+  | r054 ms1 Irrational cubic fourfolds | 62 | 19 | 18 | 1 | 0 | 27 | 0.27 | 0.40 | 4.5 |
+  | r107 ms1 Upper bound 9/4 | 13 | 3 | 3 | 0 | 0 | 6 | 0.26 | 0.11 | 1.0 |
+  | r107 ms2 Below 2.258 (secondary writeup) | 83 | 20 | 19 | 1 | 0 | 26 | 0.27 | 0.42 | 6.1 |
+  | r107 ms3 Staggered extraction | 35 | 5 | 5 | 0 | 0 | 6 | 0.35 | 0.20 | 2.6 |
+  | r160 ms1 van der Waerden numbers | 25 | 8 | 8 | 0 | 0 | 15 | 0.28 | 0.14 | 1.6 |
+  | r213 ms1 Percolation on the cubic lattice | 20 | 3 | 3 | 0 | 0 | 9 | 0.32 | 0.13 | 1.5 |
+  | r213 ms2 Quasi-transitive graphs | 42 | 13 | 12 | 1 | 0 | 10 | 0.30 | 0.24 | 2.9 |
+  | r266 ms1 Mutually unbiased bases in dim. 6 | 76 | 14 | 14 | 0 | 0 | 42 | 0.30 | 0.45 | 5.1 |
+  | r266 ms2 Fourier certificates, order 6 | 35 | 7 | 7 | 0 | 0 | 7 | 0.29 | 0.16 | 2.7 |
+  | r319 ms1 Hahn–Wilson counterexamples | 79 | 29 | 28 | 1 | 0 | 30 | 0.34 | 0.54 | 4.2 |
+  | r372 ms1 Elasticity inverse problem | 24 | 7 | 7 | 0 | 0 | 8 | 0.35 | 0.14 | 2.0 |
+  | **total, 18 manuscripts** | 1,127 | 264 | 248 | 15 | 1 | 423 | 6.3 | 6.9 | 84 |
+
+  `ms` numbers a family's manuscripts in CONTENTS.md order (r107 ms2 is the manuscript added by `ev-000001`).
+- **Not kept (one line each).** Rejected: r003 ms1 Proposition 5.1 (Completed cubic reflection) — 6,143
+  characters, over the registry's 4,000-character statement limit. Held — the manuscript presents the result as
+  someone else's, so the family attribution the brief asks for would credit it to the citing manuscript (a
+  conflict with AGENTS.md rule 6, so it is stopped here, not decided); the manuscript's own words:
+  - r002 ms1 Theorem 2.1 — "This is [23, Theorem 1.1]."
+  - r002 ms1 Theorem 2.2 — "This is [24, Theorem 1.1]."
+  - r002 ms1 Theorem 2.3 — "This is the Gross–Zagier–Kolyvagin theorem, using modularity [12, 17, 4]."
+  - r002 ms1 Proposition 2.4 — "These are the arithmetic-volume identities of Cassels and the restriction-of-scalars comparison of Milne [6, 19]."
+  - r002 ms1 Theorem 2.5 — "We use the theorem at the scope stated in [22, Theorem 1.2]."
+  - r002 ms1 Theorem 2.7 — "The first formula is the conductor-one split Gross–Zagier formula in the normalization used in [12, Chapters I and V]"
+  - r002 ms2 Theorems 2.1 and 2.2 — "These are OpenAI [62, Theorems 1.1 and 1.2]."
+  - r002 ms2 Theorem 8.4 — "Existence, polarization and the de Rham assertions are Barnet-Lamb et al. [6, Theorem 1.2];"
+  - r002 ms3 Theorem 2.2 — "We use the conductor-one Gross–Zagier theorem at a coprime split level"
+  - r002 ms3 Theorem 11.3 — "The determinant assertion is the Johnson-Leung–Kings theorem in the form of [11,"
+  - r054 ms1 Theorem 2.5 — "This is the projective case of [2, Theorem 0.1.1];"
+  - r107 ms2 Theorem 3.2 — heading "Theorem 3.2 (Asymptotic sum inequality, Schönhage [24])"
+  - r213 ms2 Theorem 2.2 — "We now invoke precisely the following external result. Theorem 2.2 (Hutchcroft [19, Theorem 1.2])"
+  - r319 ms1 Theorem 7.1 — "We use the construction in the November 14, 2018 version (v2) of Pstrągowski’s preprint."
+
+  Their verbatim statements stay in the data file, checked, so registering them later needs only an attribution
+  decision.
+- **B. Formal targets.** 15 FormalTargets, one per theorem the comparator configurations name for the 6 Lean
+  pages: r003 5 (ζ, Dirichlet and Hecke 7/8 bounds; two Siegel-zero statements), r107 4 (ω ≤ 9/4, α > 93/200,
+  rectangular ω < 523/250; ω < 2.371054886006746 over every field), r160 1, r213 2, r266 2, r372 1. Each records
+  the declaration exactly as written (checked: occurs once in its file and is followed by `:=`), code pin
+  `1581d4c`, toolchain `leanprover/lean4:v4.34.1` with Mathlib `d13f23b7`, the permitted axioms the configuration
+  *declares* (propext, Quot.sound, Classical.choice — not checked), and the page's own words for what it
+  formalises, quoted. They attach to the family claims, not to the new statement claims: matching a Lean
+  statement to a manuscript statement would be the judgement this layer does not make. The six family claims
+  now read `SEMANTIC_ALIGNMENT_PENDING` with `formal_kernel: not_run`. Lean page 266 itself says its formal
+  statement is weaker than the paper (at most five bases, not three); that sentence is quoted in the target.
+- **Tools:** `tools/intake/openai_math_statements.py` (+ `openai_math_statements.json`, the 264 candidates with
+  PDF and text hashes) and `tools/intake/openai_math_formal.py` (+ `openai_math_formal_targets.json`, the 15
+  targets with the hashes of the 33 files they rest on). Both check before writing, write through the registry's
+  checks, refuse to rewrite an object and write nothing on a re-run (checked: 0 new, 248 / 15 unchanged).
+- **Tests:** `tests/test_intake_openai_math_statements.py`, 8 new, offline (synthetic texts and Lean files):
+  verbatim and page check, paraphrase / wrong page / unnormalised text refused, a cut-short quote is still found
+  (the check proves a quote real, not complete), hold / too long / duplicate / foreign text, a whole declaration
+  required, the page must contain every quoted sentence, a changed file refused, and every registered statement
+  and target equal to what the data files produce. `tests/test_intake_openai_math.py`: family claims are now
+  selected by `rNNN` exactly, and a family with a formal target expects `SEMANTIC_ALIGNMENT_PENDING` as well.
+  Run (Linux, Python 3.13.16): **112 run, OK**; `validate` (621 claims, 15 formal targets), `audit-public`,
+  `verify`, `registry-report` and `build-site` exit 0; reports identical across two runs. The built page, in
+  headless Chromium: 621 claim cards, 6 marked 語義對齊未評估, no horizontal overflow at 1280 or 375 px.
+- **Counts:** 2 sources, 621 claims (417 theorems, 154 propositions, 49 corollaries, 1 computation),
+  15 formal targets, 1 current claim with a bounded pass (the synthetic one), 620 not checked, 0 kernel runs,
+  0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json`
+  `2710e0d1ade5bcda39d90fc657adb8a3ca4ac38418782a4461cc2bb4e15cdef4`; `site/data/index.json`
+  `e8fcd5d5fa24b9047ef7e6c8849a42be56c5d768a437e8197c19b88a977a822d`; `build/verification.json` unchanged
+  `fcd1e68ea4cbf5493ef0f234f0a718460c570259e0491e74c66d346cd1b260fb`;
+  `tools/intake/openai_math_statements.json` `8d93a9b8f1434af0bcc9b6cf0da6b44eff012ce77fd64f17057e314a58472575`;
+  `tools/intake/openai_math_formal_targets.json` `799c3f3ced031b3a21dd4e337966ee0755aec60c7f639968c5daa83b463355d8`.
+- **Cost (measured; container clock, UTC):** session 15:07:57 → 15:40:01 at the commit, about 32 minutes
+  of wall time in all. Machine time is small: fetching 55 files 17 s, `pdftotext` 6.9 s and the
+  pdfminer font pass 84 s for all 18 PDFs (1,127 pages); a full `--pdfs` re-check 16 s. The rest is the agent:
+  setup and baseline 2 min; fetch, extraction and reading the Lean pages 6 min; building the boundary aid and
+  reviewing the 18 manuscripts 8.5 min (3 short ones during calibration, then 9 s – 70 s each, longest r003 ms1
+  and r002 ms1); data files, tools, tests and registration 10 min; gates, browser check and this log the rest.
+  Tokens: the session's visible context counter fell from 15,000,000 to about 14.5 million, ≈ 0.5 M tokens of
+  context in all, of which ≈ 0.17 M went to reading candidates (≈ 0.65 K per candidate, ≈ 9 K per manuscript on
+  average, roughly proportional to the candidates shown) and the rest to setup, tooling, tests and records.
+  Billed tokens and credits are not visible to the session. *Assumption, for planning only:* the remaining 701
+  manuscripts of the corpus (719 − 18; the brief says 699) at the pilot's density (≈ 14.7 candidates and ≈ 28 s of
+  review per manuscript) would mean ≈ 10,000 candidates, ≈ 7 M context tokens of review and ≈ 5–6 hours of agent
+  time, split across sessions, plus about 6 s of machine time per manuscript; the tooling would not need
+  to be rebuilt. The pilot sample was chosen by number, so its density need not be the corpus's.
+- **Limits:** the quotes are extracted text, not typeset mathematics — superscripts, fractions, large operators
+  and delimiters come out flattened or as font codes, so a quote can be hard to read and the PDF stays
+  authoritative; the check proves a quote is real, not that it is complete — where a statement ends is the
+  font hint plus review, which can be wrong; a statement that crosses a page keeps the page number between;
+  near-duplicates are not detected (e.g. r003 ms1 Theorem 3.1 and r003 ms2 Theorem 1.1 both state the 11/12
+  half-plane, in different words, and are both kept); whether a candidate is someone else's result was judged
+  from the text around it and may have missed cases; formal targets carry declarations only, and the
+  definitions they use are fixed by the code pin, not quoted.
+- **Not done:** no merge, no deployment, no Lean run. The 15 held statements wait for an attribution decision.
+- **Next:** decide how cited results are attributed (a separate attribution field, or none registered); then the
+  remaining manuscripts in batches with the same two tools, measuring the same costs.
+
+## Statements, batch r004–r049 — and the pilot's cited results registered
+
+- **Decision (maintainer, 2026-10-14):** a result that a manuscript presents as someone else's is that work's
+  result. It is registered, credited to that work in the manuscript's own words; anything wrong is later
+  corrected by an event, never by rewriting. `openai_math_statements.py` gained the decision `cited`: the claim's
+  attribution reads "Credited to the work the manuscript cites, not to OpenAI or the manuscript's authors", then
+  the citing sentence and the manuscript's bibliography entries for its keys, each checked to occur verbatim in
+  the extracted text. The 15 pilot candidates held above are now registered this way (pilot data file edited:
+  `hold` → `cited`; its statements are unchanged). Pilot: 263 of 264 kept, 15 of them credited to cited work.
+- **Batch:** result families 004–049 without the pilot's (45 families, 100 manuscripts, 4,715 pages, 59.3 MB),
+  same commit, same extraction, same check. Base: `d8006e3` on this branch.
+- **Process, changed from the pilot to read less:** the boundary aid now (a) stops on an upright line only when
+  it starts at the left margin, so displayed formulas with roman words (`log`, `dim`, "odd and squarefree") no
+  longer end a statement early; (b) skips and trims capitalised running heads and feet; (c) looks for a heading's
+  bold row on its own page first. Review is by exception: only candidates with a boundary flag (statement not
+  ending in `.`, `)`, `]` or `}`; empty; overlapping another heading; a label used twice) or a citation phrase
+  near them were read — 127 of 1,219, with every decision recorded in the data file.
+- **Result:** 1,219 bold-heading lines; 3 were cross-references that begin a line (not candidates); **1,216
+  candidates, all found verbatim** on their recorded pages; **1,206 kept** (329 theorems, 712 propositions, 175
+  corollaries — 55 of them credited to cited work); 9 statement ends cut by hand at recorded text; 1,690 lemma
+  headings not taken. **Rejected (10), each a duplicate statement, the first kept:** r018 ms2 Theorem 4.1 (= r018
+  ms1 Theorem 8.1); r034 ms4 Theorem 3.1, Propositions 4.1, 6.3, 6.6, 6.8, 6.10 and Corollary 6.4 (= r034 ms3 C.1,
+  D.3, F.3, F.6, F.8, F.9, F.4); r034 ms13 Proposition 3.3 (= r034 ms11 Proposition 7.1); r036 ms3 Proposition 3.4
+  (= r034 ms4 Proposition 10.1).
+- **Tools and tests:** the statements tool takes `--data` per batch file, refuses two candidates mapping to one id
+  before writing anything (a run that hit this was discarded before commit), and lets a repeated label carry an
+  `id_suffix`. Tests: 113 run, OK (1 new: a cited result is credited to the cited work, and a citing quote not in
+  the text is refused; the data test now covers every data file and the duplicate rule).
+- **Counts:** 2 sources, 1,842 claims (758 theorems, 860 propositions, 223 corollaries, 1 computation), 15 formal
+  targets, 1 bounded pass (synthetic), 1,841 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json`
+  `0fcc31c951a7b393526914cabf76fe6fac01f1e87cdd986fa2f9517fc8aa11c3`; `site/data/index.json`
+  `6d495eaba9e701ce5ff254dabbca0d8f01ae97598a0caaf3910520f532071fe4`;
+  `tools/intake/openai_math_statements_r004-r049.json` `b14290cb18da82abd8ca8434d495c919a2924430fb74f57c327feccb19deb203`;
+  `tools/intake/openai_math_statements.json` (after the edit) `7b40520857dce99fb47a7ba64fcd47bed1888abdb7a93aa88dd3ec7de61e4298`.
+- **Cost:** 16:26 → 16:41 UTC, about 15 minutes of wall time, including the tool changes above. Machine time:
+  83 s to fetch, extract (twice) and font-scan the 100 PDFs with 8 workers. Context used: about 0.14 M tokens
+  (≈ 1.4 K per manuscript, ≈ 0.11 K per candidate) — a third of the pilot's rate per manuscript because only
+  flagged candidates are read.
+
+## Statements, batch r050–r099
+
+- **Batch:** result families 050–099 without the pilot's (47 families, 87 manuscripts, 3,905 pages, 50.9 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 959 bold-heading lines; 2 of them not candidates (below); **957 candidates, all found verbatim** on their recorded pages; **954 kept** (251 theorems, 532 propositions, 171 corollaries — 28 of them credited to cited work); 10 statement ends cut by hand at recorded text; 1,417 lemma headings not taken.
+- **Not candidates:** r055m1 line 943 — a section line that begins with the label; the heading is at line 948; r068m6 line 769 — a line that begins with the label after the statement; the heading is at line 745.
+- **Rejected (3):** r056 ms5 Corollary 2.5: duplicate of amvo-clm-openai-math-r056-ms4-cor-2-5 (the first is kept); r056 ms5 Corollary 4.7: duplicate of amvo-clm-openai-math-r056-ms4-cor-4-7 (the first is kept); r056 ms5 Proposition A.1: duplicate of amvo-clm-openai-math-r056-ms4-prop-a-1 (the first is kept).
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 2,796 claims (1 computation, 394 corollaries, 1,392 propositions, 1,009 theorems), 15 formal targets, 2,795 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `9449cf5a9ae7421a4bddc0f60e3cd98856a914551fc6d7db1848be113e98233d`; `site/data/index.json` `38731ad21ab0200df09c2a572a976b8becf57556ba901c9a287b0cf88ba1fd5f`; `tools/intake/openai_math_statements_r050-r099.json` `7376fd7fc9545f3a38fa35c0c527a7ea0fe63f3f02c60d1c636d55d81514262c`.
+- **Cost:** 16:41 → 16:46 UTC wall time; 68 s of machine time to fetch, extract (twice) and font-scan the 87 PDFs; about 35 K tokens of context.
+
+## Statements, batch r100–r149
+
+- **Batch:** result families 100–149 without the pilot's (48 families, 85 manuscripts, 3,304 pages, 46.4 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 679 bold-heading lines; 1 of them not candidates (below); **678 candidates, all found verbatim** on their recorded pages; **677 kept** (253 theorems, 293 propositions, 131 corollaries — 19 of them credited to cited work); 6 statement ends cut by hand at recorded text; 1,186 lemma headings not taken.
+- **Not candidates:** r108m1 line 1233 — a line that begins with the label after the statement; the heading is at line 1207.
+- **Rejected (1):** r136 ms1 Theorem 6.1: statement has 4079 characters; the registry's limit is 4000.
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 3,473 claims (1 computation, 525 corollaries, 1,685 propositions, 1,262 theorems), 15 formal targets, 3,472 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `290d6ccc113391963754fd7250721c2cc317286a7f84acc26106341e1d431581`; `site/data/index.json` `10a39fb6fd2b5268b173e6898f3f46d7abe2dc456e9266152d6f2039837fbb6c`; `tools/intake/openai_math_statements_r100-r149.json` `9d2b4e3c1e263082b6d5e3f7138819b309af348ebce83f260809c96729e76694`.
+- **Cost:** 16:44 → 16:49 UTC wall time; 64 s of machine time to fetch, extract (twice) and font-scan the 85 PDFs; about 30 K tokens of context.
+
+## Statements, batch r150–r199
+
+- **Batch:** result families 150–199 without the pilot's (48 families, 69 manuscripts, 2,723 pages, 37.9 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 560 bold-heading lines; 1 of them not candidates (below); **559 candidates, all found verbatim** on their recorded pages; **558 kept** (167 theorems, 285 propositions, 106 corollaries — 18 of them credited to cited work); 4 statement ends cut by hand at recorded text; 1,003 lemma headings not taken.
+- **Not candidates:** r154m2 line 472 — a line that begins with the label after the statement; the heading is at line 396.
+- **Rejected (0), held (1):** r187 ms1 Proposition 5: the extracted text interleaves a figure's labels and caption with this statement, so no verbatim quote of the statement alone exists.
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 4,031 claims (1 computation, 631 corollaries, 1,970 propositions, 1,429 theorems), 15 formal targets, 4,030 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `4b4494a6a8039a6af2152d1e68173bf5ac9447d911491df109f7e2f16ae72732`; `site/data/index.json` `1c5ae315e3c115b08314a6bd76a4ecb88437dc1c939c9d174bc50daae5dd4ab0`; `tools/intake/openai_math_statements_r150-r199.json` `4dad031b474818532cf2c10b8c654584151ba54da0a655fb7713e8dfee347f22`.
+- **Cost:** 16:46 → 16:52 UTC wall time; 48 s of machine time to fetch, extract (twice) and font-scan the 69 PDFs; about 17 K tokens of context.
+
+## Statements, batch r200–r249
+
+- **Batch:** result families 200–249 without the pilot's (49 families, 134 manuscripts, 8,518 pages, 94.8 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 2,047 bold-heading lines; 1 of them not candidates (below); **2,046 candidates, all found verbatim** on their recorded pages; **2,028 kept** (500 theorems, 1241 propositions, 287 corollaries — 46 of them credited to cited work); 17 statement ends cut by hand at recorded text; 2,903 lemma headings not taken.
+- **Not candidates:** r211m5 line 276 — a line that begins with the label after the statement; the heading is at line 223.
+- **Rejected (17), held (1):** r216 ms6 Proposition 3.14: statement has 4435 characters; the registry's limit is 4000; r223 ms6 Theorem 1.2: duplicate of amvo-clm-openai-math-r223-ms1-thm-1-2 (the first is kept); r223 ms6 Proposition 3.2: duplicate of amvo-clm-openai-math-r223-ms1-prop-3-2 (the first is kept); r223 ms6 Proposition 5.3: duplicate of amvo-clm-openai-math-r223-ms1-prop-5-3 (the first is kept); r223 ms6 Proposition 8.1: duplicate of amvo-clm-openai-math-r223-ms1-prop-8-1 (the first is kept); r223 ms6 Proposition 9.2: duplicate of amvo-clm-openai-math-r223-ms1-prop-9-2 (the first is kept); r223 ms6 Theorem 9.3: duplicate of amvo-clm-openai-math-r223-ms1-thm-9-3 (the first is kept); r223 ms6 Proposition 10.1: duplicate of amvo-clm-openai-math-r223-ms1-prop-10-1 (the first is kept); r223 ms6 Corollary 10.2: duplicate of amvo-clm-openai-math-r223-ms1-cor-10-2 (the first is kept); r223 ms6 Proposition 12.2: duplicate of amvo-clm-openai-math-r223-ms1-prop-12-2 (the first is kept); r223 ms6 Corollary 12.6: duplicate of amvo-clm-openai-math-r223-ms1-cor-12-6 (the first is kept); r223 ms6 Theorem 12.9: duplicate of amvo-clm-openai-math-r223-ms1-thm-12-9 (the first is kept); r223 ms6 Proposition 13.4: duplicate of amvo-clm-openai-math-r223-ms1-prop-13-4 (the first is kept); r223 ms6 Proposition 14.3: duplicate of amvo-clm-openai-math-r223-ms1-prop-14-3 (the first is kept); r223 ms6 Proposition 14.4: duplicate of amvo-clm-openai-math-r223-ms1-prop-14-4 (the first is kept); r223 ms6 Proposition 15.7: duplicate of amvo-clm-openai-math-r223-ms1-prop-15-7 (the first is kept); r223 ms6 Theorem 15.8: duplicate of amvo-clm-openai-math-r223-ms1-thm-15-8 (the first is kept); r233 ms1 Corollary 9.3: the extracted text interleaves a figure's labels and caption with this statement, so no verbatim quote of the statement alone exists.
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 6,059 claims (1 computation, 918 corollaries, 3,211 propositions, 1,929 theorems), 15 formal targets, 6,058 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `30291c0bc276bc9ea6913fe39ea844d23f59661b91a14dcecc8b8814ad2070e9`; `site/data/index.json` `4f185b69b2618d9f1b8259a04d36dab86e7c6ac805114cd852e6eaa6e4d6484c`; `tools/intake/openai_math_statements_r200-r249.json` `8deb93f978b2a47efe766f0dfb3c5a98c53e204aa87e071231bb858e7ee08306`.
+- **Cost:** 16:49 → 16:58 UTC wall time; 171 s of machine time to fetch, extract (twice) and font-scan the 134 PDFs; about 38 K tokens of context.
+
+## Statements, batch r250–r299
+
+- **Batch:** result families 250–299 without the pilot's (49 families, 99 manuscripts, 5,073 pages, 61.0 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 1,238 bold-heading lines; 0 of them not candidates (below); **1,238 candidates, all found verbatim** on their recorded pages; **1,237 kept** (299 theorems, 779 propositions, 159 corollaries — 49 of them credited to cited work); 6 statement ends cut by hand at recorded text; 1,968 lemma headings not taken.
+- **Rejected (1):** r260 ms12 Theorem 3.1: duplicate of amvo-clm-openai-math-r260-ms3-thm-4-1 (the first is kept).
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 7,296 claims (1 computation, 1,077 corollaries, 3,990 propositions, 2,228 theorems), 15 formal targets, 7,295 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `f889465b52b1480ca7132a48f9bcafa451ed5872b5ccdd41c4e1964f86302ab8`; `site/data/index.json` `97c9b7ed65cd4155fe8c900a76696737ff9de17461c6f5439830d25d3ce58cc8`; `tools/intake/openai_math_statements_r250-r299.json` `336f06b3e34f952f67c28edbacfab2d75e381c2f5ff3c13a480171ceea5f134f`.
+- **Cost:** 16:52 → 17:00 UTC wall time; 93 s of machine time to fetch, extract (twice) and font-scan the 99 PDFs; about 25 K tokens of context.
+
+## Statements, batch r300–r349
+
+- **Batch:** result families 300–349 without the pilot's (49 families, 78 manuscripts, 3,255 pages, 43.1 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 950 bold-heading lines; 3 of them not candidates (below); **947 candidates, all found verbatim** on their recorded pages; **937 kept** (263 theorems, 527 propositions, 147 corollaries — 23 of them credited to cited work); 10 statement ends cut by hand at recorded text; 1,273 lemma headings not taken.
+- **Not candidates:** r304m1 line 2061 — a second bold heading for Theorem 6.8 (repeat of line 2021) with no statement; r305m2 line 1605 — a second bold heading for Proposition 4.5 (repeat of line 1559) with no statement; r324m2 line 1545 — a second bold heading for Proposition 7.6 (repeat of line 1514) with no statement.
+- **Rejected (10):** r347 ms3 Proposition 2.2: duplicate of amvo-clm-openai-math-r347-ms1-prop-2-2 (the first is kept); r348 ms3 Proposition 2.4: duplicate of amvo-clm-openai-math-r348-ms1-prop-2-4 (the first is kept); r348 ms3 Proposition 2.6: duplicate of amvo-clm-openai-math-r348-ms1-prop-2-6 (the first is kept); r348 ms3 Proposition 3.1: duplicate of amvo-clm-openai-math-r348-ms1-prop-3-1 (the first is kept); r348 ms3 Proposition 3.2: duplicate of amvo-clm-openai-math-r348-ms1-prop-3-2 (the first is kept); r348 ms3 Proposition 3.3: duplicate of amvo-clm-openai-math-r348-ms1-prop-3-3 (the first is kept); r348 ms3 Proposition 4.1: duplicate of amvo-clm-openai-math-r348-ms1-prop-4-1 (the first is kept); r348 ms3 Proposition 4.9: duplicate of amvo-clm-openai-math-r348-ms1-prop-4-8 (the first is kept); r348 ms3 Proposition 5.7: duplicate of amvo-clm-openai-math-r348-ms1-prop-5-7 (the first is kept); r348 ms3 Proposition 6.1: duplicate of amvo-clm-openai-math-r348-ms1-prop-6-1 (the first is kept).
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 8,233 claims (1 computation, 1,224 corollaries, 4,517 propositions, 2,491 theorems), 15 formal targets, 8,232 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `14e7d31506e110ce2874f777de11468e393ae0bd0b9a4b376d793d8f7bdc8102`; `site/data/index.json` `2ebbd1776748af4f10e77d26adf28baba1807556fc27c71b2f19f4bb2e06d3de`; `tools/intake/openai_math_statements_r300-r349.json` `2639ee4b16b8abe7edc58a6e4796d942320fa22df866d7b86277f9a6a5dcc8de`.
+- **Cost:** 16:58 → 17:05 UTC wall time; 57 s of machine time to fetch, extract (twice) and font-scan the 78 PDFs; about 45 K tokens of context.
+
+## Statements, batch r350–r377
+
+- **Batch:** result families 350–377 without the pilot's (27 families, 49 manuscripts, 2,049 pages, 27.2 MB); same commit, extraction, check and review by exception as batch r004–r049.
+- **Result:** 447 bold-heading lines; 2 of them not candidates (below); **445 candidates, all found verbatim** on their recorded pages; **444 kept** (137 theorems, 251 propositions, 56 corollaries — 13 of them credited to cited work); 3 statement ends cut by hand at recorded text; 771 lemma headings not taken.
+- **Not candidates:** r350m1 line 203 — a second bold heading for Theorem 2.2 (repeat of line 175) with no statement; r356m1 line 1811 — a second bold heading for Theorem 4.1 (repeat of line 1784) with no statement.
+- **Rejected (1):** r355 ms1 Proposition 4.4: statement has 6067 characters; the registry's limit is 4000.
+- **Tests:** 113 run, OK; `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+- **Counts:** 2 sources, 8,677 claims (1 computation, 1,280 corollaries, 4,768 propositions, 2,628 theorems), 15 formal targets, 8,676 not checked, 0 kernel runs, 0 theorems proved.
+- **Evidence (SHA-256):** `build/registry.json` `79dfcbc75c3729282334d08ddbfa932969033f9461325a01d37031822edabb12`; `site/data/index.json` `8263060801fc5d3944a00f7abe8846bb89f91a216197cbac189a07d6afad09ec`; `tools/intake/openai_math_statements_r350-r377.json` `4d84e4f4870c8e816f53da00c38a789e56ed705e921fda8d3ef6b081aa356188`.
+- **Cost:** 17:00 → 17:08 UTC wall time; 37 s of machine time to fetch, extract (twice) and font-scan the 49 PDFs; about 25 K tokens of context.
+
+## Formal targets, every other Lean page
+
+- **Scope:** the 236 `lean/docs/NNN.md` pages of openai/math at `1581d4c` that the pilot did not cover, with
+  the comparator files and configurations they list (1,042 files, fetched as git blobs from the pinned tree
+  and checked against their blob ids; read as text, nothing installed, compiled or run).
+- **Result:** **521 FormalTargets on 235 family claims**, one per theorem a comparator configuration names
+  (510 `theorem`, 11 `lemma`). With the pilot's 15: 536 targets on 241 families, all
+  `SEMANTIC_ALIGNMENT_PENDING` with `formal_kernel: not_run`. Not registered: r169's only configuration
+  (ElementaryPositivity.json) names definitions and no theorem; 14 rows list a comparator file a page already
+  lists under another result, so its theorems are registered once, under the first row; r376
+  ForcedNavierStokesComputation.lean declares `OAI.BalancedTransport.balanced_three_stack_realization` again
+  (the same declaration as BalancedThreeStack.lean), and the registry holds one target per theorem name and
+  claim, so only the first file is registered.
+- **Declarations:** each `exact_statement` runs from `theorem`/`lemma` to the `:=` that ends the declaration.
+  Scanning found that the first `:=` at bracket depth 0 is not always that one: six statements bind names
+  inside the statement (`let x := …`, `letI := …`), and stopping there would have cut them short while
+  still passing the pilot's "followed by `:=`" check. `openai_math_formal.py` now finds the end itself
+  (comments blanked, brackets and `let`/`have`/`letI`/`haveI` bindings tracked) and refuses a quoted
+  declaration that stops early; it also accepts universe parameters in the declared name
+  (`theorem one_sample.{u}`), records an `enable_nanoda` a configuration leaves unset as unset (2
+  configurations), and refuses two targets that map to one id. The pilot's 15 objects are unchanged.
+- **Quotes:** the correspondence field holds at most 1,200 characters, so the page's words are chosen by a
+  fixed rule rather than by hand: the Scope section's paragraphs in page order, whole, as many as fit; then
+  the leading whole sentences of the next paragraph that fit. All of Scope is quoted for 246 targets, its
+  opening for 275. The quote is the page's description, not a match of this row to a paragraph.
+- **Tests:** 114 run, OK (one new: a declaration ends at its own `:=`, not at a binding or a comment inside
+  it; a cut-short declaration and an unset `enable_nanoda` are refused or recorded; the data test now covers
+  every formal-target file); `validate`, `audit-public`, `verify`, `registry-report`, `build-site` exit 0.
+  Re-running the tool: 0 new, 521 unchanged.
+- **Counts:** 2 sources, 8,677 claims, 536 formal targets, 8,676 not checked, 0 kernel runs, 0 theorems
+  proved.
+- **Evidence (SHA-256):** `build/registry.json` `a6586dfcbd6893ff9c229afeb32ad041acc5c543680282d9253cc54f109691f4`;
+  `site/data/index.json` `ee61fd8c5a1f6308f25a77c9f14065e86c7d73cf3aab07ef4ec398fcab577483`;
+  `tools/intake/openai_math_formal_targets_rest.json`
+  `99bf740bb1f4526dffcb56f07c2f982ecef148a923658cf964fd08dbd2ecc891`.
+- **Cost:** 17:09 → 17:26 UTC wall time, of which 6 min fetching the 1,077 Lean-tree blobs; about 60 K tokens
+  of context.
+
+## Presentation — whose word "theorem" is
+
+- **Change:** a claim card no longer opens with a bare type word. Where the claim's location names the numbered
+  heading it was quoted under, the card reads `原稿標示：Theorem · 未檢查 · <location>` (the manuscript's own
+  label); otherwise `AMVO 歸類：theorem（非原稿標示）· 未檢查 · <location>`. The status word is `未檢查` while the
+  claim is `NOT_CHECKED` and `已有檢查，見下` otherwise. The registry report now carries each claim's `location`
+  (the page already tried to show it, but the report never passed it). No registry object changes.
+- **What the page now says (headless Chromium, 1280 and 375 px, 8,677 cards, no horizontal overflow):**
+  2,256 `原稿標示：Theorem`, 4,768 `原稿標示：Proposition`, 1,280 `原稿標示：Corollary`; 372 family claims read
+  `AMVO 歸類：theorem（非原稿標示）` — their type was set by AMVO's family intake from CONTENTS.md summaries, not
+  by any manuscript heading, and those objects are already on main; 1 synthetic demo reads
+  `AMVO 歸類：computation（非原稿標示）· 已有檢查，見下`.
+- **Tests:** 114 run, OK (the site test now checks that the report's location is the object's, and that every
+  statement claim's location names its heading while no family claim's does); `validate`, `audit-public`,
+  `verify`, `registry-report`, `build-site` exit 0.

@@ -95,6 +95,17 @@ function pinText(rev) {
   return rev.version_label + " · " + pin + state + when;
 }
 
+// the type word is the source's own label only when the location names the numbered heading it was quoted under;
+// otherwise it is AMVO's classification and says so
+function claimKind(c) {
+  const type = c.claim_type || "other";
+  const word = type.charAt(0).toUpperCase() + type.slice(1);
+  const labelled = (c.location || "").split(", ").some((part) => part.startsWith(word + " "));
+  const basis = labelled ? "原稿標示：" + word : "AMVO 歸類：" + type + "（非原稿標示）";
+  const checked = c.statuses.includes("NOT_CHECKED") ? "未檢查" : "已有檢查，見下";
+  return basis + " · " + checked + (c.location ? " · " + c.location : "");
+}
+
 function makeClaim(c, ctx) {
   const card = el("article", "claim");
   const header = el("div", "record-header");
@@ -104,7 +115,7 @@ function makeClaim(c, ctx) {
   header.append(pills);
   card.append(header);
 
-  card.append(el("p", "claim-kind", (c.claim_type || "other") + (c.location ? " · " + c.location : "")));
+  card.append(el("p", "claim-kind", claimKind(c)));
   card.append(el("h3", "statement", c.statement));
   card.append(el("p", "scope", "範圍：" + c.scope));
 

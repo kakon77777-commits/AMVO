@@ -1,0 +1,510 @@
+{
+ "schema": "amvo-intake-formal-targets/1",
+ "source": "https://github.com/openai/math",
+ "commit": "1581d4cbdd69a0faf34b2089614fe2a814316a6a",
+ "toolchain": {
+  "lean_toolchain": "leanprover/lean4:v4.34.1",
+  "mathlib_rev": "d13f23b723b8a846827a245b89c10fc7d3f11612"
+ },
+ "files": {
+  "lean/ComparatorChallenges/CriticalPercolation.json": {
+   "sha256": "88eee765d329a72ee5b37111a1c46259002b94cb427cd1b1dee182740e547a54",
+   "git_blob": "c6a4297770e57f18fbda8a1c172fa05d0dac4ed5"
+  },
+  "lean/ComparatorChallenges/CriticalPercolation.lean": {
+   "sha256": "cff7e946579873434b64ed4679d21ad9f07ac77958af69952d28826136b7e528",
+   "git_blob": "5c169f9f897c35165672a2070cdf4a3cec85e5d3"
+  },
+  "lean/ComparatorChallenges/CriticalZ3.json": {
+   "sha256": "ab3de20c993f7c3823a26577052b8bf950e310841e990ea604a4bdaa83b85e4c",
+   "git_blob": "9c57c7529b86caab8cdc838dc36fc47c6dd066a6"
+  },
+  "lean/ComparatorChallenges/CriticalZ3.lean": {
+   "sha256": "34ea3ff4648b6ea92c3e7d94bcb7b66047a9d0fbd1f583c461c34636cbb854d8",
+   "git_blob": "56e93b89a55e098ad924270cd85ec9f5754fd57f"
+  },
+  "lean/ComparatorChallenges/DirichletSevenEighths.json": {
+   "sha256": "cfc8d85d49ec5f180e75990d95c59c45f9bd5b9f453a101308870b9c4df9e1d9",
+   "git_blob": "a946bfcf544ad212fbd46056dbff913c2d75247c"
+  },
+  "lean/ComparatorChallenges/DirichletSevenEighths.lean": {
+   "sha256": "8fb13ad977bca104591fcbc6ef01a58496e7385053c9b1445f95749afc0eff54",
+   "git_blob": "baa55bebc509e8aed472a293e884de5ae2884508"
+  },
+  "lean/ComparatorChallenges/ElasticityUniqueness.json": {
+   "sha256": "91b68c7c74c9e3a29813b2a205d9d078072bc69de056d9ef980304258fdf8444",
+   "git_blob": "d35e9d039a184a87f2594a57185dbf67d3facec2"
+  },
+  "lean/ComparatorChallenges/ElasticityUniqueness.lean": {
+   "sha256": "c4c928a811cce5bd5bc46642e8dbf7e6ffd698856f1bf6ff12a511dddfaccb20",
+   "git_blob": "6f68a5b3ff2d69b7f43b7d2b3b4576e490b208cc"
+  },
+  "lean/ComparatorChallenges/HadamardCubeFiber.json": {
+   "sha256": "bcb65530d2cee7c6377770c945ff888b1b3534a42195091a9abbb92976178698",
+   "git_blob": "523adb1af0185b2c893afe948daa80eb1aedb349"
+  },
+  "lean/ComparatorChallenges/HadamardCubeFiber.lean": {
+   "sha256": "9f412781be8b38c88a6efb3a4528d4c990071a233cd931612d4710213d6366a1",
+   "git_blob": "815e8a2d54b071bf057655eddf2301ac544d84c4"
+  },
+  "lean/ComparatorChallenges/HeckeSevenEighths.json": {
+   "sha256": "04eb947847df3c1717bdb660f70a74600d0991490bb67d52cbcf0b3186e0bd5e",
+   "git_blob": "139442c594171660b9e4ce80ab01aa978bb32c51"
+  },
+  "lean/ComparatorChallenges/HeckeSevenEighths.lean": {
+   "sha256": "cb5e404fa65a502c0a9006b9ad45c28914feb79e4b7b1ffcf05e4af82ed0cfc2",
+   "git_blob": "dbeb6414a5ddd497a321490a812a6987311fa101"
+  },
+  "lean/ComparatorChallenges/MUBSix.json": {
+   "sha256": "44b6a812682454988656f7c4cc85629d1cba5b3725f8cf3c03677c4f2535358f",
+   "git_blob": "e7ca6af996cfe93e34d55bba7a9c78e42bd01769"
+  },
+  "lean/ComparatorChallenges/MUBSix.lean": {
+   "sha256": "7a634ee492b54abe357901a69272c42aa8dfc85b7a3401eef723468bb0c6c355",
+   "git_blob": "c4175d7e59389fdc09abcff6935902c4df73122e"
+  },
+  "lean/ComparatorChallenges/MatrixFields.json": {
+   "sha256": "7982a57ecaab76e22ab14d62e1145f30e98672ae690101ff96f78bb2a311a72d",
+   "git_blob": "ea0bc98d111a6298b8a786a17b024d9597eb1a2a"
+  },
+  "lean/ComparatorChallenges/MatrixFields.lean": {
+   "sha256": "fe4f7ef409f69f7ef9542c6672e091c9cb6505e0d17c41cda01a2924c2729bc6",
+   "git_blob": "e11c17d138ef17d88bda99570ca2cc2d5825d551"
+  },
+  "lean/ComparatorChallenges/MatrixMultiplication.json": {
+   "sha256": "95a2e1557bef8931bdaa3da5c0ae969e5991f53199798b512d69e907f8a81288",
+   "git_blob": "05b80f27b970063376d5b76b83cdc9558f3aeef9"
+  },
+  "lean/ComparatorChallenges/MatrixMultiplication.lean": {
+   "sha256": "9a411f75929179604218e1cf84de34792e05acf40b15096ad4178ba21defa8eb",
+   "git_blob": "877d7ee3901c51382cf5bcb059a50d8dbb3cde77"
+  },
+  "lean/ComparatorChallenges/QuantitativeVanDerWaerden.json": {
+   "sha256": "0fcea93df537b8451e08f27d23231cb1b05b515afee53c5d1d8b33dfcfd814fa",
+   "git_blob": "10b1770000baae70cfe28b4890143ff9960273af"
+  },
+  "lean/ComparatorChallenges/QuantitativeVanDerWaerden.lean": {
+   "sha256": "1caa563bbf7a5602adb8cdbbc06aaf1e3d4d5fe27ed4bebf2bf44cf2937a6593",
+   "git_blob": "bee3f5a820455ead2a00f8fdc08d4ae5276cba2a"
+  },
+  "lean/ComparatorChallenges/QuasiRiemannHypothesis.json": {
+   "sha256": "46ebb7edc11f69536210f502b4bcbd36bbaf3f0872c16748b6c8ce43991bf320",
+   "git_blob": "acf552468fc23c1a27d685d33983c58c50040542"
+  },
+  "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean": {
+   "sha256": "065f8c9a01d28db78c8b1bfc5083b535082a2d2aac2230d563f98b8caa812cc5",
+   "git_blob": "e7d1caf6c579dc9afbf0d2b01f79e5cd2511b028"
+  },
+  "lean/ComparatorChallenges/README.md": {
+   "sha256": "2ed835b3c59709be6feffe0dec54fc9783fb26aa22d35517475a82ef5199c555",
+   "git_blob": "8ce7be24bf62c66104be5f733d168301ead4e4f3"
+  },
+  "lean/ComparatorChallenges/SiegelZeros.json": {
+   "sha256": "620696740156c4503f27ac17760adf1b638f621ad81ab4cde7a0f8df32c4b643",
+   "git_blob": "25989d64aa0ee538fed5921864ddfad283e61e27"
+  },
+  "lean/ComparatorChallenges/SiegelZeros.lean": {
+   "sha256": "bedaac0248a641910f79a380d9702d82c6bfbbfd3760a69d27c72c5d8fb136ce",
+   "git_blob": "8bab3f83ef57af55c5826318b6c92df84117395f"
+  },
+  "lean/docs/003.md": {
+   "sha256": "41e52ed718260e6feb1db218f8e97287e703cb63c6f16e6c36f5563e6e2395ce",
+   "git_blob": "cf794e93da2e1a494434153f5b91f2990fe9fd60"
+  },
+  "lean/docs/107.md": {
+   "sha256": "7c7263cfecc5a16d20165952ac3010598c3770b441d7d8fe2c5ceb8eda1c3347",
+   "git_blob": "b80de2d2cbef9b933a637978c6ea79a394a89b72"
+  },
+  "lean/docs/160.md": {
+   "sha256": "8189153b6a5747cbcbea25920f90ab907091d789586e39c8154a153ebe6fdb98",
+   "git_blob": "9790b3a2e07815023f04a08d51885fef3098caf3"
+  },
+  "lean/docs/213.md": {
+   "sha256": "c42f93f6e99657086bb87d66e4b8c84e13f501decad985dde4474b5a0bb3d728",
+   "git_blob": "9eb68659945d33920576e9193f6e3395fe156213"
+  },
+  "lean/docs/266.md": {
+   "sha256": "3141714e25026b26a4028e27ee001e70295310bad4290b5a8f7c9fd546e8a174",
+   "git_blob": "7c20d45303024a7e0ac7db1e65e95b24eec0f81d"
+  },
+  "lean/docs/372.md": {
+   "sha256": "5c6a8e21366181a580d561cfdc50d32306ac2f428ea487084db21bc5d603e3d6",
+   "git_blob": "2d818b463d3b4c98c181639b1b56d300eb3fa445"
+  },
+  "lean/lake-manifest.json": {
+   "sha256": "cf6105a25d9dca2f166b241d9191bd12c7e13305890dc9c4d0952351cccc0794",
+   "git_blob": "67d01d2717d0aaff59fb8814bb53581b961f42b4"
+  },
+  "lean/lean-toolchain": {
+   "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+   "git_blob": "ba8ebf2dbaf6a668cd2a0e086186d6d569b69ff5"
+  }
+ },
+ "targets": [
+  {
+   "family": 3,
+   "doc": "lean/docs/003.md",
+   "papers": [
+    "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane $\\Re(s)>7/8$",
+    "Uniform exclusion of Landau–Siegel zeros"
+   ],
+   "result": "Riemann zeta $7/8$ bound",
+   "lean_file": "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean",
+   "config": "lean/ComparatorChallenges/QuasiRiemannHypothesis.json",
+   "theorem_name": "OAI.riemannZeta_ne_zero_of_seven_eighths_lt_re",
+   "exact_statement": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0",
+   "solution_module": "OAI.NumberTheory.DirichletL.Nonvanishing",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The quasi-Riemann hypothesis asks for a fixed zero-free half-plane $\\Re s>\\theta$ with $\\theta<1$. The formalization gives $\\theta=7/8$ for the Riemann zeta function and every Dirichlet $L$-function, uniformly over all positive moduli and all characters. It also establishes the same bound for finite-order Hecke $L$-functions over $\\mathbb Q(\\sqrt{-3})$.",
+    "The principal-character poles at $s=1$ are excluded in the Dirichlet and Hecke statements. The paper's later applications are not included."
+   ],
+   "comparators_on_page": 4
+  },
+  {
+   "family": 3,
+   "doc": "lean/docs/003.md",
+   "papers": [
+    "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane $\\Re(s)>7/8$",
+    "Uniform exclusion of Landau–Siegel zeros"
+   ],
+   "result": "Dirichlet $L$-function $7/8$ bound",
+   "lean_file": "lean/ComparatorChallenges/DirichletSevenEighths.lean",
+   "config": "lean/ComparatorChallenges/DirichletSevenEighths.json",
+   "theorem_name": "OAI.DirichletCharacter.LFunction_ne_zero_of_seven_eighths_lt_re",
+   "exact_statement": "theorem LFunction_ne_zero_of_seven_eighths_lt_re\n    {q : ℕ} [NeZero q] (χ : DirichletCharacter ℂ q) {s : ℂ}\n    (hs : (7 / 8 : ℝ) < s.re) (hpole : ¬ (χ = 1 ∧ s = 1)) :\n    _root_.DirichletCharacter.LFunction χ s ≠ 0",
+   "solution_module": "OAI.NumberTheory.DirichletL.Nonvanishing",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The quasi-Riemann hypothesis asks for a fixed zero-free half-plane $\\Re s>\\theta$ with $\\theta<1$. The formalization gives $\\theta=7/8$ for the Riemann zeta function and every Dirichlet $L$-function, uniformly over all positive moduli and all characters. It also establishes the same bound for finite-order Hecke $L$-functions over $\\mathbb Q(\\sqrt{-3})$.",
+    "The principal-character poles at $s=1$ are excluded in the Dirichlet and Hecke statements. The paper's later applications are not included."
+   ],
+   "comparators_on_page": 4
+  },
+  {
+   "family": 3,
+   "doc": "lean/docs/003.md",
+   "papers": [
+    "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane $\\Re(s)>7/8$",
+    "Uniform exclusion of Landau–Siegel zeros"
+   ],
+   "result": "Finite-order Hecke $L$-function $7/8$ bound",
+   "lean_file": "lean/ComparatorChallenges/HeckeSevenEighths.lean",
+   "config": "lean/ComparatorChallenges/HeckeSevenEighths.json",
+   "theorem_name": "OAI.SevenEighths.HeckeFamily.LFunction_ne_zero_of_seven_eighths_lt_re",
+   "exact_statement": "theorem LFunction_ne_zero_of_seven_eighths_lt_re\n    (χ : Character) {s : ℂ} (hs : (7 / 8 : ℝ) < s.re)\n    (hpole : ¬ (χ.residue = 1 ∧ s = 1)) : LFunction χ s ≠ 0",
+   "solution_module": "OAI.NumberTheory.DirichletL.Hecke.Nonvanishing",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The quasi-Riemann hypothesis asks for a fixed zero-free half-plane $\\Re s>\\theta$ with $\\theta<1$. The formalization gives $\\theta=7/8$ for the Riemann zeta function and every Dirichlet $L$-function, uniformly over all positive moduli and all characters. It also establishes the same bound for finite-order Hecke $L$-functions over $\\mathbb Q(\\sqrt{-3})$.",
+    "The principal-character poles at $s=1$ are excluded in the Dirichlet and Hecke statements. The paper's later applications are not included."
+   ],
+   "comparators_on_page": 4
+  },
+  {
+   "family": 3,
+   "doc": "lean/docs/003.md",
+   "papers": [
+    "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane $\\Re(s)>7/8$",
+    "Uniform exclusion of Landau–Siegel zeros"
+   ],
+   "result": "Uniform real-zero gap",
+   "lean_file": "lean/ComparatorChallenges/SiegelZeros.lean",
+   "config": "lean/ComparatorChallenges/SiegelZeros.json",
+   "theorem_name": "OAI.SiegelZeros.WeightedTorusJets.exists_absolute_real_zero_gap",
+   "exact_statement": "theorem exists_absolute_real_zero_gap :\n    ∃ c : ℝ, 0 < c ∧\n      ∀ (q : ℕ) [NeZero q], 3 ≤ q →\n      ∀ χ : DirichletCharacter ℂ q,\n        χ.IsPrimitive → χ ≠ 1 → (∀ a : ZMod q, (χ a).im = 0) →\n        ∀ β : ℝ, 0 < β → β < 1 → χ.LFunction (β : ℂ) = 0 →\n          c ≤ (1 - β) * Real.log (q : ℝ)",
+   "solution_module": "OAI.NumberTheory.SiegelZeros.Main",
+   "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalized result gives a uniform logarithmic exclusion region for Landau–Siegel zeros. There is one constant $c>0$ such that every primitive nonprincipal real Dirichlet character of conductor $q\\ge3$ and every real zero $0<\\beta<1$ of its $L$-function satisfy $1-\\beta\\ge c/\\log q$.",
+    "Both character parities are included. No explicit value of $c$ is given. This excludes real zeros in $1-c/\\log q<\\beta<1$, but does not rule out real zeros elsewhere in $(0,1)$."
+   ],
+   "comparators_on_page": 4
+  },
+  {
+   "family": 3,
+   "doc": "lean/docs/003.md",
+   "papers": [
+    "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane $\\Re(s)>7/8$",
+    "Uniform exclusion of Landau–Siegel zeros"
+   ],
+   "result": "Uniform real-zero gap",
+   "lean_file": "lean/ComparatorChallenges/SiegelZeros.lean",
+   "config": "lean/ComparatorChallenges/SiegelZeros.json",
+   "theorem_name": "OAI.SiegelZeros.WeightedTorusJets.dirichletRealZeroBound_proof",
+   "exact_statement": "theorem WeightedTorusJets.dirichletRealZeroBound_proof :\n    ∃ c : ℝ, 0 < c ∧ ∀ (q : ℕ) [NeZero q], 3 ≤ q →\n      ∀ χ : DirichletCharacter ℂ q,\n        χ.IsPrimitive → χ ≠ 1 → (∀ a : ZMod q, (χ a).im = 0) →\n        ∀ β : ℝ,\n          (0 < β ∧ β < 1 ∧ DirichletCharacter.LFunction χ (β : ℂ) = 0) →\n            c ≤ (1 - β) * Real.log (q : ℝ)",
+   "solution_module": "OAI.NumberTheory.SiegelZeros.Main",
+   "permitted_axioms": [
+    "propext",
+    "Classical.choice",
+    "Quot.sound"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalized result gives a uniform logarithmic exclusion region for Landau–Siegel zeros. There is one constant $c>0$ such that every primitive nonprincipal real Dirichlet character of conductor $q\\ge3$ and every real zero $0<\\beta<1$ of its $L$-function satisfy $1-\\beta\\ge c/\\log q$.",
+    "Both character parities are included. No explicit value of $c$ is given. This excludes real zeros in $1-c/\\log q<\\beta<1$, but does not rule out real zeros elsewhere in $(0,1)$."
+   ],
+   "comparators_on_page": 4
+  },
+  {
+   "family": 107,
+   "doc": "lean/docs/107.md",
+   "papers": [
+    "Complex Matrix Multiplication Below 2.258 and Rectangular Bounds",
+    "Staggered extraction for exact matrix multiplication over every field"
+   ],
+   "result": "Complex square, dual, and rectangular exponent bounds",
+   "lean_file": "lean/ComparatorChallenges/MatrixMultiplication.lean",
+   "config": "lean/ComparatorChallenges/MatrixMultiplication.json",
+   "theorem_name": "OAI.MatrixMultiplication.complex_omega_le_nine_quarters",
+   "exact_statement": "theorem complex_omega_le_nine_quarters :\n    Arithmetic.omega ℂ ≤ (9 : ℝ) / 4",
+   "solution_module": "OAI.LinearAlgebra.MatrixMultiplication.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalized results bound the complex matrix-multiplication exponent by $\\omega(\\mathbb C)\\le9/4$, the dual exponent by $\\alpha>0.465$, and the rectangular exponent at aspect ratio $0.709$ by $\\omega(\\mathbb C;1,0.709,1)<2.092$. The dual exponent is the supremum of rectangular aspect ratios attainable with exponent $2$. The arithmetic model counts additions, subtractions, and multiplications in finite division-free programs, with arbitrary positive exponent slack. The square bound implies the paper's weaker $2.258$ headline bound."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 107,
+   "doc": "lean/docs/107.md",
+   "papers": [
+    "Complex Matrix Multiplication Below 2.258 and Rectangular Bounds",
+    "Staggered extraction for exact matrix multiplication over every field"
+   ],
+   "result": "Complex square, dual, and rectangular exponent bounds",
+   "lean_file": "lean/ComparatorChallenges/MatrixMultiplication.lean",
+   "config": "lean/ComparatorChallenges/MatrixMultiplication.json",
+   "theorem_name": "OAI.MatrixMultiplication.complex_alpha_gt_93_div_200",
+   "exact_statement": "theorem complex_alpha_gt_93_div_200 :\n    (93 : ℝ) / 200 < Arithmetic.complexAlpha",
+   "solution_module": "OAI.LinearAlgebra.MatrixMultiplication.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalized results bound the complex matrix-multiplication exponent by $\\omega(\\mathbb C)\\le9/4$, the dual exponent by $\\alpha>0.465$, and the rectangular exponent at aspect ratio $0.709$ by $\\omega(\\mathbb C;1,0.709,1)<2.092$. The dual exponent is the supremum of rectangular aspect ratios attainable with exponent $2$. The arithmetic model counts additions, subtractions, and multiplications in finite division-free programs, with arbitrary positive exponent slack. The square bound implies the paper's weaker $2.258$ headline bound."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 107,
+   "doc": "lean/docs/107.md",
+   "papers": [
+    "Complex Matrix Multiplication Below 2.258 and Rectangular Bounds",
+    "Staggered extraction for exact matrix multiplication over every field"
+   ],
+   "result": "Complex square, dual, and rectangular exponent bounds",
+   "lean_file": "lean/ComparatorChallenges/MatrixMultiplication.lean",
+   "config": "lean/ComparatorChallenges/MatrixMultiplication.json",
+   "theorem_name": "OAI.MatrixMultiplication.complex_rectangular_omega_lt_523_div_250",
+   "exact_statement": "theorem complex_rectangular_omega_lt_523_div_250 :\n    Arithmetic.rectangularOmega ℂ ((709 : ℝ) / 1000) < (523 : ℝ) / 250",
+   "solution_module": "OAI.LinearAlgebra.MatrixMultiplication.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalized results bound the complex matrix-multiplication exponent by $\\omega(\\mathbb C)\\le9/4$, the dual exponent by $\\alpha>0.465$, and the rectangular exponent at aspect ratio $0.709$ by $\\omega(\\mathbb C;1,0.709,1)<2.092$. The dual exponent is the supremum of rectangular aspect ratios attainable with exponent $2$. The arithmetic model counts additions, subtractions, and multiplications in finite division-free programs, with arbitrary positive exponent slack. The square bound implies the paper's weaker $2.258$ headline bound."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 107,
+   "doc": "lean/docs/107.md",
+   "papers": [
+    "Complex Matrix Multiplication Below 2.258 and Rectangular Bounds",
+    "Staggered extraction for exact matrix multiplication over every field"
+   ],
+   "result": "Matrix-multiplication exponent over every field",
+   "lean_file": "lean/ComparatorChallenges/MatrixFields.lean",
+   "config": "lean/ComparatorChallenges/MatrixFields.json",
+   "theorem_name": "OAI.MatrixAllFields.MatrixMultiplication.AllFieldMain.omega_lt_source_constant",
+   "exact_statement": "theorem omega_lt_source_constant (F : Type u) [Field F] :\n    Arithmetic.omega F < (2371054886006746 : ℝ) / 10 ^ 15 ∧\n    (2371054886006746 : ℝ) / 10 ^ 15 < (2371056 : ℝ) / 10 ^ 6",
+   "solution_module": "OAI.LinearAlgebra.MatrixFields.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalized result gives the unconditional bound $\\omega(F)<2.371054886006746$ for every field $F$, including finite fields and fields of positive characteristic. The exponent counts additions, subtractions, and multiplications in finite division-free arithmetic programs, with arbitrary positive exponent slack. No numerical inequalities remain as hypotheses. The result concerns arithmetic complexity, rather than bit complexity or practical crossover sizes."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 160,
+   "doc": "lean/docs/160.md",
+   "papers": [
+    "Quantitative Superexponential Bounds for van der Waerden Numbers"
+   ],
+   "result": "Uniform van der Waerden lower bound",
+   "lean_file": "lean/ComparatorChallenges/QuantitativeVanDerWaerden.lean",
+   "config": "lean/ComparatorChallenges/QuantitativeVanDerWaerden.json",
+   "theorem_name": "OAI.QuantitativeVanDerWaerden.uniform_lower_bound",
+   "exact_statement": "theorem uniform_lower_bound :\n    ∃ K : ℕ, ∀ k ≥ K, ∀ r ≥ 2,\n      (k : ℝ) ^ ((1 / 100000 : ℝ) * k * (Nat.log 2 r : ℝ)) < (W r k : ℝ)",
+   "solution_module": "OAI.Combinatorics.ProgressionColoring.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "Let $W(r,k)$ be the least interval length forcing a monochromatic $k$-term arithmetic progression in every coloring with at most $r$ colors. The formalized result gives an absolute threshold $K$ such that $W(r,k)>k^{k\\lfloor\\log_2 r\\rfloor/100000}$ for all $k\\ge K$ and $r\\ge2$. It also establishes the associated growth limits, finiteness, and boundary values. The sharper intermediate estimates used in the paper are not part of the described formalization."
+   ],
+   "comparators_on_page": 1
+  },
+  {
+   "family": 213,
+   "doc": "lean/docs/213.md",
+   "papers": [
+    "Critical bond and site percolation on the cubic lattice",
+    "No percolation at criticality on quasi-transitive graphs"
+   ],
+   "result": "No infinite critical clusters on $\\mathbb Z^3$",
+   "lean_file": "lean/ComparatorChallenges/CriticalZ3.lean",
+   "config": "lean/ComparatorChallenges/CriticalZ3.json",
+   "theorem_name": "OAI.CriticalZ3.critical_no_infinite",
+   "exact_statement": "theorem critical_no_infinite :\n    (∀ᵐ ω ∂bondLaw bondCritical, ∀ x : Vertex, (bondCluster ω x).Finite) ∧\n    (∀ᵐ ω ∂siteLaw siteCritical, ∀ x : Vertex, (siteCluster ω x).Finite)",
+   "solution_module": "OAI.Probability.CriticalZ3.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The critical-percolation question asks whether an infinite cluster can remain at the threshold. The formalized result proves that, at their respective critical probabilities, nearest-neighbor bond and site percolation on $\\mathbb Z^3$ almost surely have no infinite cluster. Equivalently, almost surely every vertex belongs to a finite cluster in each model."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 213,
+   "doc": "lean/docs/213.md",
+   "papers": [
+    "Critical bond and site percolation on the cubic lattice",
+    "No percolation at criticality on quasi-transitive graphs"
+   ],
+   "result": "No infinite cluster at the critical probability",
+   "lean_file": "lean/ComparatorChallenges/CriticalPercolation.lean",
+   "config": "lean/ComparatorChallenges/CriticalPercolation.json",
+   "theorem_name": "OAI.CriticalPercolation.BondGraph.no_percolation_at_criticality",
+   "exact_statement": "theorem no_percolation_at_criticality [Infinite V]\n    (hconnected : G.fullGraph.Connected)\n    (hlocal : G.LocallyFinite)\n    (hquasi : G.QuasiTransitive)\n    (hpc : G.criticalProbability < 1) :\n    G.law G.criticalProbability G.percolates = 0",
+   "solution_module": "OAI.Probability.CriticalPercolation.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalization proves absence of an infinite cluster at criticality for Bernoulli bond percolation on every infinite connected locally finite quasi-transitive graph with critical probability $p_c<1$. At $p=p_c$, the probability that any infinite cluster exists is zero. The graph model permits bond multiplicities."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 266,
+   "doc": "lean/docs/266.md",
+   "papers": [
+    "The maximum number of mutually unbiased bases in dimension six",
+    "Exact Fourier certificates for complex Hadamard matrices of order six"
+   ],
+   "result": "Order-six Hadamard Fourier vanishing and a five-basis upper bound",
+   "lean_file": "lean/ComparatorChallenges/MUBSix.lean",
+   "config": "lean/ComparatorChallenges/MUBSix.json",
+   "theorem_name": "OAI.MUB6.fourier_and_family_bound",
+   "exact_statement": "theorem fourier_and_family_bound :\n    (∀ H : CMatrix, IsHadamard H → ¬Equivalent H tao →\n      ∀ π : Equiv.Perm Coord, g H (permuteCharge π alpha) = 0) ∧\n    (∀ n : ℕ, Attainable n → n ≤ 5)",
+   "solution_module": "OAI.Analysis.MutuallyUnbiased.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The paper claims that at most three mutually unbiased orthonormal bases exist in $\\mathbb C^6$. The linked formalization proves a weaker family bound: every family in its mutually unbiased bases model has at most five members. It also proves a Fourier character-sum vanishing statement for order-six complex Hadamard matrices not equivalent to the Tao matrix, uniformly over coordinate permutations.",
+    "The selected statement does not establish the paper's upper bound of three or its computer-assisted exclusion of four arbitrary bases."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 266,
+   "doc": "lean/docs/266.md",
+   "papers": [
+    "The maximum number of mutually unbiased bases in dimension six",
+    "Exact Fourier certificates for complex Hadamard matrices of order six"
+   ],
+   "result": "Cube-fiber cancellation for order-six Hadamard row ratios",
+   "lean_file": "lean/ComparatorChallenges/HadamardCubeFiber.lean",
+   "config": "lean/ComparatorChallenges/HadamardCubeFiber.json",
+   "theorem_name": "OAI.HadamardSix.rowRatio_cubeFiber_sum_zero",
+   "exact_statement": "lemma rowRatio_cubeFiber_sum_zero {H : Matrix6} (hH : IsComplexHadamard H)\n    (hs : IsComplexHadamard (entrywiseSquare H)) {i j : Index} (hij : i ≠ j)\n    (a b : ℂ) (hne : a ≠ b)\n    (hab : ∀ k, rowRatio H i j k ^ 3 = a ∨ rowRatio H i j k ^ 3 = b) :\n    ∑ k ∈ cubeFiber (rowRatio H i j) a, H i k * star (H j k) = 0",
+   "solution_module": "OAI.LinearAlgebra.Hadamard.Main",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The linked formalization proves a cancellation lemma used in the order-six complex Hadamard analysis. Let $H$ and its entrywise square both be complex Hadamard matrices, and fix two distinct rows. If the cubes of their six entrywise ratios take only two distinct values, then the sum of the row-ratio terms over either specified cube fiber is zero.",
+    "This is a supporting Fourier cancellation statement. The paper's full character-sum vanishing theorem and its mutually unbiased bases bound are outside this selected statement."
+   ],
+   "comparators_on_page": 2
+  },
+  {
+   "family": 372,
+   "doc": "lean/docs/372.md",
+   "papers": [
+    "Global Uniqueness for the Smooth Isotropic Elasticity Inverse Problem"
+   ],
+   "result": "Global uniqueness of smooth isotropic Lamé moduli",
+   "lean_file": "lean/ComparatorChallenges/ElasticityUniqueness.lean",
+   "config": "lean/ComparatorChallenges/ElasticityUniqueness.json",
+   "theorem_name": "OAI.Elasticity.global_uniqueness",
+   "exact_statement": "theorem global_uniqueness : MainClaim",
+   "solution_module": "OAI.MathematicalPhysics.Elasticity.Uniqueness",
+   "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "enable_nanoda": false,
+   "doc_quotes": [
+    "The formalization proves global uniqueness in the three-dimensional static isotropic elasticity inverse problem. On a bounded connected smooth domain, let two pairs of smooth real Lamé moduli satisfy $\\mu>0$ and $3\\lambda+2\\mu>0$ on the closure. If their full displacement-to-traction maps agree, then both Lamé moduli agree throughout the domain. The selected statement is uniqueness; it does not supply a reconstruction algorithm."
+   ],
+   "comparators_on_page": 1
+  }
+ ]
+}

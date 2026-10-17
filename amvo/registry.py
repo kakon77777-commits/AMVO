@@ -594,8 +594,8 @@ def registry_report(objects: dict[str, dict], manifests: dict[str, dict], projec
         if pubs:
             statuses.append("PUBLISHED_REPORT")
         claims.append({"id": cid, "claim_type": claim["claim_type"], "statement": claim["statement"],
-                       "scope": claim["scope"], "revision": rev["id"], "source": rev["source"],
-                       "source_pin": rev["pin"], "source_pin_status": rev["pin_status"],
+                       "scope": claim["scope"], "location": claim.get("location"), "revision": rev["id"],
+                       "source": rev["source"], "source_pin": rev["pin"], "source_pin_status": rev["pin_status"],
                        "source_pin_verified": rev["pin_verified"], "evidence": evidence, "formal_targets": formal,
                        "formal_kernel": "not_run", "reviews": reviews, "publications": pubs, "lineage": lin,
                        "legacy_records": sorted(legacy.get(cid, [])), "statuses": statuses, "theorem_proved": False})
