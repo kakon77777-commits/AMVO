@@ -9,6 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from test_schema_consistency import schema_errors                 # noqa: E402
+from _sandbox import small_registry                               # noqa: E402
 
 from amvo.cli import main                                         # noqa: E402
 from amvo.core import RecordError, canonical_bytes, list_records, sha256   # noqa: E402
@@ -329,8 +330,9 @@ class LocateAndRegisterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             shutil.copytree(ROOT / "cases", root / "cases")
-            shutil.copytree(ROOT / "registry", root / "registry")
+            small_registry(root / "registry")
             shutil.copytree(ROOT / "evidence", root / "evidence")
+            base = registry_report(*load_registry(root / "registry"), root)["counts"]   # before anything is added
 
             def run(*args):
                 return main([args[0], "--cases", str(root / "cases"), "--root", str(root), *args[1:]])
@@ -365,7 +367,6 @@ class LocateAndRegisterTests(unittest.TestCase):
             out = root / "layered.json"
             self.assertEqual(run("registry-report", "--output", str(out)), 0)
             counts = json.loads(out.read_text("utf-8"))["counts"]
-            base = registry_report(*load_registry(ROOT / "registry"), ROOT)["counts"]
             self.assertEqual((counts["sources"], counts["claims"], counts["current_claims_not_checked"]),
                              (base["sources"] + 1, base["claims"] + 1, base["current_claims_not_checked"] + 1))
 

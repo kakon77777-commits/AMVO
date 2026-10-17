@@ -25,6 +25,32 @@ def _write_json(path: Path, payload: object) -> None:
     path.write_bytes(canonical_bytes(payload) + b"\n")
 
 
+def split_report(layered: dict) -> tuple[dict, dict[str, list]]:
+    """the site's index keeps claims that stand on their own; a claim filed under another (a statement
+    inside a manuscript, under its result family) goes to that root claim's file, loaded on demand"""
+    first_parent = {c["id"]: (c.get("parent_claims") or [None])[0] for c in layered["claims"]}
+
+    def root(cid: str) -> str:
+        seen = set()
+        while first_parent.get(cid) and cid not in seen:
+            seen.add(cid)
+            cid = first_parent[cid]
+        return cid
+    top, groups = [], {}
+    for c in layered["claims"]:
+        if first_parent[c["id"]]:
+            groups.setdefault(root(c["id"]), []).append(c)
+        else:
+            top.append(c)
+    summary = {}
+    for parent, members in groups.items():
+        by_type: dict[str, int] = {}
+        for c in members:
+            by_type[c["claim_type"]] = by_type.get(c["claim_type"], 0) + 1
+        summary[parent] = {"file": f"claims/{parent}.json", "count": len(members), "by_type": by_type}
+    return dict(layered, claims=top, claim_groups=summary), groups
+
+
 REF_FIELDS = ("source", "revision", "claim", "formal_target")
 REF_LISTS = ("parent_claims", "claims", "evidence")
 
@@ -178,8 +204,14 @@ def main(argv: list[str] | None = None) -> int:
             destination.mkdir(parents=True, exist_ok=True)
             for name in SITE_FILES:
                 shutil.copyfile(ROOT / "web" / name, destination / name)
+            index, groups = split_report(layered)
+            claims_dir = destination / "data" / "claims"
+            if claims_dir.is_dir() and not claims_dir.is_symlink():
+                shutil.rmtree(claims_dir)                     # generated: rebuilt whole, never merged
+            for parent, members in sorted(groups.items()):
+                _write_json(claims_dir / f"{parent}.json", {"parent": parent, "claims": members})
             _write_json(destination / "data" / "index.json",
-                        {"records": records, "verification": result, "events": events, "registry": layered,
+                        {"records": records, "verification": result, "events": events, "registry": index,
                          "warning": "This site reports scoped evidence, not global theorem proof."})
             print(f"SITE BUILT: {destination}")
             return 0

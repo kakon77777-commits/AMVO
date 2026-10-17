@@ -10,6 +10,9 @@ from pathlib import Path
 from amvo.core import RecordError
 from amvo.lineage import lineage, load_events
 from amvo.registry import load_registry, registry_report
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _sandbox import small_registry  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -42,8 +45,9 @@ def candidate(label, statement, page, end_page=None, decision="register", name=N
 
 def sandbox(td):
     root = Path(td) / "root"
-    for sub in ("registry", "cases", "events"):
+    for sub in ("cases", "events"):
         shutil.copytree(ROOT / sub, root / sub)
+    small_registry(root / "registry")
     return root
 
 
