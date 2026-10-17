@@ -76,6 +76,12 @@ ul.plain { list-style: none; margin: 0; padding: 0; display: flex; flex-directio
 .code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; letter-spacing: .02em; }
 .sources-section { padding-top: 20px; }
 .legend-title { font-size: 16px; margin: 48px 0 14px; }
+.group { margin-top: 10px; padding-top: 12px; border-top: 1px dashed #3a4758; display: flex; flex-direction: column; gap: 10px; }
+.load-group { align-self: flex-start; background: #172131; color: #cfe9e1; border: 1px solid #47887a; border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; }
+.load-group:hover, .load-group:focus-visible { border-color: #81e0c6; color: #f3fbf8; }
+.load-group:disabled { opacity: .6; cursor: progress; }
+.claim-list.nested { gap: 12px; }
+.claim-list.nested .claim { background: #111a28; padding: 18px 20px; }
 .legend { display: grid; grid-template-columns: minmax(0, 20em) minmax(0, 1fr); gap: 10px 18px; margin: 0; font-size: 12px; }
 .legend dt { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .legend dt .code { color: #8fa2b5; }

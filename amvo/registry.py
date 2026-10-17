@@ -551,23 +551,30 @@ def registry_report(objects: dict[str, dict], manifests: dict[str, dict], projec
                                 "pin": rev["pin"], "pin_status": state["status"], "pin_verified": state["verified"] is True,
                                 "pin_capture": state.get("capture"),
                                 "withdrawn": "withdrawn" in (src_lin["state"], rev_lin["state"])}
+    # what refers to each claim, indexed once (a per-claim scan is quadratic at corpus size)
+    about: dict[str, dict[str, list]] = {}
+    for kind in ("evidence", "formal_target", "review"):
+        for o in by_kind[kind]:
+            about.setdefault(o["claim"]["id"], {}).setdefault(kind, []).append(o)
+    for p in by_kind["publication"]:
+        for c in p["claims"]:
+            about.setdefault(c["id"], {}).setdefault("publication", []).append(p)
     claims = []
     for claim in by_kind["claim"]:
         cid, rev = claim["id"], revisions[claim["revision"]["id"]]
+        mine = about.get(cid, {})
         evidence = []
-        for e in by_kind["evidence"]:
-            if e["claim"]["id"] != cid:
-                continue
+        for e in mine.get("evidence", []):
             try:
                 result = check_one(e["check"], project_root)
             except (RecordError, OSError) as exc:
                 result = {"id": e["check"]["id"], "kind": e["check"]["kind"], "result": "error", "scope": str(exc)}
             evidence.append({"id": e["id"], "kind": e["check"]["kind"], "result": result["result"],
                              "bounded_claim": e["bounded_claim"]})
-        formal = [f["id"] for f in by_kind["formal_target"] if f["claim"]["id"] == cid]
+        formal = [f["id"] for f in mine.get("formal_target", [])]
         reviews = [{"id": r["id"], "reviewer_class": r["reviewer_class"], "audit_state": r["audit_state"]}
-                   for r in by_kind["review"] if r["claim"]["id"] == cid]
-        pubs = [p["id"] for p in by_kind["publication"] if any(c["id"] == cid for c in p["claims"])]
+                   for r in mine.get("review", [])]
+        pubs = [p["id"] for p in mine.get("publication", [])]
         lin = lineage_of(cid)
         if rev["withdrawn"] and lin["state"] != "withdrawn":
             lin = dict(lin, state="withdrawn", withdrawn_by=lin["withdrawn_by"] or "revision or source withdrawn")
@@ -594,7 +601,8 @@ def registry_report(objects: dict[str, dict], manifests: dict[str, dict], projec
         if pubs:
             statuses.append("PUBLISHED_REPORT")
         claims.append({"id": cid, "claim_type": claim["claim_type"], "statement": claim["statement"],
-                       "scope": claim["scope"], "location": claim.get("location"), "revision": rev["id"],
+                       "scope": claim["scope"], "location": claim.get("location"),
+                       "parent_claims": [p["id"] for p in claim.get("parent_claims", [])], "revision": rev["id"],
                        "source": rev["source"], "source_pin": rev["pin"], "source_pin_status": rev["pin_status"],
                        "source_pin_verified": rev["pin_verified"], "evidence": evidence, "formal_targets": formal,
                        "formal_kernel": "not_run", "reviews": reviews, "publications": pubs, "lineage": lin,

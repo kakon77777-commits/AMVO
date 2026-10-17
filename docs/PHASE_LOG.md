@@ -678,3 +678,32 @@ states what was run, on which commit, with what result; nothing here is inferred
 - **Tests:** 114 run, OK (the site test now checks that the report's location is the object's, and that every
   statement claim's location names its heading while no family claim's does); `validate`, `audit-public`,
   `verify`, `registry-report`, `build-site` exit 0.
+
+## Site and test scale after the statement intake (review follow-up to the cloud PR)
+
+- **Base:** the cloud PR's head `91ee8af` (`claude/friendly-sagan-bg5hof`). Branch `feat/site-scale`.
+- **Review of the cloud PR, independently:** its CI-built site (Linux) and a Windows build give the
+  same `site/data/index.json`, `4183958b2eb804002eac6f9988f9436a12df254a4e557a43ff629a9c723a9025`;
+  the hashes its last log entry quotes (`a6586dfc…`, `ee61fd8c…`) belong to an earlier head.
+  A fixed-seed sample of 80 statement claims: all 80 PDFs fetched again at the pin match their
+  recorded SHA-256, and all 80 statements occur verbatim in text extracted with poppler 24.04
+  (39 of 80 also in xpdf 4.00 text — a different extractor renders mathematics differently, which
+  is why a quote is "extracted text", as the PR says). 20 formal targets: each statement occurs in
+  its Lean file at the pin, each theorem is named in its comparator configuration, each code pin is
+  the commit. 20 cited-result claims: each statement occurs verbatim and each is credited to the
+  cited work. The tools run `pdftotext` on the PDFs and nothing from the source repository.
+- **The problem it left:** `site/data/index.json` had grown to 19 MB with 8,677 claims, all drawn
+  as cards at once — near the platform's 25 MiB file limit and unusable on a phone.
+- **Fix:** `build-site` keeps in `data/index.json` only claims that stand on their own (the 373) and
+  writes the claims filed under each (a family's statements) to `data/claims/<claim-id>.json`; the
+  page shows each family's count by type and loads its statements on request (a fixed file-name
+  pattern is the only path fetched). Rebuilding removes stale group files. The index is 0.74 MB,
+  the largest group file 0.75 MB (r260). The report gains each claim's `parent_claims`, and builds
+  its per-claim lists from an index instead of scanning every object per claim.
+- **Tests:** the slowest tests copied the whole registry into a temporary root; they now copy a
+  closed subset (sources, revisions, manifests, top-level claims). 115 run, 114 pass, 1 skipped,
+  in 104 s (was 487 s); one new test checks the split (every claim exactly once, index under 2 MB,
+  stale files removed).
+- **Evidence (SHA-256):** `build/registry.json`
+  `4a589bc308ea59aa41c825670da08b9f4496b448587dbaa4250cd0cd90d35ccf`; `site/data/index.json`
+  `09967884869c65360b901ade3259093cac0c574434d75969f01b1a42e9f015de`; two builds identical.

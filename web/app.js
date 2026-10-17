@@ -170,7 +170,40 @@ function makeClaim(c, ctx) {
   if (c.legacy_records && c.legacy_records.length) {
     card.append(el("p", "scope", "由 v0.1 紀錄遷移：" + c.legacy_records.join("、")));
   }
+  const group = ctx.groups ? ctx.groups[c.id] : null;
+  if (group) card.append(makeGroup(group, ctx));
   return card;
+}
+
+const TYPE_WORDS = { theorem: "定理", proposition: "命題", corollary: "推論", lemma: "引理", conjecture: "猜想" };
+
+// statements filed under this claim live in their own file and are fetched only when asked for
+function makeGroup(group, ctx) {
+  const box = el("div", "group");
+  const parts = Object.keys(group.by_type).sort().map(t => (TYPE_WORDS[t] || t) + " " + group.by_type[t]);
+  box.append(el("p", "scope", "稿件中逐字引出的敘述：" + group.count + " 條（" + parts.join(" · ") + "），每條都未檢查。"));
+  const button = el("button", "load-group", "載入這 " + group.count + " 條敘述");
+  button.type = "button";
+  const list = el("div", "claim-list nested");
+  button.addEventListener("click", async () => {
+    if (!/^claims\/[a-z0-9-]+\.json$/.test(group.file)) return;     // only our own generated files
+    button.disabled = true;
+    button.textContent = "讀取中…";
+    try {
+      const response = await fetch("./data/" + group.file, { cache: "no-store" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const data = await response.json();
+      list.replaceChildren();
+      for (const child of data.claims || []) list.append(makeClaim(child, ctx));
+      button.remove();
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = "讀取失敗，再試一次";
+    }
+  });
+  box.append(button);
+  box.append(list);
+  return box;
 }
 
 function makeSource(s, ctx) {
@@ -231,7 +264,8 @@ async function init() {
       engine: String(report.engine || "UNKNOWN"),
       sources: new Map(report.sources.map(s => [s.id, s])),
       revisions: new Map(report.revisions.map(r => [r.id, r])),
-      events: data.events || []
+      events: data.events || [],
+      groups: report.claim_groups || {}
     };
     claims = report.claims;
     const n = report.counts;

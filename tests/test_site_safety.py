@@ -108,7 +108,9 @@ class FrontEndReportTests(unittest.TestCase):
             self.assertIn('"原稿標示："', js)
             self.assertIn('"（非原稿標示）"', js)
             objects, _ = load_registry(ROOT / "registry")
-            for c in data["registry"]["claims"]:
+            grouped = [c for g in data["registry"]["claim_groups"].values()
+                       for c in json.loads((out / "data" / g["file"]).read_text("utf-8"))["claims"]]
+            for c in data["registry"]["claims"] + grouped:
                 self.assertEqual(c["location"], objects[c["id"]].get("location"))
                 named = any(part.startswith(c["claim_type"].capitalize() + " ")
                             for part in (c["location"] or "").split(", "))
@@ -116,6 +118,30 @@ class FrontEndReportTests(unittest.TestCase):
                     self.assertFalse(named, c["id"])                  # a family's type is AMVO's, not a heading
                 elif c["id"].startswith("amvo-clm-openai-math-r"):
                     self.assertTrue(named, c["id"])                   # a statement's type is its heading's word
+
+    def test_site_index_stays_small_and_statements_load_on_demand(self):
+        """statements filed under a claim go to that claim's own file; every claim appears exactly once,
+        the index stays small enough to load on a phone, and a rebuild leaves no stale file behind"""
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "site"
+            (out / "data" / "claims").mkdir(parents=True)
+            (out / "data" / "claims" / "amvo-clm-stale.json").write_text("{}", "utf-8")
+            self.assertEqual(main(["build-site", "--output", str(out)]), 0)
+            index = json.loads((out / "data" / "index.json").read_text("utf-8"))["registry"]
+            self.assertFalse((out / "data" / "claims" / "amvo-clm-stale.json").exists())
+            self.assertLess((out / "data" / "index.json").stat().st_size, 2_000_000)
+            seen = [c["id"] for c in index["claims"]]
+            self.assertTrue(all(not c["parent_claims"] for c in index["claims"]))
+            for parent, g in index["claim_groups"].items():
+                self.assertRegex(g["file"], r"^claims/[a-z0-9-]+\.json$")
+                body = json.loads((out / "data" / g["file"]).read_text("utf-8"))
+                self.assertEqual(body["parent"], parent)
+                self.assertEqual(len(body["claims"]), g["count"])
+                self.assertIn(parent, seen[:len(index["claims"])])          # every group hangs off a listed claim
+                seen += [c["id"] for c in body["claims"]]
+            self.assertEqual(len(seen), len(set(seen)))
+            self.assertEqual(len(seen), index["counts"]["claims"])
+        self.assertIn("/^claims\\/[a-z0-9-]+\\.json$/.test(group.file)", (WEB / "app.js").read_text("utf-8"))
 
     def test_deployment_headers_and_worker_config(self):
         headers = (WEB / "_headers").read_text("utf-8")
